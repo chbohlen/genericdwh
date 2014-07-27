@@ -7,23 +7,28 @@ import java.sql.SQLException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-public class MySQLDatabaseController implements DatabaseController {
+public class JDBCDatabaseController implements DatabaseController {
 	
 	private final Logger logger = LogManager.getLogger(this.getClass());
+	
 	private Connection dbConnection;
 	
-	public MySQLDatabaseController() {
-		
+	private final String dbDriver;
+	private final String dbms;
+	
+	public JDBCDatabaseController(String dbDriver, String dbms) {
+		this.dbDriver = dbDriver;
+		this.dbms = dbms;
 	}
 	
 	public void connect(String ip, String port, String dbName, String user, String password) {
 			try {
-				Class.forName(com.mysql.jdbc.Driver.class.getName());
-				dbConnection = DriverManager.getConnection("jdbc:mysql://"+ip+":"+port+"/"+dbName, user, password);
+				Class.forName(dbDriver);
+				dbConnection = DriverManager.getConnection("jdbc:"+dbms+"://"+ip+":"+port+"/"+dbName, user, password);
 				logger.info("Database connection established.");
 				
 			} catch (ClassNotFoundException e) {
-				logger.error("com.mysql.jdbc.Driver not found!");
+				logger.error(dbDriver+" not found!");
 			} catch (SQLException e) {
 				logger.error("Could not establish database connection!");
 			}
@@ -31,8 +36,10 @@ public class MySQLDatabaseController implements DatabaseController {
 	
 	public void disconnect() {
 		try {
-			dbConnection.close();
-			logger.info("Database connection closed.");
+			if (dbConnection != null) {
+				dbConnection.close();
+				logger.info("Database connection closed.");
+			}
 		} catch (SQLException e) {
 			logger.error("Could not close database connection!");
 		}
