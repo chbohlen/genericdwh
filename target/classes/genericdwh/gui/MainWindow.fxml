@@ -1,15 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<MenuBar fx:controller="genericdwh.gui.MainWindowController" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-  <menus>
-    <Menu mnemonicParsing="false" text="File">
-      <items>
-        <MenuItem mnemonicParsing="false" text="Connect" onAction="#handleMenuItemConnect" />
-        <MenuItem mnemonicParsing="false" text="Disconnect" onAction="#handleMenuItemDisconnect" />
-        <MenuItem mnemonicParsing="false" text="Exit" onAction="#handleMenuItemExit" />
-      </items>
-    </Menu>
-  </menus>
-</MenuBar>
+<Pane prefHeight="750.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.MainWindowController">
+	<children>
+		<MenuBar prefHeight="25.0" prefWidth="1000.0">
+		  <menus>
+		    <Menu mnemonicParsing="false" text="File">
+		      <items>
+		        <MenuItem mnemonicParsing="false" onAction="#onClickMenuBarConnect" text="Connect" />
+		        <MenuItem mnemonicParsing="false" onAction="#onClickMenuBarDisconnect" text="Disconnect" />
+		        <MenuItem mnemonicParsing="false" onAction="#onClickMenuBarExit" text="Exit" />
+		      </items>
+		    </Menu>
+		  </menus>
+		</MenuBar>
+      <TreeView fx:id="treeView" layoutY="25.0" prefHeight="725.0" prefWidth="200.0" visible="false">
+         <contextMenu>
+            <ContextMenu>
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#onClickContextMenuCreateDimension" text="Create new dimension" />
+              </items>
+            </ContextMenu>
+         </contextMenu>
+      </TreeView>
+	</children>
+</Pane>

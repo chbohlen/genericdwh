@@ -17,18 +17,21 @@ public class MySQLDatabaseController implements DatabaseController {
 		
 	}
 	
-	public void connect(String ip, String port, String dbName, String user, String password) {
+	public boolean connect(String ip, String port, String dbName, String user, String password) {
 		String dbDriver = com.mysql.jdbc.Driver.class.getName();
 			try {
 				Class.forName(dbDriver);
 				dbConnection = DriverManager.getConnection("jdbc:mysql://"+ip+":"+port+"/"+dbName, user, password);
 				logger.info("Database connection established.");
-				
 			} catch (ClassNotFoundException e) {
 				logger.error(dbDriver+" not found!");
+				return false;
 			} catch (SQLException e) {
 				logger.error("Could not establish database connection!");
+				return false;
 			}
+			
+			return true;
 	}
 	
 	public void disconnect() {
@@ -43,5 +46,17 @@ public class MySQLDatabaseController implements DatabaseController {
 		} catch (SQLException e) {
 			logger.error("Could not close database connection!");
 		}
+	}
+
+	public void createDimension() {
+		// TODO Auto-generated method stub
+	}
+
+	public void createDimensionHierarchy() {
+		// TODO Auto-generated method stub		
+	}
+
+	public void createDimensionCombination() {
+		// TODO Auto-generated method stub
 	}
 }

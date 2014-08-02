@@ -1,8 +1,8 @@
 package genericdwh.gui;
 
 import genericdwh.db.DatabaseController;
-import genericdwh.main.Main;import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import genericdwh.main.Main;
+import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
@@ -22,27 +22,33 @@ public class ConnectWindowController {
 	@FXML private Button btnCancel;
 
 	public ConnectWindowController() {
-		
 	}
 	
 	public void createWindow() {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("ConnectWindow.fxml"));
+			Parent root = SpringFXMLLoader.load(getClass().getResource("ConnectWindow.fxml"));
 			Scene scene = new Scene(root, 305, 240);
 			Stage stage = new Stage();
 			stage.setScene(scene);
+			stage.setTitle("Connect to database");
+			stage.setResizable(false);
 			stage.show();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
-	@FXML public void handleButtonConnect() {
-		Main.getContext().getBean(DatabaseController.class).connect(tfIp.getText(), tfPort.getText(), tfDatabase.getText() , tfUser.getText(), tfPassword.getText());
+	@FXML public void onClickButtonConnect() {
+		boolean connected  = Main.getContext().getBean(DatabaseController.class).connect("localhost", "3306", "genericdwh" , "root", "root");
+		//boolean connected  = Main.getContext().getBean(DatabaseController.class).connect(tfIp.getText(), tfPort.getText(), tfDatabase.getText() , tfUser.getText(), tfPassword.getText());
 		((Stage)btnConnect.getScene().getWindow()).close();
+		
+		if (connected) {
+			Main.getContext().getBean(MainWindowController.class).showTreeView();
+		}
 	}
 
-	@FXML public void handleButtonCancel() {
+	@FXML public void onClickButtonCancel() {
 		((Stage)btnCancel.getScene().getWindow()).close();
 	}
 }
