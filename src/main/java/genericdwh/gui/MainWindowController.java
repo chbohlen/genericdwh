@@ -1,18 +1,30 @@
 package genericdwh.gui;
 
-import genericdwh.db.DatabaseController;
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import genericdwh.main.Main;
+import genericdwh.dataobjects.DataObject;
+import genericdwh.db.DatabaseController;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 
-public class MainWindowController {
+public class MainWindowController implements Initializable {
 	
 	private Stage stage;
 	
-	public MainWindowController() {
+	private SidebarController sidebarController;
+	private ConnectWindowController connectWindowController;
+	
+	@FXML private TreeView<DataObject> sidebar;
+	
+	public MainWindowController(ConnectWindowController connectWindowController, SidebarController sidebarController) {
+		this.connectWindowController = connectWindowController;
+		this.sidebarController = sidebarController;
 	}
 	
 	public void createWindow(Stage stage) {
@@ -28,34 +40,42 @@ public class MainWindowController {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public void initialize(URL location, ResourceBundle resources) {
+		sidebarController.setSidebar(sidebar);
+	}
 	
 	public Stage getStage() {
 		return stage;
 	}
 	
-	@FXML private TreeView<?> treeView;
-	public void showTreeView() {
-		treeView.setVisible(true);
+	public void buildSidebar() {
+		sidebarController.buildSidebar();
 	}
-	public void hideTreeView() {
-		treeView.setVisible(false);
+	
+	public void showSidebar() {
+		sidebarController.showSidebar();
+	}
+	
+	public void hideSidebar() {
+		sidebarController.hideSidebar();
 	}
 		
 	@FXML protected void onClickMenuBarExit() {
 		Main.getContext().getBean(DatabaseController.class).disconnect();
-		Main.getContext().getBean(MainWindowController.class).getStage().close();
+		stage.close();
     }
 
 	@FXML public void onClickMenuBarConnect() {
-		Main.getContext().getBean(ConnectWindowController.class).createWindow();
+		connectWindowController.createWindow();
 	}
 
 	@FXML public void onClickMenuBarDisconnect() {
 		Main.getContext().getBean(DatabaseController.class).disconnect();
-		hideTreeView();
+		hideSidebar();
 	}
 
-	@FXML public void onClickContextMenuCreateDimension() {
+	@FXML public void onClickContextMenuNewDimension() {
 		
 	}
 }

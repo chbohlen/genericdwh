@@ -17,14 +17,14 @@
 		    </Menu>
 		  </menus>
 		</MenuBar>
-      <TreeView fx:id="treeView" layoutY="25.0" prefHeight="725.0" prefWidth="200.0" visible="false">
-         <contextMenu>
-            <ContextMenu>
-              <items>
-                <MenuItem mnemonicParsing="false" onAction="#onClickContextMenuCreateDimension" text="Create new dimension" />
-              </items>
-            </ContextMenu>
-         </contextMenu>
-      </TreeView>
+		<TreeView fx:id="sidebar" layoutY="25.0" prefHeight="725.0" prefWidth="200.0" visible="false">
+   			<contextMenu>
+				<ContextMenu>
+					<items>
+		           		<MenuItem mnemonicParsing="false" onAction="#onClickContextMenuNewDimension" text="New dimension" />
+		         	</items>
+       			</ContextMenu>
+    		</contextMenu>
+		</TreeView>
 	</children>
 </Pane>

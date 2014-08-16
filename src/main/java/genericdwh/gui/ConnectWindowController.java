@@ -44,7 +44,9 @@ public class ConnectWindowController {
 		((Stage)btnConnect.getScene().getWindow()).close();
 		
 		if (connected) {
-			Main.getContext().getBean(MainWindowController.class).showTreeView();
+			MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
+			mainWindowController.buildSidebar();
+			mainWindowController.showSidebar();
 		}
 	}
 
