@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane fx:id="queryPane" prefHeight="725.0" prefWidth="800.0" stylesheets="@TableViewNoHorizontalScrollBar.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.mainwindow.querypane.QueryPaneController">
+   <children>
+      <TableView fx:id="tvMeasure" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="125.0" prefWidth="200.0">
+         <columns>
+            <TableColumn fx:id="tcMeasure" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Measure" />
+         </columns>
+      </TableView>
+      <TableView fx:id="tvRowDims" layoutX="200.0" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="125.0" prefWidth="200.0">
+        <columns>
+          <TableColumn fx:id="tcRowDims" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Row Dimensions" />
+        </columns>
+      </TableView>
+      <TableView fx:id="tvColDims" layoutX="400.0" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="125.0" prefWidth="200.0">
+        <columns>
+          <TableColumn fx:id="tcColDims" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Column Dimensions" />
+        </columns>
+      </TableView>
+      <Button fx:id="btnExecQuery" layoutX="640.0" layoutY="24.0" mnemonicParsing="false" onMouseClicked="#buttonExecQueryOnClickHandler" prefHeight="30.0" prefWidth="120.0" text="Execute Query" />
+      <Button fx:id="btnClear" layoutX="640.0" layoutY="73.0" mnemonicParsing="false" onMouseClicked="#buttonClearOnClickHandler" prefHeight="30.0" prefWidth="120.0" text="Clear" />
+   </children>
+</Pane>

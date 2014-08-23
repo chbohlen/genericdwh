@@ -1,5 +1,10 @@
 package genericdwh.gui;
 
+import genericdwh.gui.mainwindow.MainWindowController;
+import genericdwh.gui.mainwindow.querypane.QueryPaneController;
+import genericdwh.gui.mainwindow.sidebar.SidebarController;
+import genericdwh.gui.subwindows.ConnectWindowController;
+
 import org.springframework.context.annotation.*;
 
 @Configuration
@@ -7,7 +12,7 @@ public class GUIConfig {
 
 	@Bean
 	public MainWindowController mainWindowController() {
-		return new MainWindowController(connectWindowController(), sidebarController());
+		return new MainWindowController(connectWindowController(), sidebarController(), queryPaneController());
 	}
 	
 	@Bean
@@ -18,5 +23,10 @@ public class GUIConfig {
 	@Bean
 	public SidebarController sidebarController() {
 		return new SidebarController();
+	}
+	
+	@Bean
+	public QueryPaneController queryPaneController() {
+		return new QueryPaneController();
 	}
 }

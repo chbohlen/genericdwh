@@ -5,6 +5,7 @@ import static genericdwh.db.model.tables.DimensionCategory.DIMENSION_CATEGORY;
 import static genericdwh.db.model.tables.DimensionCombination.DIMENSION_COMBINATION;
 import static genericdwh.db.model.tables.DimensionHierarchy.DIMENSION_HIERARCHY;
 import static genericdwh.db.model.tables.ReferenceObject.REFERENCE_OBJECT;
+import static genericdwh.db.model.tables.ReferenceObjectHierarchy.REFERENCE_OBJECT_HIERARCHY;
 import genericdwh.dataobjects.Dimension;
 import genericdwh.dataobjects.ReferenceObject;
 
@@ -12,8 +13,8 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.jooq.DSLContext;
 import org.jooq.Record2;
@@ -35,38 +36,55 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	public ArrayList<Entry<Long, Long>> loadDimensionHierachies() {
 		List<Entry<Long, Long>> hierarchyList = create.select(DIMENSION_HIERARCHY.PARENT_ID, DIMENSION_HIERARCHY.CHILD_ID)
 														.from(DIMENSION_HIERARCHY)
-														.fetch(new EntryLongLongMapper());
+														.fetch(new EntryLongLongRecordMapper());
 		return new ArrayList<Entry<Long, Long>>(hierarchyList);
 	}
 	
 	public ArrayList<Entry<Long, Long>> loadDimensionCombinations() {
 		List<Entry<Long, Long>> combinationList = create.select(DIMENSION_COMBINATION.AGGREGATE_ID, DIMENSION_COMBINATION.COMPONENT_ID)
 															.from(DIMENSION_COMBINATION)
-															.fetch(new EntryLongLongMapper());
+															.fetch(new EntryLongLongRecordMapper());
 		return new ArrayList<Entry<Long, Long>>(combinationList);
 	}
 	
-	public boolean dimensionHasRecords(long id) {
-		int cnt = create.select()
-							.from(REFERENCE_OBJECT)
-							.where(REFERENCE_OBJECT.DIMENSION_ID.equal(id))
-							.fetchCount();
-		return cnt == 0 ? false : true;
-	}
-	
-	public TreeMap<Long, ReferenceObject> loadReferenceObjectsForDimension(Dimension dim) {
+	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(long dimId) {
 		Map<Long, ReferenceObject> refObjMap = create.select(REFERENCE_OBJECT.ID, REFERENCE_OBJECT.DIMENSION_ID, REFERENCE_OBJECT.NAME)
 														.from(REFERENCE_OBJECT)
-														.where(REFERENCE_OBJECT.DIMENSION_ID.equal(dim.getId()))
+														.where(REFERENCE_OBJECT.DIMENSION_ID.equal(dimId))
 														.fetch()
 														.intoMap(REFERENCE_OBJECT.ID, ReferenceObject.class);
 		return new TreeMap<Long, ReferenceObject>(refObjMap);
 	}
 	
-	private class EntryLongLongMapper implements RecordMapper<Record2<Long, Long>, Entry<Long, Long>> {
-		public Entry<Long, Long> map(Record2<Long, Long> record) {
-			return new AbstractMap.SimpleEntry<Long, Long>((Long)record.getValue(0), (Long)record.getValue(1));
-		}
+	public TreeMap<Long, ReferenceObject> loadRefObjsForDimAndRefObjParent(long dimId, long refObjId) {
+		Map<Long, ReferenceObject> refObjMap = create.select(REFERENCE_OBJECT.ID, REFERENCE_OBJECT.DIMENSION_ID, REFERENCE_OBJECT.NAME)
+														.from(REFERENCE_OBJECT)
+															.leftOuterJoin(REFERENCE_OBJECT_HIERARCHY)
+															.on(REFERENCE_OBJECT.ID.equal(REFERENCE_OBJECT_HIERARCHY.CHILD_ID))
+														.where(REFERENCE_OBJECT.DIMENSION_ID.equal(dimId))
+															.and(REFERENCE_OBJECT_HIERARCHY.PARENT_ID.equal(refObjId))
+														.fetch()
+														.intoMap(REFERENCE_OBJECT.ID, ReferenceObject.class);
+		return new TreeMap<Long, ReferenceObject>(refObjMap);
+	}
+	
+	public boolean dimensionHasRecords(long dimId) {
+		int cnt = create.select()
+							.from(REFERENCE_OBJECT)
+							.where(REFERENCE_OBJECT.DIMENSION_ID.equal(dimId))
+							.fetchCount();
+		return cnt == 0 ? false : true;
+	}
+	
+	public boolean dimensionAndRefObjParentHaveRecords(long dimId, long refObjId) {
+		int cnt = create.select()
+							.from(REFERENCE_OBJECT)
+								.leftOuterJoin(REFERENCE_OBJECT_HIERARCHY)
+								.on(REFERENCE_OBJECT.ID.equal(REFERENCE_OBJECT_HIERARCHY.CHILD_ID))
+							.where(REFERENCE_OBJECT.DIMENSION_ID.equal(dimId))
+								.and(REFERENCE_OBJECT_HIERARCHY.PARENT_ID.equal(refObjId))
+							.fetchCount();
+		return cnt == 0 ? false : true;
 	}
 	
 	public void setDSLContext(DSLContext context) {

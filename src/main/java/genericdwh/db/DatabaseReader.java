@@ -12,7 +12,9 @@ public interface DatabaseReader {
 	public ArrayList<Entry<Long, Long>> loadDimensionHierachies();
 	public ArrayList<Entry<Long, Long>> loadDimensionCombinations();
 	
-	public boolean dimensionHasRecords(long id);
+	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(long dimId);
+	public TreeMap<Long, ReferenceObject> loadRefObjsForDimAndRefObjParent(long dimId, long refObjId);
 	
-	public TreeMap<Long, ReferenceObject> loadReferenceObjectsForDimension(Dimension dim);
+	public boolean dimensionHasRecords(long dimId);
+	public boolean dimensionAndRefObjParentHaveRecords(long dimId, long refObjId);
 }

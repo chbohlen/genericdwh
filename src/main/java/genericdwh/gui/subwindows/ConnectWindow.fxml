@@ -4,7 +4,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane prefHeight="240.0" prefWidth="305.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.ConnectWindowController">
+<Pane prefHeight="240.0" prefWidth="305.0" onKeyPressed="#onKeyPressedHandler"  xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.subwindows.ConnectWindowController">
    <children>
    	<GridPane prefHeight="180.0" prefWidth="305.0">
    	   <columnConstraints>
@@ -34,7 +34,7 @@
    	      <PasswordField fx:id="tfPassword" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="145.0" GridPane.columnIndex="2" GridPane.rowIndex="5" />
    	   </children>
    	</GridPane>
-      <Button fx:id="btnConnect" layoutX="63.0" layoutY="205.0" prefHeight="25.0" prefWidth="80.0" mnemonicParsing="false" onAction="#onClickButtonConnect" text="Connect" />
-      <Button fx:id="btnCancel" layoutX="163.0" layoutY="205.0" prefHeight="25.0" prefWidth="80.0" mnemonicParsing="false" onAction="#onClickButtonCancel" text="Cancel" />
+      <Button fx:id="btnConnect" layoutX="63.0" layoutY="205.0" mnemonicParsing="false" onAction="#buttonConnectOnClickHandler" prefHeight="25.0" prefWidth="80.0" text="Connect" />
+      <Button fx:id="btnCancel" layoutX="163.0" layoutY="205.0" mnemonicParsing="false" onAction="#buttonCancelOnClickHandler" prefHeight="25.0" prefWidth="80.0" text="Cancel" />
    </children>
 </Pane>

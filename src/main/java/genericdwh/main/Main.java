@@ -3,7 +3,7 @@ package genericdwh.main;
 import genericdwh.gui.GUIConfig;
 import genericdwh.db.DatabaseControllerConfig;
 import genericdwh.dataobjects.DataObjectManagerConfig;
-import genericdwh.gui.MainWindowController;
+import genericdwh.gui.mainwindow.MainWindowController;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

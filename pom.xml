@@ -44,5 +44,10 @@
   		<artifactId>jooq-meta</artifactId>
   		<version>3.4.1</version>
   	</dependency>
+  	<dependency>
+  		<groupId>com.google.guava</groupId>
+  		<artifactId>guava</artifactId>
+  		<version>18.0-rc2</version>
+  	</dependency>
   </dependencies>
 </project>

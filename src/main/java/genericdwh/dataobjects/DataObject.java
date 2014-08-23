@@ -1,16 +1,15 @@
 package genericdwh.dataobjects;
 
 public abstract class DataObject {
-	protected long id;
+	
 	protected String name;
 	
-	public DataObject(long id, String name) {
-		this.id = id;
+	public DataObject(String name) {
 		this.name = name;
 	}
 	
-	public long getId() {
-		return id;
+	public DataObject() {
+		this(new String());
 	}
 
 	public String getName() {
