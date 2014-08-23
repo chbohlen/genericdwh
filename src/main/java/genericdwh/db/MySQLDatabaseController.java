@@ -24,12 +24,12 @@ public class MySQLDatabaseController implements DatabaseController {
 		this.dbWriter = dbWriter;
 	}
 	
-	public boolean connect(String ip, String port, String dbName, String user, String password) {
+	public boolean connect(String ip, String port, String dbName, String userName, String password) {
 		String dbDriver = com.mysql.jdbc.Driver.class.getName();
 		
 		try {
 			Class.forName(dbDriver);
-			dbConnection = DriverManager.getConnection("jdbc:mysql://"+ip+":"+port+"/"+dbName, user, password);
+			dbConnection = DriverManager.getConnection("jdbc:mysql://"+ip+":"+port+"/"+dbName, userName, password);
 			logger.info("Database connection established.");
 		} catch (ClassNotFoundException e) {
 			logger.error(dbDriver+" not found!");

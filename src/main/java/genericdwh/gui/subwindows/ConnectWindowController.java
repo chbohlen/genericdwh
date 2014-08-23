@@ -1,5 +1,8 @@
 package genericdwh.gui.subwindows;
 
+import java.util.Properties;
+
+import genericdwh.configfiles.ConfigFileReader;
 import genericdwh.dataobjects.DimensionManager;
 import genericdwh.db.DatabaseController;
 import genericdwh.gui.SpringFXMLLoader;
@@ -19,8 +22,8 @@ public class ConnectWindowController {
 	
 	@FXML private TextField tfIp;
 	@FXML private TextField tfPort;
-	@FXML private TextField tfDatabase;
-	@FXML private TextField tfUser;
+	@FXML private TextField tfDbName;
+	@FXML private TextField tfUserName;
 	@FXML private PasswordField tfPassword;
 	
 	@FXML private Button btnConnect;
@@ -41,14 +44,19 @@ public class ConnectWindowController {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		
+		if (loadDbCredentials()) {
+			tfPassword.requestFocus();
+		}
 	}
 	
-	private void connect() {
+	private void connectToDatabase() {
 		boolean connected  = Main.getContext().getBean(DatabaseController.class).connect("localhost", "3306", "genericdwh" , "root", "root");
-		//boolean connected  = Main.getContext().getBean(DatabaseController.class).connect(tfIp.getText(), tfPort.getText(), tfDatabase.getText() , tfUser.getText(), tfPassword.getText());
-		((Stage)btnConnect.getScene().getWindow()).close();
+		//boolean connected  = Main.getContext().getBean(DatabaseController.class).connect(tfIp.getText(), tfPort.getText(), tfDbName.getText() , tfUserName.getText(), tfPassword.getText());
 		
 		if (connected) {
+			storeDbCredentials();
+			
 			DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 			dimManager.loadDimensions();
 			
@@ -57,28 +65,54 @@ public class ConnectWindowController {
 			mainWindowController.showSidebar();
 			mainWindowController.showQueryPane();
 		}
+		
+		closeWindow();
 	}
 	
-	private void cancel() {
+	private void storeDbCredentials() {
+		Properties dbCredentials = new Properties();
+		dbCredentials.setProperty("ip", tfIp.getText());
+		dbCredentials.setProperty("port", tfPort.getText());
+		dbCredentials.setProperty("dbName", tfDbName.getText());
+		dbCredentials.setProperty("userName", tfUserName.getText());
+		
+		Main.getContext().getBean(ConfigFileReader.class).store(dbCredentials, "dbCredentials.properties", "last successfully used database credentials");
+	}
+	
+	private boolean loadDbCredentials() {
+		Properties dbCredentials = Main.getContext().getBean(ConfigFileReader.class).load("dbCredentials.properties");
+		boolean loaded = dbCredentials.size() > 0;
+		
+		if (loaded) {
+			tfIp.setText(dbCredentials.getProperty("ip"));
+			tfPort.setText(dbCredentials.getProperty("port"));
+			tfDbName.setText(dbCredentials.getProperty("dbName"));
+			tfUserName.setText(dbCredentials.getProperty("userName"));
+		}
+		
+		return loaded;
+	}
+
+	private void closeWindow() {
 		((Stage)btnCancel.getScene().getWindow()).close();
 	}
 	
 	@FXML public void buttonConnectOnClickHandler() {		
-		connect();
+		connectToDatabase();
 	}
 
 	@FXML public void buttonCancelOnClickHandler() {
-		cancel();
+		closeWindow();
 	}
 
 	@FXML public void onKeyPressedHandler(KeyEvent event) {
 		KeyCode pressedKeyCode = event.getCode();
 		
 		if (pressedKeyCode == KeyCode.ESCAPE) {
-			cancel();
+			closeWindow();
 		}
 		else if (pressedKeyCode == KeyCode.ENTER) {
-			connect();
+			connectToDatabase();
 		}
 		
 		event.consume();

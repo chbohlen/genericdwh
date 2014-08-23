@@ -92,5 +92,6 @@ public class MainWindowController {
 	@FXML public void menuBarDisconnectOnClickHandler() {
 		Main.getContext().getBean(DatabaseController.class).disconnect();
 		hideSidebar();
+		hideQueryPane();
 	}
 }

@@ -1,6 +1,7 @@
 package genericdwh.main;
 
 import genericdwh.gui.GUIConfig;
+import genericdwh.configfiles.ConfigFileReaderConfig;
 import genericdwh.db.DatabaseControllerConfig;
 import genericdwh.dataobjects.DataObjectManagerConfig;
 import genericdwh.gui.mainwindow.MainWindowController;
@@ -15,6 +16,7 @@ public class Main extends Application {
 	
 	public static void main(String[] args) {
 		context = new AnnotationConfigApplicationContext();
+		context.register(ConfigFileReaderConfig.class);
 		context.register(GUIConfig.class);
 		context.register(DatabaseControllerConfig.class);
 		context.register(DataObjectManagerConfig.class);
