@@ -11,7 +11,7 @@ package genericdwh.db.model;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends org.jooq.impl.SchemaImpl {
 
-	private static final long serialVersionUID = 1197363376;
+	private static final long serialVersionUID = -2117327980;
 
 	/**
 	 * The singleton instance of <code></code>
@@ -34,14 +34,15 @@ public class DefaultSchema extends org.jooq.impl.SchemaImpl {
 
 	private final java.util.List<org.jooq.Table<?>> getTables0() {
 		return java.util.Arrays.<org.jooq.Table<?>>asList(
-			genericdwh.db.model.tables.Dimension.DIMENSION,
-			genericdwh.db.model.tables.DimensionCategory.DIMENSION_CATEGORY,
-			genericdwh.db.model.tables.DimensionCombination.DIMENSION_COMBINATION,
-			genericdwh.db.model.tables.DimensionHierarchy.DIMENSION_HIERARCHY,
-			genericdwh.db.model.tables.Ratio.RATIO,
-			genericdwh.db.model.tables.RatioCategory.RATIO_CATEGORY,
-			genericdwh.db.model.tables.ReferenceObject.REFERENCE_OBJECT,
-			genericdwh.db.model.tables.ReferenceObjectCombination.REFERENCE_OBJECT_COMBINATION,
-			genericdwh.db.model.tables.ReferenceObjectHierarchy.REFERENCE_OBJECT_HIERARCHY);
+			genericdwh.db.model.tables.Dimensions.DIMENSIONS,
+			genericdwh.db.model.tables.DimensionCategories.DIMENSION_CATEGORIES,
+			genericdwh.db.model.tables.DimensionCombinations.DIMENSION_COMBINATIONS,
+			genericdwh.db.model.tables.DimensionHierarchies.DIMENSION_HIERARCHIES,
+			genericdwh.db.model.tables.Ratios.RATIOS,
+			genericdwh.db.model.tables.RatioCategories.RATIO_CATEGORIES,
+			genericdwh.db.model.tables.RatioRelations.RATIO_RELATIONS,
+			genericdwh.db.model.tables.ReferenceObjects.REFERENCE_OBJECTS,
+			genericdwh.db.model.tables.ReferenceObjectCombinations.REFERENCE_OBJECT_COMBINATIONS,
+			genericdwh.db.model.tables.ReferenceObjectHierarchies.REFERENCE_OBJECT_HIERARCHIES);
 	}
 }

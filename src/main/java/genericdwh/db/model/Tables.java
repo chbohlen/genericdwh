@@ -14,47 +14,52 @@ package genericdwh.db.model;
 public class Tables {
 
 	/**
-	 * The table dimension
+	 * The table dimensions
 	 */
-	public static final genericdwh.db.model.tables.Dimension DIMENSION = genericdwh.db.model.tables.Dimension.DIMENSION;
+	public static final genericdwh.db.model.tables.Dimensions DIMENSIONS = genericdwh.db.model.tables.Dimensions.DIMENSIONS;
 
 	/**
-	 * The table dimension_category
+	 * The table dimension_categories
 	 */
-	public static final genericdwh.db.model.tables.DimensionCategory DIMENSION_CATEGORY = genericdwh.db.model.tables.DimensionCategory.DIMENSION_CATEGORY;
+	public static final genericdwh.db.model.tables.DimensionCategories DIMENSION_CATEGORIES = genericdwh.db.model.tables.DimensionCategories.DIMENSION_CATEGORIES;
 
 	/**
-	 * The table dimension_combination
+	 * The table dimension_combinations
 	 */
-	public static final genericdwh.db.model.tables.DimensionCombination DIMENSION_COMBINATION = genericdwh.db.model.tables.DimensionCombination.DIMENSION_COMBINATION;
+	public static final genericdwh.db.model.tables.DimensionCombinations DIMENSION_COMBINATIONS = genericdwh.db.model.tables.DimensionCombinations.DIMENSION_COMBINATIONS;
 
 	/**
-	 * The table dimension_hierarchy
+	 * The table dimension_hierarchies
 	 */
-	public static final genericdwh.db.model.tables.DimensionHierarchy DIMENSION_HIERARCHY = genericdwh.db.model.tables.DimensionHierarchy.DIMENSION_HIERARCHY;
+	public static final genericdwh.db.model.tables.DimensionHierarchies DIMENSION_HIERARCHIES = genericdwh.db.model.tables.DimensionHierarchies.DIMENSION_HIERARCHIES;
 
 	/**
-	 * The table ratio
+	 * The table ratios
 	 */
-	public static final genericdwh.db.model.tables.Ratio RATIO = genericdwh.db.model.tables.Ratio.RATIO;
+	public static final genericdwh.db.model.tables.Ratios RATIOS = genericdwh.db.model.tables.Ratios.RATIOS;
 
 	/**
-	 * The table ratio_category
+	 * The table ratio_categories
 	 */
-	public static final genericdwh.db.model.tables.RatioCategory RATIO_CATEGORY = genericdwh.db.model.tables.RatioCategory.RATIO_CATEGORY;
+	public static final genericdwh.db.model.tables.RatioCategories RATIO_CATEGORIES = genericdwh.db.model.tables.RatioCategories.RATIO_CATEGORIES;
 
 	/**
-	 * The table reference_object
+	 * The table ratio_relations
 	 */
-	public static final genericdwh.db.model.tables.ReferenceObject REFERENCE_OBJECT = genericdwh.db.model.tables.ReferenceObject.REFERENCE_OBJECT;
+	public static final genericdwh.db.model.tables.RatioRelations RATIO_RELATIONS = genericdwh.db.model.tables.RatioRelations.RATIO_RELATIONS;
 
 	/**
-	 * The table reference_object_combination
+	 * The table reference_objects
 	 */
-	public static final genericdwh.db.model.tables.ReferenceObjectCombination REFERENCE_OBJECT_COMBINATION = genericdwh.db.model.tables.ReferenceObjectCombination.REFERENCE_OBJECT_COMBINATION;
+	public static final genericdwh.db.model.tables.ReferenceObjects REFERENCE_OBJECTS = genericdwh.db.model.tables.ReferenceObjects.REFERENCE_OBJECTS;
 
 	/**
-	 * The table reference_object_hierarchy
+	 * The table reference_object_combinations
 	 */
-	public static final genericdwh.db.model.tables.ReferenceObjectHierarchy REFERENCE_OBJECT_HIERARCHY = genericdwh.db.model.tables.ReferenceObjectHierarchy.REFERENCE_OBJECT_HIERARCHY;
+	public static final genericdwh.db.model.tables.ReferenceObjectCombinations REFERENCE_OBJECT_COMBINATIONS = genericdwh.db.model.tables.ReferenceObjectCombinations.REFERENCE_OBJECT_COMBINATIONS;
+
+	/**
+	 * The table reference_object_hierarchies
+	 */
+	public static final genericdwh.db.model.tables.ReferenceObjectHierarchies REFERENCE_OBJECT_HIERARCHIES = genericdwh.db.model.tables.ReferenceObjectHierarchies.REFERENCE_OBJECT_HIERARCHIES;
 }

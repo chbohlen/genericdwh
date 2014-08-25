@@ -23,11 +23,12 @@ public class ReferenceObject extends DataObject {
 		children = new TreeMap<Long, ReferenceObject>();
 		components = new TreeMap<Long, ReferenceObject>();
 	}
+	
+	public void addChildren(ReferenceObject newChildren) {
+		children.put(newChildren.getId(), newChildren);
+	}
 
 	public void addComponent(ReferenceObject newComponent) {
-		if (components == null) {
-			components = new TreeMap<Long, ReferenceObject>();
-		}
 		components.put(newComponent.getId(), newComponent);
 	}
 
@@ -37,5 +38,9 @@ public class ReferenceObject extends DataObject {
 
 	public boolean isCombination() {
 		return !components.isEmpty();
+	}
+	
+	public int getChildCount() {
+		return children.size();
 	}
 }

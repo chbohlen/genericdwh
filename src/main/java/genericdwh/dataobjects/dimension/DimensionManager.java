@@ -16,8 +16,8 @@ public class DimensionManager {
 	private DatabaseReader dbReader;
 	private DatabaseWriter dbWriter;
 	
-	@Getter private TreeMap<Long, Dimension> dimensions;
 	@Getter private TreeMap<Long, DimensionCategory> categories;
+	@Getter private TreeMap<Long, Dimension> dimensions;
 	@Getter private ArrayList<DimensionHierarchy> hierarchies;
 	
 	public DimensionManager(DatabaseController dbController) {

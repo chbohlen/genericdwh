@@ -26,4 +26,5 @@ public interface DatabaseReader {
 	
 	public TreeMap<Long, RatioCategory> loadRatioCategories();
 	public TreeMap<Long, Ratio> loadRatios();
+	public ArrayList<Entry<Long, Long>> loadRatioRelations();
 }

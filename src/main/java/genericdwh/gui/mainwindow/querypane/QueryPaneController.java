@@ -4,10 +4,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 
 import genericdwh.dataobjects.DataObject;
 import genericdwh.dataobjects.dimension.Dimension;
+import genericdwh.dataobjects.dimension.DimensionManager;
 import genericdwh.dataobjects.ratio.Ratio;
+import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.db.DatabaseController;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.main.Main;
@@ -16,7 +19,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TableView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
@@ -126,13 +128,21 @@ public class QueryPaneController implements Initializable {
 		List<DataObject> rowDims = tvRowDims.getItems();
 		List<DataObject> colDims = tvColDims.getItems();
 		
+		TreeMap<Long, Dimension> dimensions = Main.getContext().getBean(DimensionManager.class).getDimensions();
+		
 		ArrayList<Dimension> combination = new ArrayList<Dimension>();
 		
 		for (DataObject obj : rowDims) {
+			if (obj instanceof ReferenceObject) {
+				obj = dimensions.get(((ReferenceObject)obj).getDimensionId());
+			}
 			combination.add((Dimension)obj);
 		}
 		
 		for (DataObject obj : colDims) {
+			if (obj instanceof ReferenceObject) {
+				obj = dimensions.get(((ReferenceObject)obj).getDimensionId());
+			}
 			combination.add((Dimension)obj);
 		}
 		

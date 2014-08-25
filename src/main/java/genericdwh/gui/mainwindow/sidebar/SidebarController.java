@@ -12,6 +12,7 @@ import genericdwh.dataobjects.dimension.DimensionCategory;
 import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
+import genericdwh.dataobjects.ratio.RatioRelation;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.main.Main;
 import javafx.fxml.FXML;
@@ -124,6 +125,13 @@ public class SidebarController implements Initializable {
 			DataObjectTreeItem tiCat = categoryTreeItemMap.get(currRatio.getCategory());
 			if (tiCat != null) {
 				tiCat.addChild(tiNewRatio);
+			}
+			
+			if (currRatio.isRelation()) {
+				for (Ratio dependency : currRatio.getDependencies()) {
+					DataObjectTreeItem tiNewDependency = new DataObjectTreeItem(dependency);
+					tiNewRatio.addChild(tiNewDependency);
+				}
 			}
 		}
 		

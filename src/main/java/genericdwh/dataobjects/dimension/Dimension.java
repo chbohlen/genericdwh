@@ -29,16 +29,10 @@ public class Dimension extends DataObject {
 	}
 
 	public void addChildren(Dimension newChildren) {
-		if (children == null) {
-			children = new ArrayList<Dimension>();
-		}
 		children.add(newChildren);
 	}
 
 	public void addComponent(Dimension newComponent) {
-		if (components == null) {
-			components = new ArrayList<Dimension>();
-		}
 		components.add(newComponent);
 	}
 
