@@ -11,45 +11,45 @@ package genericdwh.db.model.tables.records;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReferenceObjectRecord extends org.jooq.impl.UpdatableRecordImpl<genericdwh.db.model.tables.records.ReferenceObjectRecord> implements org.jooq.Record3<java.lang.Long, java.lang.Long, java.lang.String> {
 
-	private static final long serialVersionUID = -1552591961;
+	private static final long serialVersionUID = -51373647;
 
 	/**
-	 * Setter for <code>genericdwh.reference_object.id</code>.
+	 * Setter for <code>reference_object.id</code>.
 	 */
 	public void setId(java.lang.Long value) {
 		setValue(0, value);
 	}
 
 	/**
-	 * Getter for <code>genericdwh.reference_object.id</code>.
+	 * Getter for <code>reference_object.id</code>.
 	 */
 	public java.lang.Long getId() {
 		return (java.lang.Long) getValue(0);
 	}
 
 	/**
-	 * Setter for <code>genericdwh.reference_object.dimension_id</code>.
+	 * Setter for <code>reference_object.dimension_id</code>.
 	 */
 	public void setDimensionId(java.lang.Long value) {
 		setValue(1, value);
 	}
 
 	/**
-	 * Getter for <code>genericdwh.reference_object.dimension_id</code>.
+	 * Getter for <code>reference_object.dimension_id</code>.
 	 */
 	public java.lang.Long getDimensionId() {
 		return (java.lang.Long) getValue(1);
 	}
 
 	/**
-	 * Setter for <code>genericdwh.reference_object.name</code>.
+	 * Setter for <code>reference_object.name</code>.
 	 */
 	public void setName(java.lang.String value) {
 		setValue(2, value);
 	}
 
 	/**
-	 * Getter for <code>genericdwh.reference_object.name</code>.
+	 * Getter for <code>reference_object.name</code>.
 	 */
 	public java.lang.String getName() {
 		return (java.lang.String) getValue(2);
@@ -90,6 +90,7 @@ public class ReferenceObjectRecord extends org.jooq.impl.UpdatableRecordImpl<gen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public org.jooq.Field<java.lang.Long> field1() {
 		return genericdwh.db.model.tables.ReferenceObject.REFERENCE_OBJECT.ID;
 	}
@@ -97,6 +98,7 @@ public class ReferenceObjectRecord extends org.jooq.impl.UpdatableRecordImpl<gen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public org.jooq.Field<java.lang.Long> field2() {
 		return genericdwh.db.model.tables.ReferenceObject.REFERENCE_OBJECT.DIMENSION_ID;
 	}
@@ -104,6 +106,7 @@ public class ReferenceObjectRecord extends org.jooq.impl.UpdatableRecordImpl<gen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public org.jooq.Field<java.lang.String> field3() {
 		return genericdwh.db.model.tables.ReferenceObject.REFERENCE_OBJECT.NAME;
 	}
@@ -111,6 +114,7 @@ public class ReferenceObjectRecord extends org.jooq.impl.UpdatableRecordImpl<gen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public java.lang.Long value1() {
 		return getId();
 	}
@@ -118,6 +122,7 @@ public class ReferenceObjectRecord extends org.jooq.impl.UpdatableRecordImpl<gen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public java.lang.Long value2() {
 		return getDimensionId();
 	}
@@ -125,6 +130,7 @@ public class ReferenceObjectRecord extends org.jooq.impl.UpdatableRecordImpl<gen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public java.lang.String value3() {
 		return getName();
 	}
@@ -132,6 +138,7 @@ public class ReferenceObjectRecord extends org.jooq.impl.UpdatableRecordImpl<gen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ReferenceObjectRecord value1(java.lang.Long value) {
 		setId(value);
 		return this;
@@ -140,6 +147,7 @@ public class ReferenceObjectRecord extends org.jooq.impl.UpdatableRecordImpl<gen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ReferenceObjectRecord value2(java.lang.Long value) {
 		setDimensionId(value);
 		return this;
@@ -148,6 +156,7 @@ public class ReferenceObjectRecord extends org.jooq.impl.UpdatableRecordImpl<gen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ReferenceObjectRecord value3(java.lang.String value) {
 		setName(value);
 		return this;
@@ -156,6 +165,7 @@ public class ReferenceObjectRecord extends org.jooq.impl.UpdatableRecordImpl<gen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ReferenceObjectRecord values(java.lang.Long value1, java.lang.Long value2, java.lang.String value3) {
 		return this;
 	}

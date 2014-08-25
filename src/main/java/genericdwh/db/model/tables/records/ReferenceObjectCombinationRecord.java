@@ -11,31 +11,31 @@ package genericdwh.db.model.tables.records;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReferenceObjectCombinationRecord extends org.jooq.impl.UpdatableRecordImpl<genericdwh.db.model.tables.records.ReferenceObjectCombinationRecord> implements org.jooq.Record2<java.lang.Long, java.lang.Long> {
 
-	private static final long serialVersionUID = 1591155250;
+	private static final long serialVersionUID = 811602012;
 
 	/**
-	 * Setter for <code>genericdwh.reference_object_combination.aggregate_id</code>.
+	 * Setter for <code>reference_object_combination.aggregate_id</code>.
 	 */
 	public void setAggregateId(java.lang.Long value) {
 		setValue(0, value);
 	}
 
 	/**
-	 * Getter for <code>genericdwh.reference_object_combination.aggregate_id</code>.
+	 * Getter for <code>reference_object_combination.aggregate_id</code>.
 	 */
 	public java.lang.Long getAggregateId() {
 		return (java.lang.Long) getValue(0);
 	}
 
 	/**
-	 * Setter for <code>genericdwh.reference_object_combination.component_id</code>.
+	 * Setter for <code>reference_object_combination.component_id</code>.
 	 */
 	public void setComponentId(java.lang.Long value) {
 		setValue(1, value);
 	}
 
 	/**
-	 * Getter for <code>genericdwh.reference_object_combination.component_id</code>.
+	 * Getter for <code>reference_object_combination.component_id</code>.
 	 */
 	public java.lang.Long getComponentId() {
 		return (java.lang.Long) getValue(1);
@@ -76,6 +76,7 @@ public class ReferenceObjectCombinationRecord extends org.jooq.impl.UpdatableRec
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public org.jooq.Field<java.lang.Long> field1() {
 		return genericdwh.db.model.tables.ReferenceObjectCombination.REFERENCE_OBJECT_COMBINATION.AGGREGATE_ID;
 	}
@@ -83,6 +84,7 @@ public class ReferenceObjectCombinationRecord extends org.jooq.impl.UpdatableRec
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public org.jooq.Field<java.lang.Long> field2() {
 		return genericdwh.db.model.tables.ReferenceObjectCombination.REFERENCE_OBJECT_COMBINATION.COMPONENT_ID;
 	}
@@ -90,6 +92,7 @@ public class ReferenceObjectCombinationRecord extends org.jooq.impl.UpdatableRec
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public java.lang.Long value1() {
 		return getAggregateId();
 	}
@@ -97,6 +100,7 @@ public class ReferenceObjectCombinationRecord extends org.jooq.impl.UpdatableRec
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public java.lang.Long value2() {
 		return getComponentId();
 	}
@@ -104,6 +108,7 @@ public class ReferenceObjectCombinationRecord extends org.jooq.impl.UpdatableRec
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ReferenceObjectCombinationRecord value1(java.lang.Long value) {
 		setAggregateId(value);
 		return this;
@@ -112,6 +117,7 @@ public class ReferenceObjectCombinationRecord extends org.jooq.impl.UpdatableRec
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ReferenceObjectCombinationRecord value2(java.lang.Long value) {
 		setComponentId(value);
 		return this;
@@ -120,6 +126,7 @@ public class ReferenceObjectCombinationRecord extends org.jooq.impl.UpdatableRec
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ReferenceObjectCombinationRecord values(java.lang.Long value1, java.lang.Long value2) {
 		return this;
 	}

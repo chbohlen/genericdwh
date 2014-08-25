@@ -15,7 +15,6 @@ public class DataObjectTreeCell extends TreeCell<DataObject>{
 	private DataObject obj;
 	
 	public DataObjectTreeCell() {
-		
         setOnDragDetected(new EventHandler<MouseEvent>() {
         	public void handle(MouseEvent event) {
                 if (obj == null || obj instanceof SidebarHeader) {

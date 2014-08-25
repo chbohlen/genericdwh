@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane prefHeight="725.0" prefWidth="200.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.mainwindow.sidebar.SidebarController">
-	<TreeView fx:id="sidebar" prefHeight="725.0" prefWidth="200.0">
-		<contextMenu>
-			<ContextMenu>
-				<items>
-         			<MenuItem mnemonicParsing="false" onAction="#contextMenuNewDimensionOnClickHandler" text="New dimension" />
-	       		</items>
-   			</ContextMenu>
-		</contextMenu>
-	</TreeView>
+<Pane fx:id="sidebars" prefHeight="725.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.mainwindow.sidebar.SidebarController">
+   <children>
+   	<TreeView fx:id="dimensionSidebar" prefHeight="450.0" prefWidth="200.0">
+   		<contextMenu>
+   			<ContextMenu>
+   				<items>
+            			<MenuItem mnemonicParsing="false" onAction="#contextMenuNewDimensionOnClickHandler" text="New dimension" />
+   	       		</items>
+      			</ContextMenu>
+   		</contextMenu>
+   	</TreeView>
+      <TreeView fx:id="ratioSidebar" layoutY="450.0" prefHeight="275.0" prefWidth="200.0">
+         <contextMenu>
+            <ContextMenu>
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#contextMenuNewRatioOnClickHandler" text="New Ratio" />
+               </items>
+            </ContextMenu>
+         </contextMenu>
+      </TreeView>
+   </children>
 </Pane>
-

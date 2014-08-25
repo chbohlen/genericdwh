@@ -11,31 +11,31 @@ package genericdwh.db.model.tables.records;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReferenceObjectHierarchyRecord extends org.jooq.impl.UpdatableRecordImpl<genericdwh.db.model.tables.records.ReferenceObjectHierarchyRecord> implements org.jooq.Record2<java.lang.Long, java.lang.Long> {
 
-	private static final long serialVersionUID = 390503654;
+	private static final long serialVersionUID = 144204204;
 
 	/**
-	 * Setter for <code>genericdwh.reference_object_hierarchy.parent_id</code>.
+	 * Setter for <code>reference_object_hierarchy.parent_id</code>.
 	 */
 	public void setParentId(java.lang.Long value) {
 		setValue(0, value);
 	}
 
 	/**
-	 * Getter for <code>genericdwh.reference_object_hierarchy.parent_id</code>.
+	 * Getter for <code>reference_object_hierarchy.parent_id</code>.
 	 */
 	public java.lang.Long getParentId() {
 		return (java.lang.Long) getValue(0);
 	}
 
 	/**
-	 * Setter for <code>genericdwh.reference_object_hierarchy.child_id</code>.
+	 * Setter for <code>reference_object_hierarchy.child_id</code>.
 	 */
 	public void setChildId(java.lang.Long value) {
 		setValue(1, value);
 	}
 
 	/**
-	 * Getter for <code>genericdwh.reference_object_hierarchy.child_id</code>.
+	 * Getter for <code>reference_object_hierarchy.child_id</code>.
 	 */
 	public java.lang.Long getChildId() {
 		return (java.lang.Long) getValue(1);
@@ -76,6 +76,7 @@ public class ReferenceObjectHierarchyRecord extends org.jooq.impl.UpdatableRecor
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public org.jooq.Field<java.lang.Long> field1() {
 		return genericdwh.db.model.tables.ReferenceObjectHierarchy.REFERENCE_OBJECT_HIERARCHY.PARENT_ID;
 	}
@@ -83,6 +84,7 @@ public class ReferenceObjectHierarchyRecord extends org.jooq.impl.UpdatableRecor
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public org.jooq.Field<java.lang.Long> field2() {
 		return genericdwh.db.model.tables.ReferenceObjectHierarchy.REFERENCE_OBJECT_HIERARCHY.CHILD_ID;
 	}
@@ -90,6 +92,7 @@ public class ReferenceObjectHierarchyRecord extends org.jooq.impl.UpdatableRecor
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public java.lang.Long value1() {
 		return getParentId();
 	}
@@ -97,6 +100,7 @@ public class ReferenceObjectHierarchyRecord extends org.jooq.impl.UpdatableRecor
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public java.lang.Long value2() {
 		return getChildId();
 	}
@@ -104,6 +108,7 @@ public class ReferenceObjectHierarchyRecord extends org.jooq.impl.UpdatableRecor
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ReferenceObjectHierarchyRecord value1(java.lang.Long value) {
 		setParentId(value);
 		return this;
@@ -112,6 +117,7 @@ public class ReferenceObjectHierarchyRecord extends org.jooq.impl.UpdatableRecor
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ReferenceObjectHierarchyRecord value2(java.lang.Long value) {
 		setChildId(value);
 		return this;
@@ -120,6 +126,7 @@ public class ReferenceObjectHierarchyRecord extends org.jooq.impl.UpdatableRecor
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ReferenceObjectHierarchyRecord values(java.lang.Long value1, java.lang.Long value2) {
 		return this;
 	}

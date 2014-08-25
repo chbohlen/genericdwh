@@ -1,9 +1,14 @@
 package genericdwh.gui.mainwindow.querypane;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import genericdwh.dataobjects.DataObject;
+import genericdwh.dataobjects.dimension.Dimension;
+import genericdwh.dataobjects.ratio.Ratio;
+import genericdwh.db.DatabaseController;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.main.Main;
 import javafx.fxml.FXML;
@@ -11,22 +16,22 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TableView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
-import javafx.scene.input.MouseEvent;
 
 public class QueryPaneController implements Initializable {
 	
 	@FXML private Pane queryPane;
 	
-	@FXML private TableView<DataObject> tvMeasure;
+	@FXML private TableView<DataObject> tvRatio;
 	@FXML private TableView<DataObject> tvRowDims;
 	@FXML private TableView<DataObject> tvColDims;
 	
-	@FXML TableColumn<DataObject, DataObject> tcMeasure;
+	@FXML TableColumn<DataObject, DataObject> tcRatio;
 	@FXML TableColumn<DataObject, DataObject> tcRowDims;
 	@FXML TableColumn<DataObject, DataObject> tcColDims;
 
@@ -39,7 +44,7 @@ public class QueryPaneController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {		
 		hideQueryPane();
 		
-		tcMeasure.setCellFactory(new Callback<TableColumn<DataObject, DataObject>, TableCell<DataObject, DataObject>>() {
+		tcRatio.setCellFactory(new Callback<TableColumn<DataObject, DataObject>, TableCell<DataObject, DataObject>>() {
             public TableCell<DataObject, DataObject> call(TableColumn<DataObject, DataObject> param) {
                 return new DataObjectTableCell();
             }
@@ -95,14 +100,14 @@ public class QueryPaneController implements Initializable {
 		if (draggedDataObject != null) {
 			@SuppressWarnings("unchecked")
 			TableView<DataObject> tvSource = (TableView<DataObject>)event.getSource();
-			// TODO: false/true placeholder für DataObject-Ratio
-			if ((false && tvSource != tvMeasure) || (true && tvSource == tvMeasure)) {
+
+			if ((draggedDataObject instanceof Ratio && tvSource != tvRatio) || (!(draggedDataObject instanceof Ratio) && tvSource == tvRatio)) {
 				event.consume();
 				return;
 			}
 			
 			if (!(event.getGestureSource() instanceof TableView)
-					&& (tvMeasure.getItems().contains(draggedDataObject)
+					&& (tvRatio.getItems().contains(draggedDataObject)
 						|| tvRowDims.getItems().contains(draggedDataObject)
 						|| tvColDims.getItems().contains(draggedDataObject))) {
 				event.consume();
@@ -117,11 +122,26 @@ public class QueryPaneController implements Initializable {
 	}
 
 	@FXML public void buttonExecQueryOnClickHandler() {
+		List<DataObject> ratios = tvRatio.getItems();
+		List<DataObject> rowDims = tvRowDims.getItems();
+		List<DataObject> colDims = tvColDims.getItems();
 		
+		ArrayList<Dimension> combination = new ArrayList<Dimension>();
+		
+		for (DataObject obj : rowDims) {
+			combination.add((Dimension)obj);
+		}
+		
+		for (DataObject obj : colDims) {
+			combination.add((Dimension)obj);
+		}
+		
+		
+		System.out.println(Main.getContext().getBean(DatabaseController.class).getDbReader().findDimensionCombination(combination));
 	}
 
 	@FXML public void buttonClearOnClickHandler() {
-		tvMeasure.getItems().clear();
+		tvRatio.getItems().clear();
 		tvRowDims.getItems().clear();
 		tvColDims.getItems().clear();
 	}

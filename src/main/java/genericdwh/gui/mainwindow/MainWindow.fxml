@@ -19,6 +19,6 @@
 		  </menus>
 		</MenuBar>
 		<fx:include layoutY="25.0" source="sidebar/Sidebar.fxml" />
-		<fx:include layoutY="25.0" layoutX="200.0" source="querypane/QueryPane.fxml"/>
+		<fx:include layoutY="25.0" layoutX="200" source="querypane/QueryPane.fxml"/>
 	</children>
 </Pane>

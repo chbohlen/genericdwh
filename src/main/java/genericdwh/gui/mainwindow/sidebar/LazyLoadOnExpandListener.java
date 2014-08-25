@@ -1,8 +1,11 @@
 package genericdwh.gui.mainwindow.sidebar;
 
-import genericdwh.dataobjects.Dimension;
-import genericdwh.dataobjects.ReferenceObject;
-import genericdwh.dataobjects.ReferenceObjectManager;
+import genericdwh.dataobjects.dimension.Dimension;
+import genericdwh.dataobjects.dimension.DimensionCategory;
+import genericdwh.dataobjects.ratio.Ratio;
+import genericdwh.dataobjects.ratio.RatioCategory;
+import genericdwh.dataobjects.referenceobject.ReferenceObject;
+import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.main.Main;
 
 import java.util.TreeMap;
@@ -18,7 +21,9 @@ public 	class LazyLoadOnExpandListener implements ChangeListener<Boolean> {
     	if (newValue) {
 			DataObjectTreeItem tiObj = (DataObjectTreeItem)((BooleanProperty)observable).getBean();
 			
-			if (tiObj.isLoaded() || (tiObj.getValue() instanceof SidebarHeader)) {
+			if (tiObj.isLoaded() || tiObj.getValue() instanceof SidebarHeader
+					|| tiObj.getValue() instanceof DimensionCategory || tiObj.getValue() instanceof RatioCategory
+					|| tiObj.getValue() instanceof Ratio) {
 				return;
 			}
 

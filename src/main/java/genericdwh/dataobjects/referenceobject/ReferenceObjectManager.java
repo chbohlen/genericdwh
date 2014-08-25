@@ -1,5 +1,6 @@
-package genericdwh.dataobjects;
+package genericdwh.dataobjects.referenceobject;
 
+import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.db.DatabaseController;
 import genericdwh.db.DatabaseReader;
 import genericdwh.db.DatabaseWriter;
@@ -10,14 +11,15 @@ import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 
 public class ReferenceObjectManager {
+	
 	private DatabaseReader dbReader;
 	private DatabaseWriter dbWriter;
 	
 	private Table<Long, Long, TreeMap<Long, ReferenceObject>> referenceObjects;
 	
 	public ReferenceObjectManager(DatabaseController dbController) {
-		dbReader = dbController.getReader();
-		dbWriter = dbController.getWriter();
+		dbReader = dbController.getDbReader();
+		dbWriter = dbController.getDbWriter();
 		
 		referenceObjects = TreeBasedTable.create();
 	}

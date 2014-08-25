@@ -11,10 +11,10 @@ package genericdwh.db.model.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DimensionHierarchy extends org.jooq.impl.TableImpl<genericdwh.db.model.tables.records.DimensionHierarchyRecord> {
 
-	private static final long serialVersionUID = -613373854;
+	private static final long serialVersionUID = -89525303;
 
 	/**
-	 * The singleton instance of <code>genericdwh.dimension_hierarchy</code>
+	 * The singleton instance of <code>dimension_hierarchy</code>
 	 */
 	public static final genericdwh.db.model.tables.DimensionHierarchy DIMENSION_HIERARCHY = new genericdwh.db.model.tables.DimensionHierarchy();
 
@@ -27,24 +27,24 @@ public class DimensionHierarchy extends org.jooq.impl.TableImpl<genericdwh.db.mo
 	}
 
 	/**
-	 * The column <code>genericdwh.dimension_hierarchy.parent_id</code>.
+	 * The column <code>dimension_hierarchy.parent_id</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.DimensionHierarchyRecord, java.lang.Long> PARENT_ID = createField("parent_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
 	/**
-	 * The column <code>genericdwh.dimension_hierarchy.child_id</code>.
+	 * The column <code>dimension_hierarchy.child_id</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.DimensionHierarchyRecord, java.lang.Long> CHILD_ID = createField("child_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
 	/**
-	 * Create a <code>genericdwh.dimension_hierarchy</code> table reference
+	 * Create a <code>dimension_hierarchy</code> table reference
 	 */
 	public DimensionHierarchy() {
 		this("dimension_hierarchy", null);
 	}
 
 	/**
-	 * Create an aliased <code>genericdwh.dimension_hierarchy</code> table reference
+	 * Create an aliased <code>dimension_hierarchy</code> table reference
 	 */
 	public DimensionHierarchy(java.lang.String alias) {
 		this(alias, genericdwh.db.model.tables.DimensionHierarchy.DIMENSION_HIERARCHY);
@@ -55,7 +55,7 @@ public class DimensionHierarchy extends org.jooq.impl.TableImpl<genericdwh.db.mo
 	}
 
 	private DimensionHierarchy(java.lang.String alias, org.jooq.Table<genericdwh.db.model.tables.records.DimensionHierarchyRecord> aliased, org.jooq.Field<?>[] parameters) {
-		super(alias, genericdwh.db.model.Genericdwh.GENERICDWH, aliased, parameters, "");
+		super(alias, genericdwh.db.model.DefaultSchema.DEFAULT_SCHEMA, aliased, parameters, "");
 	}
 
 	/**

@@ -11,10 +11,10 @@ package genericdwh.db.model.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dimension extends org.jooq.impl.TableImpl<genericdwh.db.model.tables.records.DimensionRecord> {
 
-	private static final long serialVersionUID = 34250074;
+	private static final long serialVersionUID = 2111925951;
 
 	/**
-	 * The singleton instance of <code>genericdwh.dimension</code>
+	 * The singleton instance of <code>dimension</code>
 	 */
 	public static final genericdwh.db.model.tables.Dimension DIMENSION = new genericdwh.db.model.tables.Dimension();
 
@@ -27,29 +27,29 @@ public class Dimension extends org.jooq.impl.TableImpl<genericdwh.db.model.table
 	}
 
 	/**
-	 * The column <code>genericdwh.dimension.id</code>.
+	 * The column <code>dimension.id</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.DimensionRecord, java.lang.Long> ID = createField("id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
 	/**
-	 * The column <code>genericdwh.dimension.name</code>.
+	 * The column <code>dimension.name</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.DimensionRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR.length(255).nullable(false), this, "");
 
 	/**
-	 * The column <code>genericdwh.dimension.category_id</code>.
+	 * The column <code>dimension.category_id</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.DimensionRecord, java.lang.Long> CATEGORY_ID = createField("category_id", org.jooq.impl.SQLDataType.BIGINT, this, "");
 
 	/**
-	 * Create a <code>genericdwh.dimension</code> table reference
+	 * Create a <code>dimension</code> table reference
 	 */
 	public Dimension() {
 		this("dimension", null);
 	}
 
 	/**
-	 * Create an aliased <code>genericdwh.dimension</code> table reference
+	 * Create an aliased <code>dimension</code> table reference
 	 */
 	public Dimension(java.lang.String alias) {
 		this(alias, genericdwh.db.model.tables.Dimension.DIMENSION);
@@ -60,7 +60,7 @@ public class Dimension extends org.jooq.impl.TableImpl<genericdwh.db.model.table
 	}
 
 	private Dimension(java.lang.String alias, org.jooq.Table<genericdwh.db.model.tables.records.DimensionRecord> aliased, org.jooq.Field<?>[] parameters) {
-		super(alias, genericdwh.db.model.Genericdwh.GENERICDWH, aliased, parameters, "");
+		super(alias, genericdwh.db.model.DefaultSchema.DEFAULT_SCHEMA, aliased, parameters, "");
 	}
 
 	/**

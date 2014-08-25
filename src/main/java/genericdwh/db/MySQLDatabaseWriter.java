@@ -1,9 +1,12 @@
 package genericdwh.db;
 
+import lombok.Setter;
+
 import org.jooq.DSLContext;
 
 public class MySQLDatabaseWriter implements DatabaseWriter {
-	private DSLContext create;
+	
+	@Setter private DSLContext dslContext;
 
 	public void newDimension() {
 		// TODO Auto-generated method stub
@@ -29,7 +32,7 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		// TODO Auto-generated method stub
 	}
 
-	public void setDSLContext(DSLContext context) {
-		this.create = context;
+	public void newRatio() {
+		// TODO Auto-generated method stub
 	}
 }

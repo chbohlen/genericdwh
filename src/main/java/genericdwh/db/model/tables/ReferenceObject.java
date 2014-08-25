@@ -11,10 +11,10 @@ package genericdwh.db.model.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReferenceObject extends org.jooq.impl.TableImpl<genericdwh.db.model.tables.records.ReferenceObjectRecord> {
 
-	private static final long serialVersionUID = -506180485;
+	private static final long serialVersionUID = -1585664290;
 
 	/**
-	 * The singleton instance of <code>genericdwh.reference_object</code>
+	 * The singleton instance of <code>reference_object</code>
 	 */
 	public static final genericdwh.db.model.tables.ReferenceObject REFERENCE_OBJECT = new genericdwh.db.model.tables.ReferenceObject();
 
@@ -27,29 +27,29 @@ public class ReferenceObject extends org.jooq.impl.TableImpl<genericdwh.db.model
 	}
 
 	/**
-	 * The column <code>genericdwh.reference_object.id</code>.
+	 * The column <code>reference_object.id</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.ReferenceObjectRecord, java.lang.Long> ID = createField("id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
 	/**
-	 * The column <code>genericdwh.reference_object.dimension_id</code>.
+	 * The column <code>reference_object.dimension_id</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.ReferenceObjectRecord, java.lang.Long> DIMENSION_ID = createField("dimension_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
 	/**
-	 * The column <code>genericdwh.reference_object.name</code>.
+	 * The column <code>reference_object.name</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.ReferenceObjectRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR.length(255).nullable(false), this, "");
 
 	/**
-	 * Create a <code>genericdwh.reference_object</code> table reference
+	 * Create a <code>reference_object</code> table reference
 	 */
 	public ReferenceObject() {
 		this("reference_object", null);
 	}
 
 	/**
-	 * Create an aliased <code>genericdwh.reference_object</code> table reference
+	 * Create an aliased <code>reference_object</code> table reference
 	 */
 	public ReferenceObject(java.lang.String alias) {
 		this(alias, genericdwh.db.model.tables.ReferenceObject.REFERENCE_OBJECT);
@@ -60,7 +60,7 @@ public class ReferenceObject extends org.jooq.impl.TableImpl<genericdwh.db.model
 	}
 
 	private ReferenceObject(java.lang.String alias, org.jooq.Table<genericdwh.db.model.tables.records.ReferenceObjectRecord> aliased, org.jooq.Field<?>[] parameters) {
-		super(alias, genericdwh.db.model.Genericdwh.GENERICDWH, aliased, parameters, "");
+		super(alias, genericdwh.db.model.DefaultSchema.DEFAULT_SCHEMA, aliased, parameters, "");
 	}
 
 	/**

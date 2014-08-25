@@ -11,10 +11,10 @@ package genericdwh.db.model.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DimensionCombination extends org.jooq.impl.TableImpl<genericdwh.db.model.tables.records.DimensionCombinationRecord> {
 
-	private static final long serialVersionUID = -1384731150;
+	private static final long serialVersionUID = 1845057259;
 
 	/**
-	 * The singleton instance of <code>genericdwh.dimension_combination</code>
+	 * The singleton instance of <code>dimension_combination</code>
 	 */
 	public static final genericdwh.db.model.tables.DimensionCombination DIMENSION_COMBINATION = new genericdwh.db.model.tables.DimensionCombination();
 
@@ -27,24 +27,24 @@ public class DimensionCombination extends org.jooq.impl.TableImpl<genericdwh.db.
 	}
 
 	/**
-	 * The column <code>genericdwh.dimension_combination.aggregate_id</code>.
+	 * The column <code>dimension_combination.aggregate_id</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.DimensionCombinationRecord, java.lang.Long> AGGREGATE_ID = createField("aggregate_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
 	/**
-	 * The column <code>genericdwh.dimension_combination.component_id</code>.
+	 * The column <code>dimension_combination.component_id</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.DimensionCombinationRecord, java.lang.Long> COMPONENT_ID = createField("component_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
 	/**
-	 * Create a <code>genericdwh.dimension_combination</code> table reference
+	 * Create a <code>dimension_combination</code> table reference
 	 */
 	public DimensionCombination() {
 		this("dimension_combination", null);
 	}
 
 	/**
-	 * Create an aliased <code>genericdwh.dimension_combination</code> table reference
+	 * Create an aliased <code>dimension_combination</code> table reference
 	 */
 	public DimensionCombination(java.lang.String alias) {
 		this(alias, genericdwh.db.model.tables.DimensionCombination.DIMENSION_COMBINATION);
@@ -55,7 +55,7 @@ public class DimensionCombination extends org.jooq.impl.TableImpl<genericdwh.db.
 	}
 
 	private DimensionCombination(java.lang.String alias, org.jooq.Table<genericdwh.db.model.tables.records.DimensionCombinationRecord> aliased, org.jooq.Field<?>[] parameters) {
-		super(alias, genericdwh.db.model.Genericdwh.GENERICDWH, aliased, parameters, "");
+		super(alias, genericdwh.db.model.DefaultSchema.DEFAULT_SCHEMA, aliased, parameters, "");
 	}
 
 	/**

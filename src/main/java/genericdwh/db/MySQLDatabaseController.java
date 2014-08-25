@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import lombok.Getter;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.jooq.DSLContext;
@@ -16,8 +18,8 @@ public class MySQLDatabaseController implements DatabaseController {
 	
 	private Connection dbConnection;
 
-	private MySQLDatabaseReader dbReader;
-	private MySQLDatabaseWriter dbWriter;
+	@Getter private MySQLDatabaseReader dbReader;
+	@Getter private MySQLDatabaseWriter dbWriter;
 		
 	public MySQLDatabaseController(MySQLDatabaseReader dbReader, MySQLDatabaseWriter dbWriter) {
 		this.dbReader = dbReader;
@@ -40,8 +42,8 @@ public class MySQLDatabaseController implements DatabaseController {
 		}
 			
 		DSLContext context = DSL.using(dbConnection, SQLDialect.MYSQL);
-		dbReader.setDSLContext(context);
-		dbWriter.setDSLContext(context);
+		dbReader.setDslContext(context);
+		dbWriter.setDslContext(context);
 		
 		return true;
 	}
@@ -58,13 +60,5 @@ public class MySQLDatabaseController implements DatabaseController {
 		} catch (SQLException e) {
 			logger.error("Could not close database connection!");
 		}
-	}
-	
-	public MySQLDatabaseReader getReader() {
-		return dbReader;
-	}
-	
-	public MySQLDatabaseWriter getWriter() {
-		return dbWriter;
 	}
 }

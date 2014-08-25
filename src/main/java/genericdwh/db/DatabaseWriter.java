@@ -8,4 +8,6 @@ public interface DatabaseWriter {
 	public void newReferenceObject();
 	public void newReferenceObjectHierarchy();
 	public void newReferenceObjectCombination();
+	
+	public void newRatio();
 }

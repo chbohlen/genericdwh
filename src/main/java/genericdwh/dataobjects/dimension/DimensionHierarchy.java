@@ -1,10 +1,16 @@
-package genericdwh.dataobjects;
+package genericdwh.dataobjects.dimension;
+
+import genericdwh.dataobjects.DataObject;
 
 import java.util.LinkedList;
 
+import lombok.Getter;
+
 public class DimensionHierarchy extends DataObject {
 	
-	private LinkedList<Dimension> levels;
+	@Getter private String category;
+	
+	@Getter private LinkedList<Dimension> levels;
 	
 	public DimensionHierarchy() {
 		super();
@@ -27,16 +33,16 @@ public class DimensionHierarchy extends DataObject {
 	}
 	
 	public void addLevel(Dimension level) {
-		levels.add(level);
-		
 		if (!name.isEmpty()) {
 			name += "-";
 		}
 		name += level.getName();
-	}
-	
-	public LinkedList<Dimension> getLevels() {
-		return levels;
+		
+		if (levels.isEmpty()) {
+			category = level.getCategory();
+		}
+		
+		levels.add(level);
 	}
 	
 	@Override

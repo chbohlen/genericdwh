@@ -11,10 +11,10 @@ package genericdwh.db.model.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReferenceObjectCombination extends org.jooq.impl.TableImpl<genericdwh.db.model.tables.records.ReferenceObjectCombinationRecord> {
 
-	private static final long serialVersionUID = 1359413306;
+	private static final long serialVersionUID = 233408553;
 
 	/**
-	 * The singleton instance of <code>genericdwh.reference_object_combination</code>
+	 * The singleton instance of <code>reference_object_combination</code>
 	 */
 	public static final genericdwh.db.model.tables.ReferenceObjectCombination REFERENCE_OBJECT_COMBINATION = new genericdwh.db.model.tables.ReferenceObjectCombination();
 
@@ -27,24 +27,24 @@ public class ReferenceObjectCombination extends org.jooq.impl.TableImpl<genericd
 	}
 
 	/**
-	 * The column <code>genericdwh.reference_object_combination.aggregate_id</code>.
+	 * The column <code>reference_object_combination.aggregate_id</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.ReferenceObjectCombinationRecord, java.lang.Long> AGGREGATE_ID = createField("aggregate_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
 	/**
-	 * The column <code>genericdwh.reference_object_combination.component_id</code>.
+	 * The column <code>reference_object_combination.component_id</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.ReferenceObjectCombinationRecord, java.lang.Long> COMPONENT_ID = createField("component_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
 	/**
-	 * Create a <code>genericdwh.reference_object_combination</code> table reference
+	 * Create a <code>reference_object_combination</code> table reference
 	 */
 	public ReferenceObjectCombination() {
 		this("reference_object_combination", null);
 	}
 
 	/**
-	 * Create an aliased <code>genericdwh.reference_object_combination</code> table reference
+	 * Create an aliased <code>reference_object_combination</code> table reference
 	 */
 	public ReferenceObjectCombination(java.lang.String alias) {
 		this(alias, genericdwh.db.model.tables.ReferenceObjectCombination.REFERENCE_OBJECT_COMBINATION);
@@ -55,7 +55,7 @@ public class ReferenceObjectCombination extends org.jooq.impl.TableImpl<genericd
 	}
 
 	private ReferenceObjectCombination(java.lang.String alias, org.jooq.Table<genericdwh.db.model.tables.records.ReferenceObjectCombinationRecord> aliased, org.jooq.Field<?>[] parameters) {
-		super(alias, genericdwh.db.model.Genericdwh.GENERICDWH, aliased, parameters, "");
+		super(alias, genericdwh.db.model.DefaultSchema.DEFAULT_SCHEMA, aliased, parameters, "");
 	}
 
 	/**

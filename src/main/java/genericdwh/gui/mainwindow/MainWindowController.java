@@ -5,14 +5,16 @@ import java.util.TreeMap;
 
 import genericdwh.main.Main;
 import genericdwh.dataobjects.DataObject;
-import genericdwh.dataobjects.Dimension;
-import genericdwh.dataobjects.DimensionHierarchy;
+import genericdwh.dataobjects.dimension.Dimension;
+import genericdwh.dataobjects.dimension.DimensionCategory;
+import genericdwh.dataobjects.dimension.DimensionHierarchy;
+import genericdwh.dataobjects.ratio.Ratio;
+import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.db.DatabaseController;
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController;
 import genericdwh.gui.mainwindow.sidebar.SidebarController;
 import genericdwh.gui.subwindows.ConnectWindowController;
-
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -52,16 +54,18 @@ public class MainWindowController {
 		return stage;
 	}
 	
-	public void buildSidebar(TreeMap<Long, Dimension> dimensions, ArrayList<DimensionHierarchy> hierarchies) {
-		sidebarController.buildSidebar(hierarchies, dimensions);
+	public void buildSidebars(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions, 
+			TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
+		
+		sidebarController.buildSidebars(dimensionCategories, hierarchies, dimensions, ratioCategories, ratios);
 	}
 	
-	public void showSidebar() {
-		sidebarController.showSidebar();
+	public void showSidebars() {
+		sidebarController.showSidebars();
 	}
 	
-	public void hideSidebar() {
-		sidebarController.hideSidebar();
+	public void hideSidebars() {
+		sidebarController.hideSidebars();
 	}
 	
 	public void showQueryPane() {
@@ -91,7 +95,7 @@ public class MainWindowController {
 
 	@FXML public void menuBarDisconnectOnClickHandler() {
 		Main.getContext().getBean(DatabaseController.class).disconnect();
-		hideSidebar();
+		hideSidebars();
 		hideQueryPane();
 	}
 }

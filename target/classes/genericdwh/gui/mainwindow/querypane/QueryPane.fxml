@@ -6,9 +6,9 @@
 
 <Pane fx:id="queryPane" prefHeight="725.0" prefWidth="800.0" stylesheets="@TableViewNoHorizontalScrollBar.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.mainwindow.querypane.QueryPaneController">
    <children>
-      <TableView fx:id="tvMeasure" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="125.0" prefWidth="200.0">
+      <TableView fx:id="tvRatio" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="125.0" prefWidth="200.0">
          <columns>
-            <TableColumn fx:id="tcMeasure" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Measure" />
+            <TableColumn fx:id="tcRatio" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Ratio" />
          </columns>
       </TableView>
       <TableView fx:id="tvRowDims" layoutX="200.0" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="125.0" prefWidth="200.0">

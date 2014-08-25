@@ -2,50 +2,83 @@ package genericdwh.gui.mainwindow.sidebar;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import genericdwh.dataobjects.DataObject;
-import genericdwh.dataobjects.Dimension;
-import genericdwh.dataobjects.DimensionHierarchy;
-import genericdwh.dataobjects.ReferenceObjectManager;
+import genericdwh.dataobjects.dimension.Dimension;
+import genericdwh.dataobjects.dimension.DimensionCategory;
+import genericdwh.dataobjects.dimension.DimensionHierarchy;
+import genericdwh.dataobjects.ratio.Ratio;
+import genericdwh.dataobjects.ratio.RatioCategory;
+import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.main.Main;
-
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.Pane;
 import javafx.util.Callback;
 
 public class SidebarController implements Initializable {
 	
-	@FXML private TreeView<DataObject> sidebar;
+	@FXML private Pane sidebars;
+	@FXML private TreeView<DataObject> dimensionSidebar;
+	@FXML private TreeView<DataObject> ratioSidebar;
 	
 	public SidebarController() {
 	}
 	
 	public void initialize(URL location, ResourceBundle resources) {		
-		hideSidebar();
+		hideSidebars();
 		
-		sidebar.setCellFactory(new Callback<TreeView<DataObject>, TreeCell<DataObject>>() {
+		dimensionSidebar.setCellFactory(new Callback<TreeView<DataObject>, TreeCell<DataObject>>() {
+            public TreeCell<DataObject> call(TreeView<DataObject> param) {
+                return new DataObjectTreeCell();
+            }
+        });
+		
+		ratioSidebar.setCellFactory(new Callback<TreeView<DataObject>, TreeCell<DataObject>>() {
             public TreeCell<DataObject> call(TreeView<DataObject> param) {
                 return new DataObjectTreeCell();
             }
         });
 	}
 	
+	public void buildSidebars(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions, 
+			TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
+		
+		buildDimensionSidebar(dimensionCategories, hierarchies, dimensions);
+		buildRatioSidebar(ratioCategories, ratios);
+	}
 	
-	public void buildSidebar(ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions) {
+	private void buildDimensionSidebar(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions) {
 		DataObjectTreeItem tiRoot = new DataObjectTreeItem(new SidebarHeader("Dimensions"));
 		tiRoot.setExpanded(true);
 		
+		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
+		
+		TreeMap<String, DataObjectTreeItem> categoryTreeItemMap = new TreeMap<String, DataObjectTreeItem>();
+		for (Entry<Long, DimensionCategory> currEntry : dimensionCategories.entrySet()) {
+			DimensionCategory currDimCat = currEntry.getValue();
+			DataObjectTreeItem tiNewCategory = new DataObjectTreeItem(currDimCat);
+			tiRoot.addChild(tiNewCategory);
+			
+			categoryTreeItemMap.put(currDimCat.getName(), tiNewCategory);
+		}
+		
 		for (DimensionHierarchy hierarchy : hierarchies) {
 			DataObjectTreeItem tiNewHierarchy = new DataObjectTreeItem(hierarchy);
-			tiRoot.addChild(tiNewHierarchy);
+			DataObjectTreeItem tiCat = categoryTreeItemMap.get(hierarchy.getCategory());
+			if (tiCat != null) {
+				tiCat.addChild(tiNewHierarchy);
+			}
+
 			DataObjectTreeItem tiTmp = tiNewHierarchy;
 			
 			for (Dimension lvl : hierarchy.getLevels()) {
-				if (!Main.getContext().getBean(ReferenceObjectManager.class).dimensionHasRecords(lvl)) {
+				if (!refObjManager.dimensionHasRecords(lvl)) {
 					break;
 				}
 				
@@ -55,18 +88,61 @@ public class SidebarController implements Initializable {
 			}
 		}
 		
-		sidebar.setRoot(tiRoot);
-	}
-
-	public void showSidebar() {
-		sidebar.setVisible(true);
+		for (Entry<Long, Dimension> currEntry : dimensions.entrySet()) {
+			Dimension currDim = currEntry.getValue();
+			DataObjectTreeItem tiNewDim = new DataObjectTreeItem(currDim);
+			DataObjectTreeItem tiCat = categoryTreeItemMap.get(currDim.getCategory());
+			if (tiCat != null) {
+				tiCat.addChild(tiNewDim);
+			}
+			
+			if (refObjManager.dimensionHasRecords(currDim)) {
+				DataObjectTreeItem tiPlaceholder = new DataObjectTreeItem(currDim);
+				tiNewDim.addChild(tiPlaceholder);
+			}
+		}
+		
+		dimensionSidebar.setRoot(tiRoot);
 	}
 	
-	public void hideSidebar() {
-		sidebar.setVisible(false);
+	private void buildRatioSidebar(TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
+		DataObjectTreeItem tiRoot = new DataObjectTreeItem(new SidebarHeader("Ratios"));
+		tiRoot.setExpanded(true);
+		
+		TreeMap<String, DataObjectTreeItem> categoryTreeItemMap = new TreeMap<String, DataObjectTreeItem>();
+		for (Entry<Long, RatioCategory> currEntry : ratioCategories.entrySet()) {
+			RatioCategory currRatioCat = currEntry.getValue();
+			DataObjectTreeItem tiNewCategory = new DataObjectTreeItem(currRatioCat);
+			tiRoot.addChild(tiNewCategory);
+			
+			categoryTreeItemMap.put(currRatioCat.getName(), tiNewCategory);
+		}
+		
+		for (Entry<Long, Ratio> currEntry : ratios.entrySet()) {
+			Ratio currRatio = currEntry.getValue();
+			DataObjectTreeItem tiNewRatio = new DataObjectTreeItem(currRatio);
+			DataObjectTreeItem tiCat = categoryTreeItemMap.get(currRatio.getCategory());
+			if (tiCat != null) {
+				tiCat.addChild(tiNewRatio);
+			}
+		}
+		
+		ratioSidebar.setRoot(tiRoot);
+	}
+
+	public void showSidebars() {
+		sidebars.setVisible(true);
+	}
+	
+	public void hideSidebars() {
+		sidebars.setVisible(false);
 	}
 	
 	@FXML public void contextMenuNewDimensionOnClickHandler() {
+		
+	}
+
+	@FXML public void contextMenuNewRatioOnClickHandler() {
 		
 	}
 }

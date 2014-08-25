@@ -1,0 +1,9 @@
+reorder ratios/dimensions
+ratios/dimensions tableview context menu
+refresh sidebar
+duplicate object
+create/edit/delete objects
+save/discard changes (refetch?)
+no new connection when connecting to same database
+db-status notification (invalid password etc)
+

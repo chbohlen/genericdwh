@@ -3,7 +3,8 @@ package genericdwh.gui.subwindows;
 import java.util.Properties;
 
 import genericdwh.configfiles.ConfigFileReader;
-import genericdwh.dataobjects.DimensionManager;
+import genericdwh.dataobjects.dimension.DimensionManager;
+import genericdwh.dataobjects.ratio.RatioManager;
 import genericdwh.db.DatabaseController;
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.mainwindow.MainWindowController;
@@ -58,11 +59,17 @@ public class ConnectWindowController {
 			storeDbCredentials();
 			
 			DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
+			dimManager.loadCategories();
 			dimManager.loadDimensions();
 			
+			RatioManager ratioManager = Main.getContext().getBean(RatioManager.class);
+			ratioManager.loadCategories();
+			ratioManager.loadRatios();
+			
 			MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
-			mainWindowController.buildSidebar(dimManager.getDimensions(), dimManager.getHierachies());
-			mainWindowController.showSidebar();
+			mainWindowController.buildSidebars(dimManager.getCategories(), dimManager.getHierarchies(), dimManager.getDimensions(),
+												ratioManager.getCategories(), ratioManager.getRatios());
+			mainWindowController.showSidebars();
 			mainWindowController.showQueryPane();
 		}
 		

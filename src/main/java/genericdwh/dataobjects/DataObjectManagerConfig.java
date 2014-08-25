@@ -1,5 +1,8 @@
 package genericdwh.dataobjects;
 
+import genericdwh.dataobjects.dimension.DimensionManager;
+import genericdwh.dataobjects.ratio.RatioManager;
+import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.db.DatabaseControllerConfig;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,5 +25,10 @@ public class DataObjectManagerConfig {
 	@Bean
 	public ReferenceObjectManager referenceObjectManager() {
 		return new ReferenceObjectManager(dbControllerConfig.databaseController());
+	}
+	
+	@Bean
+	public RatioManager ratioManager() {
+		return new RatioManager(dbControllerConfig.databaseController());
 	}
 }

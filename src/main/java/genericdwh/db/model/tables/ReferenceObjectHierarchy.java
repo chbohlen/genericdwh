@@ -11,10 +11,10 @@ package genericdwh.db.model.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReferenceObjectHierarchy extends org.jooq.impl.TableImpl<genericdwh.db.model.tables.records.ReferenceObjectHierarchyRecord> {
 
-	private static final long serialVersionUID = 1077051146;
+	private static final long serialVersionUID = -229478113;
 
 	/**
-	 * The singleton instance of <code>genericdwh.reference_object_hierarchy</code>
+	 * The singleton instance of <code>reference_object_hierarchy</code>
 	 */
 	public static final genericdwh.db.model.tables.ReferenceObjectHierarchy REFERENCE_OBJECT_HIERARCHY = new genericdwh.db.model.tables.ReferenceObjectHierarchy();
 
@@ -27,24 +27,24 @@ public class ReferenceObjectHierarchy extends org.jooq.impl.TableImpl<genericdwh
 	}
 
 	/**
-	 * The column <code>genericdwh.reference_object_hierarchy.parent_id</code>.
+	 * The column <code>reference_object_hierarchy.parent_id</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.ReferenceObjectHierarchyRecord, java.lang.Long> PARENT_ID = createField("parent_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
 	/**
-	 * The column <code>genericdwh.reference_object_hierarchy.child_id</code>.
+	 * The column <code>reference_object_hierarchy.child_id</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.ReferenceObjectHierarchyRecord, java.lang.Long> CHILD_ID = createField("child_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
 	/**
-	 * Create a <code>genericdwh.reference_object_hierarchy</code> table reference
+	 * Create a <code>reference_object_hierarchy</code> table reference
 	 */
 	public ReferenceObjectHierarchy() {
 		this("reference_object_hierarchy", null);
 	}
 
 	/**
-	 * Create an aliased <code>genericdwh.reference_object_hierarchy</code> table reference
+	 * Create an aliased <code>reference_object_hierarchy</code> table reference
 	 */
 	public ReferenceObjectHierarchy(java.lang.String alias) {
 		this(alias, genericdwh.db.model.tables.ReferenceObjectHierarchy.REFERENCE_OBJECT_HIERARCHY);
@@ -55,7 +55,7 @@ public class ReferenceObjectHierarchy extends org.jooq.impl.TableImpl<genericdwh
 	}
 
 	private ReferenceObjectHierarchy(java.lang.String alias, org.jooq.Table<genericdwh.db.model.tables.records.ReferenceObjectHierarchyRecord> aliased, org.jooq.Field<?>[] parameters) {
-		super(alias, genericdwh.db.model.Genericdwh.GENERICDWH, aliased, parameters, "");
+		super(alias, genericdwh.db.model.DefaultSchema.DEFAULT_SCHEMA, aliased, parameters, "");
 	}
 
 	/**

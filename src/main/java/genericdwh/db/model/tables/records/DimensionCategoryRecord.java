@@ -11,31 +11,31 @@ package genericdwh.db.model.tables.records;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DimensionCategoryRecord extends org.jooq.impl.UpdatableRecordImpl<genericdwh.db.model.tables.records.DimensionCategoryRecord> implements org.jooq.Record2<java.lang.Long, java.lang.String> {
 
-	private static final long serialVersionUID = -1517827566;
+	private static final long serialVersionUID = -375047682;
 
 	/**
-	 * Setter for <code>genericdwh.dimension_category.id</code>.
+	 * Setter for <code>dimension_category.id</code>.
 	 */
 	public void setId(java.lang.Long value) {
 		setValue(0, value);
 	}
 
 	/**
-	 * Getter for <code>genericdwh.dimension_category.id</code>.
+	 * Getter for <code>dimension_category.id</code>.
 	 */
 	public java.lang.Long getId() {
 		return (java.lang.Long) getValue(0);
 	}
 
 	/**
-	 * Setter for <code>genericdwh.dimension_category.name</code>.
+	 * Setter for <code>dimension_category.name</code>.
 	 */
 	public void setName(java.lang.String value) {
 		setValue(1, value);
 	}
 
 	/**
-	 * Getter for <code>genericdwh.dimension_category.name</code>.
+	 * Getter for <code>dimension_category.name</code>.
 	 */
 	public java.lang.String getName() {
 		return (java.lang.String) getValue(1);
@@ -68,6 +68,7 @@ public class DimensionCategoryRecord extends org.jooq.impl.UpdatableRecordImpl<g
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public org.jooq.Row2<java.lang.Long, java.lang.String> valuesRow() {
 		return (org.jooq.Row2) super.valuesRow();
 	}
@@ -75,6 +76,7 @@ public class DimensionCategoryRecord extends org.jooq.impl.UpdatableRecordImpl<g
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public org.jooq.Field<java.lang.Long> field1() {
 		return genericdwh.db.model.tables.DimensionCategory.DIMENSION_CATEGORY.ID;
 	}
@@ -82,6 +84,7 @@ public class DimensionCategoryRecord extends org.jooq.impl.UpdatableRecordImpl<g
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public org.jooq.Field<java.lang.String> field2() {
 		return genericdwh.db.model.tables.DimensionCategory.DIMENSION_CATEGORY.NAME;
 	}
@@ -89,6 +92,7 @@ public class DimensionCategoryRecord extends org.jooq.impl.UpdatableRecordImpl<g
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public java.lang.Long value1() {
 		return getId();
 	}
@@ -96,6 +100,7 @@ public class DimensionCategoryRecord extends org.jooq.impl.UpdatableRecordImpl<g
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public java.lang.String value2() {
 		return getName();
 	}
@@ -103,6 +108,7 @@ public class DimensionCategoryRecord extends org.jooq.impl.UpdatableRecordImpl<g
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public DimensionCategoryRecord value1(java.lang.Long value) {
 		setId(value);
 		return this;
@@ -111,6 +117,7 @@ public class DimensionCategoryRecord extends org.jooq.impl.UpdatableRecordImpl<g
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public DimensionCategoryRecord value2(java.lang.String value) {
 		setName(value);
 		return this;
@@ -119,6 +126,7 @@ public class DimensionCategoryRecord extends org.jooq.impl.UpdatableRecordImpl<g
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public DimensionCategoryRecord values(java.lang.Long value1, java.lang.String value2) {
 		return this;
 	}
