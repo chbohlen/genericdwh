@@ -18,10 +18,10 @@ public class DimensionHierarchy extends DataObject {
 		levels = new LinkedList<Dimension>();
 	}
 	
-	public DimensionHierarchy(Dimension root) {
+	public DimensionHierarchy(Dimension top) {
 		this();
 		
-		addLevel(root);
+		addLevel(top);
 	}
 	
 	public DimensionHierarchy(LinkedList<Dimension> levels) {
@@ -43,6 +43,10 @@ public class DimensionHierarchy extends DataObject {
 		}
 		
 		levels.add(level);
+	}
+	
+	public DataObject getTop() {
+		return levels.get(0);
 	}
 	
 	@Override

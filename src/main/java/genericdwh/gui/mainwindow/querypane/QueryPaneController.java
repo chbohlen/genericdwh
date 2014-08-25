@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import genericdwh.dataobjects.DataObject;
 import genericdwh.dataobjects.dimension.Dimension;
+import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.dimension.DimensionManager;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
@@ -133,14 +134,20 @@ public class QueryPaneController implements Initializable {
 		ArrayList<Dimension> combination = new ArrayList<Dimension>();
 		
 		for (DataObject obj : rowDims) {
-			if (obj instanceof ReferenceObject) {
-				obj = dimensions.get(((ReferenceObject)obj).getDimensionId());
+			if (obj instanceof DimensionHierarchy) {
+				obj = ((DimensionHierarchy)obj).getTop();
 			}
+			else if (obj instanceof ReferenceObject) {
+				obj = dimensions.get(((ReferenceObject)obj).getDimensionId());
+			} 
 			combination.add((Dimension)obj);
 		}
 		
 		for (DataObject obj : colDims) {
-			if (obj instanceof ReferenceObject) {
+			if (obj instanceof DimensionHierarchy) {
+				obj = ((DimensionHierarchy)obj).getTop();
+			}
+			else if (obj instanceof ReferenceObject) {
 				obj = dimensions.get(((ReferenceObject)obj).getDimensionId());
 			}
 			combination.add((Dimension)obj);

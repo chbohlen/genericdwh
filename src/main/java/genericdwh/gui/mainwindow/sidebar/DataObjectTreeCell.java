@@ -1,6 +1,8 @@
 package genericdwh.gui.mainwindow.sidebar;
 
 import genericdwh.dataobjects.DataObject;
+import genericdwh.dataobjects.dimension.DimensionCategory;
+import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.main.Main;
 import javafx.event.EventHandler;
@@ -17,7 +19,10 @@ public class DataObjectTreeCell extends TreeCell<DataObject>{
 	public DataObjectTreeCell() {
         setOnDragDetected(new EventHandler<MouseEvent>() {
         	public void handle(MouseEvent event) {
-                if (obj == null || obj instanceof SidebarHeader) {
+                if (obj == null || obj instanceof SidebarHeader
+                		|| obj instanceof DimensionCategory
+                		|| obj instanceof RatioCategory) {
+                	
                     return;
                 }
                 
