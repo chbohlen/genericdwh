@@ -7,14 +7,17 @@ import static genericdwh.db.model.tables.Dimensions.DIMENSIONS;
 import static genericdwh.db.model.tables.RatioCategories.RATIO_CATEGORIES;
 import static genericdwh.db.model.tables.RatioRelations.RATIO_RELATIONS;
 import static genericdwh.db.model.tables.Ratios.RATIOS;
+import static genericdwh.db.model.tables.ReferenceObjectCombinations.REFERENCE_OBJECT_COMBINATIONS;
 import static genericdwh.db.model.tables.ReferenceObjectHierarchies.REFERENCE_OBJECT_HIERARCHIES;
 import static genericdwh.db.model.tables.ReferenceObjects.REFERENCE_OBJECTS;
+import static genericdwh.db.model.tables.Facts.FACTS;
 import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionCategory;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.db.model.tables.DimensionCombinations;
+import genericdwh.db.model.tables.ReferenceObjectCombinations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +58,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 										.select(DIMENSIONS.DIMENSION_ID, DIMENSIONS.NAME, DIMENSION_CATEGORIES.NAME)
 										.from(DIMENSIONS
 										.leftOuterJoin(DIMENSION_CATEGORIES)
-										.on(DIMENSIONS.CATEGORY_ID.equal(DIMENSION_CATEGORIES.CATEGORY_ID)))
+											.on(DIMENSIONS.CATEGORY_ID.equal(DIMENSION_CATEGORIES.CATEGORY_ID)))
 										.fetch()
 										.intoMap(DIMENSIONS.DIMENSION_ID, Dimension.class);
 		return new TreeMap<Long, Dimension>(dimMap);
@@ -82,13 +85,14 @@ public class MySQLDatabaseReader implements DatabaseReader {
 
 	
 	@Override
-	public long findDimensionCombination(ArrayList<Dimension> combination) {
-		int componentCount = combination.size();
+	public long findDimensionCombinationId(long[] combination) {
+		int componentCount = combination.length;
 		
-		Table<Record2<Long, Integer>> query = dslContext
-												.select(DIMENSION_COMBINATIONS.AGGREGATE_ID, DSL.count().as("count"))
+		Table<Record1<Long>> query = dslContext
+												.select(DIMENSION_COMBINATIONS.AGGREGATE_ID)
 												.from(DIMENSION_COMBINATIONS)
 												.groupBy(DIMENSION_COMBINATIONS.AGGREGATE_ID)
+												.having(DSL.count().equal(componentCount))
 												.asTable();
 		
 		DimensionCombinations[] aliases = new DimensionCombinations[componentCount];
@@ -105,7 +109,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		}
 		
 		for (int i = 0; i < componentCount; i++) {
-			joinQuery.addConditions(aliases[i].COMPONENT_ID.equal(combination.get(i).getId()));
+			joinQuery.addConditions(aliases[i].COMPONENT_ID.equal(combination[i]));
 		}
 		
 		Table<Record> joinTable = joinQuery.asTable();
@@ -113,9 +117,8 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		Result<Record1<Long>> result = dslContext
 										.select(query.field("aggregate_id").cast(Long.class))
 										.from(query)
-										.leftOuterJoin(joinTable)
-										.on(query.field(DIMENSION_COMBINATIONS.AGGREGATE_ID).equal(joinTable.field(DIMENSION_COMBINATIONS.AGGREGATE_ID)))
-										.where(query.field("count").cast(Integer.class).equal(combination.size()))
+										.join(joinTable)
+											.on(query.field(DIMENSION_COMBINATIONS.AGGREGATE_ID).equal(joinTable.field(DIMENSION_COMBINATIONS.AGGREGATE_ID)))
 										.fetch();
 		
 		if (result.size() != 1) {
@@ -142,7 +145,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 					.select()
 					.from(REFERENCE_OBJECTS)
 					.leftOuterJoin(REFERENCE_OBJECT_HIERARCHIES)
-					.on(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID))
+						.on(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID))
 					.where(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
 						.and(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(refObjId))
 					.fetchCount();
@@ -167,7 +170,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 													.select(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, REFERENCE_OBJECTS.DIMENSION_ID, REFERENCE_OBJECTS.NAME)
 													.from(REFERENCE_OBJECTS)
 													.leftOuterJoin(REFERENCE_OBJECT_HIERARCHIES)
-													.on(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID))
+														.on(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID))
 													.where(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
 														.and(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(refObjId))
 													.fetch()
@@ -175,6 +178,51 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		return new TreeMap<Long, ReferenceObject>(refObjMap);
 	}
 
+	
+	@Override
+	public long findReferenceObjectCombinationId(long[] combination) {
+		int componentCount = combination.length;
+		
+		Table<Record1<Long>> query = dslContext
+												.select(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID)
+												.from(REFERENCE_OBJECT_COMBINATIONS)
+												.groupBy(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID)
+												.having(DSL.count().equal(componentCount))
+												.asTable();
+		
+		ReferenceObjectCombinations[] aliases = new ReferenceObjectCombinations[componentCount];
+		for (int i = 0; i < componentCount; i++) {
+			aliases[i] = REFERENCE_OBJECT_COMBINATIONS.as("reference_object_combination_"+i);
+		}
+		
+		SelectQuery<Record> joinQuery = dslContext.selectQuery();
+		joinQuery.addSelect(aliases[0].AGGREGATE_ID);
+		joinQuery.addFrom(aliases[0]);
+		
+		for (int i = 1; i < componentCount; i++) {
+			joinQuery.addJoin(aliases[i], JoinType.LEFT_OUTER_JOIN, aliases[0].AGGREGATE_ID.equal(aliases[i].AGGREGATE_ID));
+		}
+		
+		for (int i = 0; i < componentCount; i++) {
+			joinQuery.addConditions(aliases[i].COMPONENT_ID.equal(combination[i]));
+		}
+		
+		Table<Record> joinTable = joinQuery.asTable();
+		
+		Result<Record1<Long>> result = dslContext
+										.select(query.field("aggregate_id").cast(Long.class))
+										.from(query)
+										.join(joinTable)
+											.on(query.field(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID).equal(joinTable.field(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID)))
+										.fetch();
+		
+		if (result.size() != 1) {
+			return -1;
+		}
+		
+		return result.getValue(0, REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID);
+	}
+	
 	
 	@Override
 	public TreeMap<Long, RatioCategory> loadRatioCategories() {
@@ -192,7 +240,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 										.select(RATIOS.RATIO_ID, RATIOS.NAME, RATIO_CATEGORIES.NAME)
 										.from(RATIOS
 										.leftOuterJoin(RATIO_CATEGORIES)
-										.on(RATIOS.CATEGORY_ID.equal(RATIO_CATEGORIES.CATEGORY_ID)))
+											.on(RATIOS.CATEGORY_ID.equal(RATIO_CATEGORIES.CATEGORY_ID)))
 										.fetch()
 										.intoMap(RATIOS.RATIO_ID, Ratio.class);
 		return new TreeMap<Long, Ratio>(ratioMap);
@@ -205,5 +253,34 @@ public class MySQLDatabaseReader implements DatabaseReader {
 													.from(RATIO_RELATIONS)
 													.fetch(new EntryLongLongRecordMapper());
 		return new ArrayList<Entry<Long, Long>>(hierarchyList);
+	}
+
+	
+	
+	
+	@Override
+	public Double loadFactForReferenceObject(long ratioId, long referenceObjectId) {
+		Result<Record> result = dslContext.select()
+											.from(FACTS)
+											.where(FACTS.RATIO_ID.equal(ratioId)
+												.and(FACTS.REFERENCE_OBJECT_ID.equal(referenceObjectId)))
+											.fetch();
+		return result.getValue(0, FACTS.VALUE);
+	}
+	
+
+	@Override
+	public Map<Long, Result<Record>> loadFactsForDimension(long ratioId, long dimensionId) {
+		Result<Record> result = dslContext.select()
+									.from(FACTS)
+									.join(REFERENCE_OBJECTS)
+										.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID))
+									.join(REFERENCE_OBJECT_COMBINATIONS)
+										.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
+									.where(FACTS.RATIO_ID.equal(ratioId))
+										.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimensionId))
+									.fetch();
+
+		return result.intoGroups(FACTS.REFERENCE_OBJECT_ID);
 	}	
 }

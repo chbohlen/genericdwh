@@ -4,7 +4,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane prefHeight="240.0" prefWidth="305.0" onKeyPressed="#onKeyPressedHandler"  xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.subwindows.ConnectWindowController">
+<Pane prefHeight="240.0" prefWidth="305.0" onKeyPressed="#onKeyPressedHandler"  xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
    	<GridPane prefHeight="180.0" prefWidth="305.0">
    	   <columnConstraints>

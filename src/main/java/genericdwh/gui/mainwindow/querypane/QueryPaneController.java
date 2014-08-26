@@ -4,15 +4,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.TreeMap;
 
 import genericdwh.dataobjects.DataObject;
 import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionHierarchy;
-import genericdwh.dataobjects.dimension.DimensionManager;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.db.DatabaseController;
+import genericdwh.db.DatabaseReader;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.main.Main;
 import javafx.fxml.FXML;
@@ -28,6 +27,12 @@ import javafx.util.Callback;
 
 public class QueryPaneController implements Initializable {
 	
+	private enum QueryType {
+		MIXED,
+		DIMENSIONS_ONLY,
+		REFERENCE_OBJECTS_ONLY;
+	}
+		
 	@FXML private Pane queryPane;
 	
 	@FXML private TableView<DataObject> tvRatio;
@@ -64,7 +69,6 @@ public class QueryPaneController implements Initializable {
         });
 	}
 	
-
 	public void showQueryPane() {
 		queryPane.setVisible(true);
 	}
@@ -125,36 +129,106 @@ public class QueryPaneController implements Initializable {
 	}
 
 	@FXML public void buttonExecQueryOnClickHandler() {
+		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
+		DatabaseReader dbReader = Main.getContext().getBean(DatabaseController.class).getDbReader();
+		
 		List<DataObject> ratios = tvRatio.getItems();
 		List<DataObject> rowDims = tvRowDims.getItems();
 		List<DataObject> colDims = tvColDims.getItems();
 		
-		TreeMap<Long, Dimension> dimensions = Main.getContext().getBean(DimensionManager.class).getDimensions();
-		
-		ArrayList<Dimension> combination = new ArrayList<Dimension>();
-		
-		for (DataObject obj : rowDims) {
-			if (obj instanceof DimensionHierarchy) {
-				obj = ((DimensionHierarchy)obj).getTop();
+		if (ratios.isEmpty()) {
+			// TODO
+			return;
+		} else {
+			ArrayList<DataObject> combinedDims = new ArrayList<>();
+			combinedDims.addAll(rowDims);
+			combinedDims.addAll(colDims);
+			
+			if (combinedDims.isEmpty()) {
+				// TODO
+				return;
 			}
-			else if (obj instanceof ReferenceObject) {
-				obj = dimensions.get(((ReferenceObject)obj).getDimensionId());
-			} 
-			combination.add((Dimension)obj);
+				
+			QueryType type = getQueryTypeForQueryDimensions(combinedDims);
+			
+			if (type == QueryType.DIMENSIONS_ONLY) {
+				long dimCombinationId = dbReader.findDimensionCombinationId(getDimensionCombination(combinedDims));
+				
+				if (dimCombinationId == -1) {
+					mainWindowController.postStatus("No data for the given input.");
+					return;
+				}
+				
+				dbReader.loadFactsForDimension(((Ratio)ratios.get(0)).getId(), dimCombinationId);
+				
+			} else if (type == QueryType.REFERENCE_OBJECTS_ONLY) {
+				long refObjCombinationId = dbReader.findReferenceObjectCombinationId(getReferenceObjectCombination(combinedDims));
+				
+				if (refObjCombinationId == -1) {
+					mainWindowController.postStatus("No data for the given input.");
+					return;
+				}
+				
+				dbReader.loadFactForReferenceObject(((Ratio)ratios.get(0)).getId(), refObjCombinationId);
+			} else {
+				long dimCombinationId = dbReader.findDimensionCombinationId(getDimensionCombination(combinedDims));
+				System.out.println(dimCombinationId);
+			}
+		}
+	}
+	
+	private long[] getReferenceObjectCombination(ArrayList<DataObject> combinedDims) {
+		long[] combination = new long[combinedDims.size()];
+		
+		for (int i = 0; i < combination.length; i++) {
+			combination[i] = ((ReferenceObject)combinedDims.get(i)).getId();
 		}
 		
-		for (DataObject obj : colDims) {
-			if (obj instanceof DimensionHierarchy) {
-				obj = ((DimensionHierarchy)obj).getTop();
+		return combination;
+	}
+
+	private long[] getDimensionCombination(ArrayList<DataObject> combinedDims) {
+		long[] combination = new long[combinedDims.size()];
+		
+		for (int i = 0; i < combination.length; i++) {
+			DataObject currObj = combinedDims.get(i);
+			if (currObj instanceof DimensionHierarchy) {
+				combination[i] = ((DimensionHierarchy)currObj).getTop().getId();
+			} else if (currObj instanceof ReferenceObject) {
+				combination[i] = ((ReferenceObject)currObj).getDimensionId()    ;
+			} else {
+				combination[i] = ((Dimension)currObj).getId();
 			}
-			else if (obj instanceof ReferenceObject) {
-				obj = dimensions.get(((ReferenceObject)obj).getDimensionId());
-			}
-			combination.add((Dimension)obj);
 		}
 		
+		return combination;
+	}
+
+	private QueryType getQueryTypeForQueryDimensions(ArrayList<DataObject> dims) {
+		Class<?> type = dims.get(0).getClass();
 		
-		System.out.println(Main.getContext().getBean(DatabaseController.class).getDbReader().findDimensionCombination(combination));
+		if (type == DimensionHierarchy.class) {
+			type = Dimension.class;
+		}
+		
+		for (DataObject obj : dims) {
+			Class<?> currType = obj.getClass();
+			if (currType == DimensionHierarchy.class) {
+				currType = Dimension.class;
+			}
+			
+			if (type != currType) {
+				return QueryType.MIXED;
+			}
+		}
+		
+		if (type == Dimension.class) {
+			return QueryType.DIMENSIONS_ONLY;
+		} else if (type == ReferenceObject.class) {
+			return QueryType.REFERENCE_OBJECTS_ONLY;
+		}
+		
+		return null;
 	}
 
 	@FXML public void buttonClearOnClickHandler() {

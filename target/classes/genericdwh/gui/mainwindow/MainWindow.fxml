@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.web.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane prefHeight="750.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.mainwindow.MainWindowController">
+<Pane prefHeight="750.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 	<children>
 		<MenuBar prefHeight="25.0" prefWidth="1000.0">
 		  <menus>
@@ -19,6 +20,13 @@
 		  </menus>
 		</MenuBar>
 		<fx:include layoutY="25.0" source="sidebar/Sidebar.fxml" />
-		<fx:include layoutY="25.0" layoutX="200" source="querypane/QueryPane.fxml"/>
+		<fx:include layoutX="200" layoutY="25.0" source="querypane/QueryPane.fxml" />
+      <Separator layoutY="724.0" prefWidth="1000.0" />
+      <Label fx:id="statusBar" layoutY="725.0" prefHeight="25.0" prefWidth="1000" alignment="CENTER_RIGHT"
+      	style="-fx-background-color: -fx-body-color, -fx-text-fill: -fx-selection-bar-text;">
+         <padding>
+            <Insets right="10.0" />
+         </padding>
+      </Label>
 	</children>
 </Pane>

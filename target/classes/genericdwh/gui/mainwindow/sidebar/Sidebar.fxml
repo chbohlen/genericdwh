@@ -5,9 +5,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane fx:id="sidebars" prefHeight="725.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.mainwindow.sidebar.SidebarController">
+<Pane fx:id="sidebars" prefHeight="700.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.mainwindow.sidebar.SidebarController">
    <children>
-   	<TreeView fx:id="dimensionSidebar" prefHeight="450.0" prefWidth="200.0">
+   	<TreeView fx:id="dimensionSidebar" prefHeight="425.0" prefWidth="200.0">
    		<contextMenu>
    			<ContextMenu>
    				<items>
@@ -16,7 +16,7 @@
       			</ContextMenu>
    		</contextMenu>
    	</TreeView>
-      <TreeView fx:id="ratioSidebar" layoutY="450.0" prefHeight="275.0" prefWidth="200.0">
+      <TreeView fx:id="ratioSidebar" layoutY="425.0" prefHeight="275.0" prefWidth="200.0">
          <contextMenu>
             <ContextMenu>
                <items>

@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane fx:id="queryPane" prefHeight="725.0" prefWidth="800.0" stylesheets="@TableViewNoHorizontalScrollBar.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.mainwindow.querypane.QueryPaneController">
+<Pane fx:id="queryPane" prefHeight="700.0" prefWidth="800.0" stylesheets="@TableViewNoHorizontalScrollBar.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.mainwindow.querypane.QueryPaneController">
    <children>
       <TableView fx:id="tvRatio" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="125.0" prefWidth="200.0">
          <columns>
@@ -23,5 +23,6 @@
       </TableView>
       <Button fx:id="btnExecQuery" layoutX="640.0" layoutY="24.0" mnemonicParsing="false" onMouseClicked="#buttonExecQueryOnClickHandler" prefHeight="30.0" prefWidth="120.0" text="Execute Query" />
       <Button fx:id="btnClear" layoutX="640.0" layoutY="73.0" mnemonicParsing="false" onMouseClicked="#buttonClearOnClickHandler" prefHeight="30.0" prefWidth="120.0" text="Clear" />
+      <Separator layoutX="600.0" layoutY="124.0" prefWidth="200.0" />
    </children>
 </Pane>

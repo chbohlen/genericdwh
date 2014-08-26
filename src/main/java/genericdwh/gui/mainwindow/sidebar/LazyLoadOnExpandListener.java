@@ -4,7 +4,6 @@ import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionCategory;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
-import genericdwh.dataobjects.ratio.RatioRelation;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.main.Main;
@@ -24,8 +23,8 @@ public 	class LazyLoadOnExpandListener implements ChangeListener<Boolean> {
 			
 			if (tiObj.isLoaded() || tiObj.getValue() instanceof SidebarHeader
 					|| tiObj.getValue() instanceof DimensionCategory || tiObj.getValue() instanceof RatioCategory
-					|| tiObj.getValue() instanceof Ratio
-					|| tiObj.getValue() instanceof RatioRelation) {
+					|| tiObj.getValue() instanceof Ratio) {
+				
 				return;
 			}
 

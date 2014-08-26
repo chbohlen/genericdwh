@@ -12,7 +12,6 @@ import genericdwh.dataobjects.dimension.DimensionCategory;
 import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
-import genericdwh.dataobjects.ratio.RatioRelation;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.main.Main;
 import javafx.fxml.FXML;

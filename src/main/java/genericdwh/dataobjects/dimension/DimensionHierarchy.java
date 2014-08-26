@@ -45,7 +45,7 @@ public class DimensionHierarchy extends DataObject {
 		levels.add(level);
 	}
 	
-	public DataObject getTop() {
+	public Dimension getTop() {
 		return levels.get(0);
 	}
 	

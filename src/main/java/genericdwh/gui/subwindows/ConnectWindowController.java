@@ -35,7 +35,8 @@ public class ConnectWindowController {
 	
 	public void createWindow() {
 		try {
-			Parent root = SpringFXMLLoader.load(getClass().getResource("ConnectWindow.fxml"));
+			SpringFXMLLoader loader = new SpringFXMLLoader(getClass().getResource("ConnectWindow.fxml"), Main.getContext().getBean(ConnectWindowController.class));
+			Parent root = loader.load();
 			Scene scene = new Scene(root, 305, 240);
 			Stage stage = new Stage();
 			stage.setScene(scene);
@@ -67,11 +68,12 @@ public class ConnectWindowController {
 			ratioManager.loadRatios();
 			
 			MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
+			
 			mainWindowController.buildSidebars(dimManager.getCategories(), dimManager.getHierarchies(), dimManager.getDimensions(),
 												ratioManager.getCategories(), ratioManager.getRatios());
 			mainWindowController.showSidebars();
 			mainWindowController.showQueryPane();
-		}
+		}		
 		
 		closeWindow();
 	}

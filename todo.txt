@@ -6,4 +6,5 @@ create/edit/delete objects
 save/discard changes (refetch?)
 no new connection when connecting to same database
 db-status notification (invalid password etc)
-
+only unique categories in queries
+no ratio/dimension selected

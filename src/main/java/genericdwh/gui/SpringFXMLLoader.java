@@ -1,23 +1,22 @@
 package genericdwh.gui;
 
-import java.io.IOException;
 import java.net.URL;
 
 import genericdwh.main.Main;
 import javafx.fxml.FXMLLoader;
 import javafx.util.Callback;
 
-public class SpringFXMLLoader {
+public class SpringFXMLLoader extends FXMLLoader {
 	
-	public static <T> T load(URL location) {
-		try {
-			return FXMLLoader.load(location, null, null, new Callback<Class<?>, Object>() {
-			    public Object call(Class<?> clazz) {
-			    	return Main.getContext().getBean(clazz);
-			    }
-			});
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+	public SpringFXMLLoader(URL location, Object controller) {
+		super(location);
+		
+		setControllerFactory(new Callback<Class<?>, Object>() {
+		    public Object call(Class<?> clazz) {
+		    	return Main.getContext().getBean(clazz);
+		    }
+		});
+		
+		setController(controller);
 	}
 }

@@ -34,6 +34,11 @@ public class Tables {
 	public static final genericdwh.db.model.tables.DimensionHierarchies DIMENSION_HIERARCHIES = genericdwh.db.model.tables.DimensionHierarchies.DIMENSION_HIERARCHIES;
 
 	/**
+	 * The table facts
+	 */
+	public static final genericdwh.db.model.tables.Facts FACTS = genericdwh.db.model.tables.Facts.FACTS;
+
+	/**
 	 * The table ratios
 	 */
 	public static final genericdwh.db.model.tables.Ratios RATIOS = genericdwh.db.model.tables.Ratios.RATIOS;
