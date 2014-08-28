@@ -13,10 +13,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 public class Main extends Application {
 	
-	@Getter private static AnnotationConfigApplicationContext context = null;
+	@Getter private static AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 	
 	public static void main(String[] args) {
-		context = new AnnotationConfigApplicationContext();
 		context.register(ConfigFileReaderConfig.class);
 		context.register(GUIConfig.class);
 		context.register(DatabaseControllerConfig.class);

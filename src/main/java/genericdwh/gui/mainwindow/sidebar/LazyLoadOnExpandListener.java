@@ -18,6 +18,8 @@ import javafx.beans.value.ObservableValue;
 public 	class LazyLoadOnExpandListener implements ChangeListener<Boolean> {
 
 	public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
+		
     	if (newValue) {
 			DataObjectTreeItem tiObj = (DataObjectTreeItem)((BooleanProperty)observable).getBean();
 			
@@ -27,8 +29,6 @@ public 	class LazyLoadOnExpandListener implements ChangeListener<Boolean> {
 				
 				return;
 			}
-
-    		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
     		
     		TreeMap<Long, ReferenceObject> refObjs;
     		if (tiObj.getValue() instanceof ReferenceObject) {

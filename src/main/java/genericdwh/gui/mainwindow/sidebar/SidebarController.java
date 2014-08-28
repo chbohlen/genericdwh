@@ -46,19 +46,19 @@ public class SidebarController implements Initializable {
         });
 	}
 	
-	public void buildSidebars(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions, 
+	public void createSidebars(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions, 
 			TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
 		
-		buildDimensionSidebar(dimensionCategories, hierarchies, dimensions);
-		buildRatioSidebar(ratioCategories, ratios);
+		createDimensionSidebar(dimensionCategories, hierarchies, dimensions);
+		createRatioSidebar(ratioCategories, ratios);
 	}
 	
-	private void buildDimensionSidebar(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions) {
-		DataObjectTreeItem tiRoot = new DataObjectTreeItem(new SidebarHeader("Dimensions"));
-		tiRoot.setExpanded(true);
-		
+	private void createDimensionSidebar(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions) {
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
 		
+		DataObjectTreeItem tiRoot = new DataObjectTreeItem(new SidebarHeader("Dimensions"));
+		tiRoot.setExpanded(true);
+				
 		TreeMap<String, DataObjectTreeItem> categoryTreeItemMap = new TreeMap<String, DataObjectTreeItem>();
 		for (Entry<Long, DimensionCategory> currEntry : dimensionCategories.entrySet()) {
 			DimensionCategory currDimCat = currEntry.getValue();
@@ -105,7 +105,7 @@ public class SidebarController implements Initializable {
 		dimensionSidebar.setRoot(tiRoot);
 	}
 	
-	private void buildRatioSidebar(TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
+	private void createRatioSidebar(TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
 		DataObjectTreeItem tiRoot = new DataObjectTreeItem(new SidebarHeader("Ratios"));
 		tiRoot.setExpanded(true);
 		

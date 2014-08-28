@@ -9,15 +9,13 @@ public class Ratio extends DataObject {
 	@Getter private long id;
 	@Getter private String category;
 	
-	@Getter private ArrayList<Ratio> dependencies;
+	@Getter private ArrayList<Ratio> dependencies = new ArrayList<Ratio>();
 	
 	public Ratio(long id, String name, String category) {
 		super(name);
 		
 		this.id = id;
 		this.category = category;
-		
-		dependencies = new ArrayList<Ratio>();
 	}
 	
 	public void addDependency(Ratio newChildren) {

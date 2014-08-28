@@ -13,31 +13,43 @@ import genericdwh.gui.mainwindow.sidebar.SidebarController;
 import genericdwh.gui.subwindows.ConnectWindowController;
 import genericdwh.main.Main;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import lombok.Getter;
+import lombok.Setter;
 
-public class MainWindowController {
+public class MainWindowController implements Initializable{
+		
+	@FXML private Label statusBar;
 	
-	private Stage stage;
+	@Getter private Stage stage;
 	
 	private ConnectWindowController connectWindowController;
 	private SidebarController sidebarController;
 	private QueryPaneController queryPaneController;
 	
-	private DataObject draggedDataObject;
-	
-	@FXML private Label statusBar;
+	@ Getter @Setter private DataObject draggedDataObject;
 	
 	public MainWindowController(ConnectWindowController connectWindowController, SidebarController sidebarController, QueryPaneController queryPaneController) {
 		this.connectWindowController = connectWindowController;
 		this.sidebarController = sidebarController;
 		this.queryPaneController = queryPaneController;
+	}
+	
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		statusBar.getStyleClass().add("statusbar");
 	}
 	
 	public void createWindow(Stage stage) {
@@ -47,6 +59,7 @@ public class MainWindowController {
 			SpringFXMLLoader loader = new SpringFXMLLoader(getClass().getResource("MainWindow.fxml"), Main.getContext().getBean(MainWindowController.class));
 			Parent root = loader.load();
 			Scene scene = new Scene(root, 1000, 750);
+			scene.getStylesheets().add("/css/StatusBarStyle.css");
 			stage.setScene(scene);
 			stage.setTitle("Generic DWH");
 			stage.show();
@@ -55,14 +68,10 @@ public class MainWindowController {
 		}
 	}
 	
-	public Stage getStage() {
-		return stage;
-	}
-	
-	public void buildSidebars(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions, 
+	public void createSidebars(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions, 
 			TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
 		
-		sidebarController.buildSidebars(dimensionCategories, hierarchies, dimensions, ratioCategories, ratios);
+		sidebarController.createSidebars(dimensionCategories, hierarchies, dimensions, ratioCategories, ratios);
 	}
 	
 	public void showSidebars() {
@@ -79,14 +88,6 @@ public class MainWindowController {
 	
 	public void hideQueryPane() {
 		queryPaneController.hideQueryPane();
-	}
-	
-	public void setDraggedDataObject(DataObject draggedTreeItem) {
-		this.draggedDataObject = draggedTreeItem;
-	}
-	
-	public DataObject getDraggedDataObject() {
-		return draggedDataObject;
 	}
 	
 	public void postStatus(String status) {

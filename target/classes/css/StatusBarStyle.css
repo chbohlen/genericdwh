@@ -1,0 +1,4 @@
+.statusbar {
+	-fx-background-color: -fx-body-color;
+	-fx-text-fill: -fx-selection-bar-text;
+}

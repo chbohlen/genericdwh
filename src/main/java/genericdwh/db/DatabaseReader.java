@@ -7,12 +7,9 @@ import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.TreeMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
-
-import org.jooq.Record;
-import org.jooq.Result;
 
 public interface DatabaseReader {
 	public TreeMap<Long, DimensionCategory> loadDimensionCategories();
@@ -33,6 +30,6 @@ public interface DatabaseReader {
 	public long findDimCombinationId(long[] combination);
 	public long findRefObjCombinationId(long[] combination);
 	
-	public double loadFactForRefObj(long ratioId, long referenceObjectId);
-	public Map<Long, Result<Record>> loadFactsForDim(long ratioId, long dimensionId);
+	public SimpleEntry<Double, Long[]> loadFactForRefObj(long ratioId, long referenceObjectId);
+	public TreeMap<Long, SimpleEntry<Double, Long[]>> loadFactsForDim(long ratioId, long dimensionId);
 }

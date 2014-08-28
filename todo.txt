@@ -5,6 +5,10 @@ duplicate object
 create/edit/delete objects
 save/discard changes (refetch?)
 no new connection when connecting to same database
-db-status notification (invalid password etc)
+db-status notification (invalid password etc)/generally better messages
 only unique categories in queries
 no ratio/dimension selected
+"none" category
+refactor statusbar
+totals
+span

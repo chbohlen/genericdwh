@@ -29,6 +29,11 @@ public class ConnectWindowController {
 	
 	@FXML private Button btnConnect;
 	@FXML private Button btnCancel;
+	
+	private String lastIp = new String();
+	private String lastPort = new String();
+	private String lastDbName = new String();
+	private String lastUserName = new String();
 
 	public ConnectWindowController() {
 	}
@@ -69,7 +74,7 @@ public class ConnectWindowController {
 			
 			MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
 			
-			mainWindowController.buildSidebars(dimManager.getCategories(), dimManager.getHierarchies(), dimManager.getDimensions(),
+			mainWindowController.createSidebars(dimManager.getCategories(), dimManager.getHierarchies(), dimManager.getDimensions(),
 												ratioManager.getCategories(), ratioManager.getRatios());
 			mainWindowController.showSidebars();
 			mainWindowController.showQueryPane();
@@ -89,15 +94,25 @@ public class ConnectWindowController {
 	}
 	
 	private boolean loadDbCredentials() {
-		Properties dbCredentials = Main.getContext().getBean(ConfigFileReader.class).load("dbCredentials.properties");
-		boolean loaded = dbCredentials.size() > 0;
-		
-		if (loaded) {
-			tfIp.setText(dbCredentials.getProperty("ip"));
-			tfPort.setText(dbCredentials.getProperty("port"));
-			tfDbName.setText(dbCredentials.getProperty("dbName"));
-			tfUserName.setText(dbCredentials.getProperty("userName"));
+		boolean loaded = false;
+		if (lastIp.isEmpty() && lastPort.isEmpty() && lastDbName.isEmpty() && lastDbName.isEmpty()) {
+			Properties dbCredentials = Main.getContext().getBean(ConfigFileReader.class).load("dbCredentials.properties");
+			loaded = dbCredentials.size() > 0;
+			
+			if (loaded) {
+				lastIp = dbCredentials.getProperty("ip");
+				lastPort = dbCredentials.getProperty("port");
+				lastDbName = dbCredentials.getProperty("dbName");
+				lastUserName = dbCredentials.getProperty("userName");
+			}
+		} else {
+			loaded = true;
 		}
+		
+		tfIp.setText(lastIp);
+		tfPort.setText(lastPort);
+		tfDbName.setText(lastDbName);
+		tfUserName.setText(lastUserName);
 		
 		return loaded;
 	}

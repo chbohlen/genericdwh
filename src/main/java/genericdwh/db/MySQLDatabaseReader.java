@@ -20,6 +20,7 @@ import genericdwh.db.model.tables.DimensionCombinations;
 import genericdwh.db.model.tables.ReferenceObjectCombinations;
 import genericdwh.db.model.tables.ReferenceObjects;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,6 @@ import org.jooq.DSLContext;
 import org.jooq.JoinType;
 import org.jooq.Record;
 import org.jooq.Record1;
-import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.SelectQuery;
 import org.jooq.Table;
@@ -41,7 +41,6 @@ import org.jooq.impl.DSL;
 public class MySQLDatabaseReader implements DatabaseReader {
 	
 	@Setter private DSLContext dslContext;
-	
 	
 	@Override
 	public TreeMap<Long, DimensionCategory> loadDimensionCategories() {
@@ -258,21 +257,27 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	
 	
 	@Override
-	public double loadFactForRefObj(long ratioId, long referenceObjectId) {
+	public SimpleEntry<Double, Long[]> loadFactForRefObj(long ratioId, long referenceObjectId) {
 		Result<Record> result = dslContext.select()
 											.from(FACTS)
+											.join(REFERENCE_OBJECT_COMBINATIONS)
+												.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
 											.where(FACTS.RATIO_ID.equal(ratioId)
 												.and(FACTS.REFERENCE_OBJECT_ID.equal(referenceObjectId)))
 											.fetch();
+		
 		if (result.isEmpty()) {
-			return (double)-1;
+			return null;
 		}
 		
-		return result.getValue(0, FACTS.VALUE);
+		Double value = result.getValue(0, FACTS.VALUE);
+		Long[] combination = result.getValues(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID).toArray(new Long[0]);
+		
+		return new SimpleEntry<Double, Long[]>(value, combination);
 	}
 	
 	@Override
-	public Map<Long, Result<Record>> loadFactsForDim(long ratioId, long dimensionId) {
+	public TreeMap<Long, SimpleEntry<Double, Long[]>> loadFactsForDim(long ratioId, long dimensionId) {
 		ReferenceObjects refObjs2 = REFERENCE_OBJECTS.as("refObjs2");
 		Result<Record> result = dslContext.select()
 									.from(FACTS)
@@ -287,7 +292,19 @@ public class MySQLDatabaseReader implements DatabaseReader {
 									.where(FACTS.RATIO_ID.equal(ratioId))
 										.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimensionId))
 									.fetch();
+		
+		if (result.isEmpty()) {
+			return null;
+		}
+		
+		TreeMap<Long, SimpleEntry<Double, Long[]>> resultMap = new TreeMap<Long, SimpleEntry<Double, Long[]>>();
+		for (Entry<Long, Result<Record>> currRecord : result.intoGroups(FACTS.REFERENCE_OBJECT_ID).entrySet()) {
+			Double value = currRecord.getValue().getValue(0, FACTS.VALUE);
+			Long[] combination = currRecord.getValue().getValues(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID).toArray(new Long[0]);
+			currRecord.getValue().getValues(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID).toArray(new Long[0]);
+			resultMap.put(currRecord.getKey(), new SimpleEntry<Double, Long[]>(value, combination));
+		}
 
-		return result.intoGroups(FACTS.REFERENCE_OBJECT_ID);
+		return resultMap;
 	}
 }

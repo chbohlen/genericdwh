@@ -15,13 +15,11 @@ public class ReferenceObjectManager {
 	private DatabaseReader dbReader;
 	private DatabaseWriter dbWriter;
 	
-	private Table<Long, Long, TreeMap<Long, ReferenceObject>> referenceObjects;
+	private Table<Long, Long, TreeMap<Long, ReferenceObject>> referenceObjects = TreeBasedTable.create();
 	
 	public ReferenceObjectManager(DatabaseController dbController) {
 		dbReader = dbController.getDbReader();
 		dbWriter = dbController.getDbWriter();
-		
-		referenceObjects = TreeBasedTable.create();
 	}
 	
 	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(Dimension dim) {
@@ -40,5 +38,15 @@ public class ReferenceObjectManager {
 	
 	public boolean dimensionAndRefObjParentHaveRecords(Dimension dim, ReferenceObject refObj) {
 		return dbReader.dimensionAndRefObjParentHaveRecords(dim.getId(), refObj.getId());
+	}
+	
+	public ReferenceObject getReferenceObject(long refObjId) {
+		for (TreeMap<Long, ReferenceObject> currEntry : referenceObjects.values()) {
+			if (currEntry.containsKey(refObjId)) {
+				return currEntry.get(refObjId);
+			}
+		}
+		
+		return null;
 	}
 }

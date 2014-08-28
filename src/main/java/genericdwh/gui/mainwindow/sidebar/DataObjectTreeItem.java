@@ -2,18 +2,21 @@ package genericdwh.gui.mainwindow.sidebar;
 
 import genericdwh.dataobjects.DataObject;
 import javafx.scene.control.TreeItem;
+import lombok.Getter;
+import lombok.Setter;
 
 public class DataObjectTreeItem extends TreeItem<DataObject> {
 	
 	private DataObject obj;
 	
-	private boolean loaded;
+	@Getter @Setter private boolean loaded;
 	
 	public DataObjectTreeItem(DataObject obj) {
 		super(obj);
 		
 		this.obj = obj;
 		this.loaded = false;
+		
 		if (obj instanceof SidebarHeader) {
 			expandedProperty().addListener(new DontCollapseOnCollapseListener());
 		} else {
@@ -31,14 +34,6 @@ public class DataObjectTreeItem extends TreeItem<DataObject> {
 		} else {
 			return null;
 		}
-	}
-	
-	public void setLoaded(boolean loaded) {
-		this.loaded = loaded;
-	}
-	
-	public boolean isLoaded() {
-		return loaded;
 	}
 	
 	public Class<?> getDataObjectType() {

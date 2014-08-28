@@ -11,8 +11,8 @@ public class Dimension extends DataObject {
 	@Getter private long id;
 	@Getter private String category;
 
-	@Getter private ArrayList<Dimension> children;
-	@Getter private ArrayList<Dimension> components;
+	@Getter private ArrayList<Dimension> children = new ArrayList<Dimension>();
+	@Getter private ArrayList<Dimension> components = new ArrayList<Dimension>();
 
 	public Dimension(long id, String name, String category) {
 		super(name);
@@ -23,9 +23,6 @@ public class Dimension extends DataObject {
 		} else {
 			this.category = category;
 		}
-
-		children = new ArrayList<Dimension>();
-		components = new ArrayList<Dimension>();
 	}
 
 	public void addChildren(Dimension newChildren) {
