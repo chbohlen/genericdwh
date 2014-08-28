@@ -23,7 +23,7 @@
 		<fx:include layoutX="200" layoutY="25.0" source="querypane/QueryPane.fxml" />
       <Separator layoutY="724.0" prefWidth="1000.0" />
       <Label fx:id="statusBar" layoutY="725.0" prefHeight="25.0" prefWidth="1000" alignment="CENTER_RIGHT"
-      	style="-fx-background-color: -fx-body-color, -fx-text-fill: -fx-selection-bar-text;">
+      	style="-fx-background-color: -fx-body-color; -fx-text-fill: -fx-selection-bar-text;">
          <padding>
             <Insets right="10.0" />
          </padding>

@@ -3,7 +3,11 @@ package genericdwh.gui.mainwindow.querypane;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+
+import org.jooq.Record;
+import org.jooq.Result;
 
 import genericdwh.dataobjects.DataObject;
 import genericdwh.dataobjects.dimension.Dimension;
@@ -13,6 +17,7 @@ import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.db.DatabaseController;
 import genericdwh.db.DatabaseReader;
 import genericdwh.gui.mainwindow.MainWindowController;
+import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGrid;
 import genericdwh.main.Main;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -131,7 +136,8 @@ public class QueryPaneController implements Initializable {
 	@FXML public void buttonExecQueryOnClickHandler() {
 		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseController.class).getDbReader();
-		
+
+
 		List<DataObject> ratios = tvRatio.getItems();
 		List<DataObject> rowDims = tvRowDims.getItems();
 		List<DataObject> colDims = tvColDims.getItems();
@@ -152,31 +158,36 @@ public class QueryPaneController implements Initializable {
 			QueryType type = getQueryTypeForQueryDimensions(combinedDims);
 			
 			if (type == QueryType.DIMENSIONS_ONLY) {
-				long dimCombinationId = dbReader.findDimensionCombinationId(getDimensionCombination(combinedDims));
+				long dimCombinationId = dbReader.findDimCombinationId(getDimensionCombination(combinedDims));
+				Map<Long, Result<Record>> loadFactsForDimension = dbReader.loadFactsForDim(((Ratio)ratios.get(0)).getId(), dimCombinationId);
+				 
+//				if (loadFactsForDimension.isEmpty()) {
+//					mainWindowController.postStatus("No data for the given input.");
+//					return;
+//				}
+//				
+//				System.out.println(loadFactsForDimension);
 				
-				if (dimCombinationId == -1) {
-					mainWindowController.postStatus("No data for the given input.");
-					return;
-				}
-				
-				dbReader.loadFactsForDimension(((Ratio)ratios.get(0)).getId(), dimCombinationId);
+				ResultGrid resultGrid = new ResultGrid(rowDims, colDims);
+				queryPane.getChildren().add(resultGrid);
+				resultGrid.setLayoutY(130);
 				
 			} else if (type == QueryType.REFERENCE_OBJECTS_ONLY) {
-				long refObjCombinationId = dbReader.findReferenceObjectCombinationId(getReferenceObjectCombination(combinedDims));
+				long refObjCombinationId = dbReader.findRefObjCombinationId(getReferenceObjectCombination(combinedDims));
+				Double loadFactForRefObj = dbReader.loadFactForRefObj(((Ratio)ratios.get(0)).getId(), refObjCombinationId);
 				
-				if (refObjCombinationId == -1) {
+				if (loadFactForRefObj == -1) {
 					mainWindowController.postStatus("No data for the given input.");
 					return;
 				}
 				
-				dbReader.loadFactForReferenceObject(((Ratio)ratios.get(0)).getId(), refObjCombinationId);
 			} else {
-				long dimCombinationId = dbReader.findDimensionCombinationId(getDimensionCombination(combinedDims));
+				long dimCombinationId = dbReader.findDimCombinationId(getDimensionCombination(combinedDims));
 				System.out.println(dimCombinationId);
 			}
 		}
 	}
-	
+
 	private long[] getReferenceObjectCombination(ArrayList<DataObject> combinedDims) {
 		long[] combination = new long[combinedDims.size()];
 		

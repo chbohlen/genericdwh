@@ -20,20 +20,19 @@ public interface DatabaseReader {
 	public ArrayList<Entry<Long, Long>> loadDimensionHierachies();
 	public ArrayList<Entry<Long, Long>> loadDimensionCombinations();
 	
-	public long findDimensionCombinationId(long[] combination);
-	
-	public boolean dimensionHasRecords(long dimId);
-	public boolean dimensionAndRefObjParentHaveRecords(long dimId, long refObjId);
-	
 	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(long dimId);
 	public TreeMap<Long, ReferenceObject> loadRefObjsForDimAndRefObjParent(long dimId, long refObjId);
-	
-	public long findReferenceObjectCombinationId(long[] combination);
-	
+		
 	public TreeMap<Long, RatioCategory> loadRatioCategories();
 	public TreeMap<Long, Ratio> loadRatios();
 	public ArrayList<Entry<Long, Long>> loadRatioRelations();
+		
+	public boolean dimensionHasRecords(long dimId);
+	public boolean dimensionAndRefObjParentHaveRecords(long dimId, long refObjId);
 	
-	public Double loadFactForReferenceObject(long ratioId, long referenceObjectId);
-	public Map<Long, Result<Record>> loadFactsForDimension(long ratioId, long dimensionId);
+	public long findDimCombinationId(long[] combination);
+	public long findRefObjCombinationId(long[] combination);
+	
+	public double loadFactForRefObj(long ratioId, long referenceObjectId);
+	public Map<Long, Result<Record>> loadFactsForDim(long ratioId, long dimensionId);
 }
