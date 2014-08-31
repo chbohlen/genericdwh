@@ -41,14 +41,14 @@ public class ResultGridCell extends BorderPane {
 		setText(text);
 	}
 
-	public void setValue(Double value) {
+	public void setValue(Double value, String symbol) {
 		this.value = value;
 		
 		if (value == null) {
 			value = (double)0;
 			setText("no data");
 		} else {
-			setText(value.toString());
+			setText(value.toString() + symbol);
 		}		
 	}
 	

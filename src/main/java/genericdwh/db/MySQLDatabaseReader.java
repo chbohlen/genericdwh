@@ -279,8 +279,8 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		
 		ResultObject resultObject = new ResultObject(result.getValue(0, FACTS.REFERENCE_OBJECT_ID),
 													 null,
-													 result.getValue(0, FACTS.UNIT_ID),
-													 result.getValue(0, FACTS.VALUE));
+													 result.getValue(0, FACTS.VALUE),
+													 result.getValue(0, FACTS.UNIT_ID));
 		return resultObject;
 	}
 	
@@ -301,8 +301,8 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		
 		ResultObject resultObject = new ResultObject(result.getValue(0, FACTS.REFERENCE_OBJECT_ID),
 													 result.getValues(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID).toArray(new Long[0]),
-													 result.getValue(0, FACTS.UNIT_ID),
-													 result.getValue(0, FACTS.VALUE));
+													 result.getValue(0, FACTS.VALUE),
+													 result.getValue(0, FACTS.UNIT_ID));
 		return resultObject;
 	}
 	
@@ -325,8 +325,8 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		for (Record record : result) {
 			ResultObject resultObject = new ResultObject(record.getValue(FACTS.REFERENCE_OBJECT_ID),
 														 null,
-														 record.getValue(FACTS.UNIT_ID),
-														 record.getValue(FACTS.VALUE));
+														 record.getValue(FACTS.VALUE),
+														 record.getValue(FACTS.UNIT_ID));
 			resultList.add(resultObject);
 		}
 		return resultList;
@@ -353,8 +353,8 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		for (Result<Record> record : result.intoGroups(FACTS.REFERENCE_OBJECT_ID).values()) {
 			ResultObject resultObject = new ResultObject(record.getValue(0, FACTS.REFERENCE_OBJECT_ID),
 														 record.getValues(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID).toArray(new Long[0]),
-														 record.getValue(0, FACTS.UNIT_ID),
-														 record.getValue(0, FACTS.VALUE));
+														 record.getValue(0, FACTS.VALUE),
+														 record.getValue(0, FACTS.UNIT_ID));
 			resultList.add(resultObject);
 		}                                                                                                                                                                                                                                                                                                                                                                           
 		return resultList;
@@ -389,8 +389,8 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		for (Result<Record> record : result.intoGroups(FACTS.REFERENCE_OBJECT_ID).values()) {
 			ResultObject resultObject = new ResultObject(record.getValue(0, FACTS.REFERENCE_OBJECT_ID),
 														 record.getValues(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID).toArray(new Long[0]),
-														 record.getValue(0, FACTS.UNIT_ID),
-														 record.getValue(0, FACTS.VALUE));
+														 record.getValue(0, FACTS.VALUE),
+														 record.getValue(0, FACTS.UNIT_ID));
 			resultList.add(resultObject);
 		}                                                                                                                                                                                                                                                                                                                                                                           
 		return resultList;

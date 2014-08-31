@@ -11,6 +11,5 @@ no ratio/dimension selected
 only unique categories in queries
 cell padding
 
-
 refactor statusbar
 node refactor

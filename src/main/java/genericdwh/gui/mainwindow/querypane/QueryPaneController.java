@@ -12,6 +12,7 @@ import genericdwh.dataobjects.dimension.DimensionManager;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
+import genericdwh.dataobjects.unit.UnitManager;
 import genericdwh.db.DatabaseReader;
 import genericdwh.db.ResultObject;
 import genericdwh.gui.mainwindow.MainWindowController;
@@ -159,6 +160,7 @@ public class QueryPaneController implements Initializable {
 	
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
+		UnitManager unitManager = Main.getContext().getBean(UnitManager.class);
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		
@@ -187,7 +189,9 @@ public class QueryPaneController implements Initializable {
 						return;
 					}
 					
-					resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims));
+					String unitSymbol = unitManager.getUnit(factForRefObj.getUnitId()).getSymbol();
+					
+					resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), unitSymbol);
 					resultGridController.fillSingleRefObj(factForRefObj);
 					break;
 				}
@@ -200,7 +204,9 @@ public class QueryPaneController implements Initializable {
 						return;
 					}
 					
-					resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims));
+					String unitSymbol = unitManager.getUnit(factForRefObj.getUnitId()).getSymbol();
+					
+					resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), unitSymbol);
 					resultGridController.fillRefObjCombination(factForRefObj);
 					break;
 				}
@@ -213,7 +219,9 @@ public class QueryPaneController implements Initializable {
 						return;
 					}
 					
-					resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims));
+					String unitSymbol = unitManager.getUnit(factsForDimension.get(0).getUnitId()).getSymbol();
+					
+					resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), unitSymbol);
 					resultGridController.fillSingleDim(factsForDimension);
 					break;
 				}
@@ -226,7 +234,9 @@ public class QueryPaneController implements Initializable {
 						return;
 					}
 					
-					resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims));
+					String unitSymbol = unitManager.getUnit(factsForDimension.get(0).getUnitId()).getSymbol();
+					
+					resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), unitSymbol);
 					resultGridController.fillDimCombination(factsForDimension);
 					break;
 				}
@@ -240,7 +250,9 @@ public class QueryPaneController implements Initializable {
 						return;
 					}
 					
-					resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims));
+					String unitSymbol = unitManager.getUnit(factsForDimensionAndRefObjs.get(0).getUnitId()).getSymbol();
+					
+					resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), unitSymbol);
 					resultGridController.fillDimCombination(factsForDimensionAndRefObjs);
 					
 					break;

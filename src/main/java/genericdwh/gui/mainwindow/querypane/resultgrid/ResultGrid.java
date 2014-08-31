@@ -18,6 +18,8 @@ import javafx.scene.layout.GridPane;
 
 public class ResultGrid extends GridPane {
 	
+	private String unitSymbol;
+	
 	private TreeMap<Long, ResultGridNode> rowHeaderTree;
 	private TreeMap<Long, ResultGridNode> colHeaderTree;
 		
@@ -46,7 +48,9 @@ public class ResultGrid extends GridPane {
 		setPrefWidth(750);
 	}
 	
-	public void initialize(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs) {
+	public void initialize(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, String unitSymbol) {
+		this.unitSymbol = unitSymbol;
+		
 		rowHeaderTree = createHeaders(rowRefObjs, colRefObjs.size(), true);
 		colHeaderTree = createHeaders(colRefObjs, rowRefObjs.size(), false);
 		
@@ -69,7 +73,6 @@ public class ResultGrid extends GridPane {
 		createTotalCells();
 	}
 
-	
 	private TreeMap<Long, ResultGridNode> createHeaders(ArrayList<TreeMap<Long, ReferenceObject>> refObjs, int baseOffset, boolean isRowHeader) {
  		TreeMap<Long, ResultGridNode> root = new TreeMap<>();
 		
@@ -255,7 +258,7 @@ public class ResultGrid extends GridPane {
 		ResultGridNode node = resultsTable.get(index[0], index[1]);
 		node.setId(id);
 		node.setComponentIds(componentIds);
-		node.getCell().setValue(value);
+		node.getCell().setValue(value, unitSymbol);
 	}
 	
 	public void calculateAndPostTotals() {	
@@ -269,7 +272,7 @@ public class ResultGrid extends GridPane {
 		for (ResultGridNode resultNode : resultsTable.values()) {
 			total += resultNode.getCell().getValue();
 		}
-		totalsTable.get(grandTotalRow, grandTotalCol).setValue(total);
+		totalsTable.get(grandTotalRow, grandTotalCol).setValue(total, unitSymbol);
 	}
 
 	private void calculateAndPostSubtotals(ArrayList<ResultGridNode> headers, boolean isColTotalHeader) {		
@@ -287,7 +290,7 @@ public class ResultGrid extends GridPane {
 								for (ResultGridNode resultNode : resultsTable.column(i).values()) {
 									total += resultNode.getCell().getValue();
 								}
-								totalsTable.get(currTotal.getCell().getRowIndex(), currHeaderNode.getCell().getColIndex()).setValue(total);
+								totalsTable.get(currTotal.getCell().getRowIndex(), currHeaderNode.getCell().getColIndex()).setValue(total, unitSymbol);
 							}
 						}
 					}
@@ -304,7 +307,7 @@ public class ResultGrid extends GridPane {
 								for (ResultGridNode resultNode : resultsTable.row(i).values()) {
 									total += resultNode.getCell().getValue();
 								}
-								totalsTable.get(currHeaderNode.getCell().getRowIndex(), currTotal.getCell().getColIndex()).setValue(total);
+								totalsTable.get(currHeaderNode.getCell().getRowIndex(), currTotal.getCell().getColIndex()).setValue(total, unitSymbol);
 							}
 						}
 					}

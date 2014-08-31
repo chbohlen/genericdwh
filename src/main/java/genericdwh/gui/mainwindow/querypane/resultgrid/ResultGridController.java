@@ -18,13 +18,13 @@ public class ResultGridController {
 	public ResultGridController() {
 	}
 	
-	public void initializeGrid(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs) {
+	public void initializeGrid(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, String unitSymbol) {
 		this.rowRefObjs = rowRefObjs;
 		this.colRefObjs = colRefObjs;
 		
 		reset();
 		
-		resultGrid.initialize(rowRefObjs, colRefObjs);
+		resultGrid.initialize(rowRefObjs, colRefObjs, unitSymbol);
 	}
 
 	public void fillSingleRefObj(ResultObject factForRefObj) {
