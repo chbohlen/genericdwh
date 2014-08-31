@@ -1,19 +1,19 @@
 package genericdwh.gui.mainwindow.querypane;
 
 import java.net.URL;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import genericdwh.dataobjects.DataObject;
 import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionHierarchy;
+import genericdwh.dataobjects.dimension.DimensionManager;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
-import genericdwh.db.DatabaseController;
 import genericdwh.db.DatabaseReader;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.mainwindow.StatusMessage;
@@ -47,8 +47,10 @@ public class QueryPaneController implements Initializable {
 	
 	private enum QueryType {
 		MIXED,
-		DIMENSIONS_ONLY,
-		REFERENCE_OBJECTS_ONLY;
+		SINGLE_DIMENSION,
+		DIMENSION_COMBINATION,
+		SINGLE_REFERENCE_OBJECT,
+		REFERENCE_OBJECT_COMBINATION;
 	}
 	
 	private ResultGrid resultGrid;
@@ -149,8 +151,10 @@ public class QueryPaneController implements Initializable {
 	}
 
 	@FXML public void buttonExecQueryOnClickHandler() {
-		DatabaseReader dbReader = Main.getContext().getBean(DatabaseController.class).getDbReader();
 		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
+		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
+		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
+		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		
 		List<DataObject> ratios = tvRatio.getItems();
 		List<DataObject> rowDims = tvRowDims.getItems();
@@ -160,8 +164,6 @@ public class QueryPaneController implements Initializable {
 		combinedDims.addAll(rowDims);
 		combinedDims.addAll(colDims);
 		
-		
-		
 		if (ratios.isEmpty()) {
 			// TODO
 			return;
@@ -169,82 +171,62 @@ public class QueryPaneController implements Initializable {
 			// TODO
 			return;
 		} else {
-			resultGrid.create(loadRefObjs(rowDims), loadRefObjs(colDims));
+			resultGrid.create(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims));
 			
-			QueryType type = determineQueryType(combinedDims);
-			if (type == QueryType.REFERENCE_OBJECTS_ONLY) {
-				long refObjCombinationId = dbReader.findRefObjCombinationId(determineRefObjCombinationComponentIds(combinedDims));
-				SimpleEntry<Double, Long[]> factForRefObj = dbReader.loadFactForRefObj(((Ratio)ratios.get(0)).getId(), refObjCombinationId);
-				
-				if (factForRefObj == null) {
-					mainWindowController.postStatus(StatusMessage.NO_DATA_FOR_INPUT);
-					return;
+			switch (determineQueryType(combinedDims)) {
+				case SINGLE_REFERENCE_OBJECT: {
+					long refObjId = ((ReferenceObject)combinedDims.get(0)).getId();
+					Entry<Long, Double> factForRefObj = dbReader.loadFactForSingleRefObj(((Ratio)ratios.get(0)).getId(), refObjId);
+					
+					if (factForRefObj == null) {
+						mainWindowController.postStatus(StatusMessage.NO_DATA_FOR_INPUT);
+						return;
+					}
+					
+					resultGrid.fillSingleRefObj(factForRefObj);
+					break;
 				}
-				
-				resultGrid.fillWith(factForRefObj);
-			} else if (type == QueryType.DIMENSIONS_ONLY) {
-				long dimCombinationId = dbReader.findDimCombinationId(determineDimCombinationComponentIds(combinedDims));
-				TreeMap<Long, SimpleEntry<Double, Long[]>> factsForDimensions = dbReader.loadFactsForDim(((Ratio)ratios.get(0)).getId(), dimCombinationId);
-				 
-				if (factsForDimensions == null) {
-					mainWindowController.postStatus(StatusMessage.NO_DATA_FOR_INPUT);
-					return;
+				case REFERENCE_OBJECT_COMBINATION: {
+					long refObjId = refObjManager.findRefObjAggregateId(combinedDims);					
+					Entry<Long, Entry<Long[], Double>> factForRefObj = dbReader.loadFactForRefObjCombination(((Ratio)ratios.get(0)).getId(), refObjId);
+					
+					if (factForRefObj == null) {
+						mainWindowController.postStatus(StatusMessage.NO_DATA_FOR_INPUT);
+						return;
+					}
+					
+					resultGrid.fillRefObjCombination(factForRefObj);
+					break;
 				}
-				
-				resultGrid.fillWith(factsForDimensions);
-			} else {
-				long dimCombinationId = dbReader.findDimCombinationId(determineDimCombinationComponentIds(combinedDims));
+				case SINGLE_DIMENSION: {
+					long dimId = ((Dimension)combinedDims.get(0)).getId();
+					TreeMap<Long, Double> factsForDimension = dbReader.loadFactsForSingleDim(((Ratio)ratios.get(0)).getId(), dimId);
+					 
+					if (factsForDimension == null) {
+						mainWindowController.postStatus(StatusMessage.NO_DATA_FOR_INPUT);
+						return;
+					}
+					
+					resultGrid.fillSingleDim(factsForDimension);
+					break;
+				}
+				case DIMENSION_COMBINATION: {
+					long dimId = dimManager.findDimAggregateId(combinedDims); 
+					TreeMap<Long, Entry<Long[], Double>> factsForDimension = dbReader.loadFactsForDimCombination(((Ratio)ratios.get(0)).getId(), dimId);
+					 
+					if (factsForDimension == null) {
+						mainWindowController.postStatus(StatusMessage.NO_DATA_FOR_INPUT);
+						return;
+					}
+					
+					resultGrid.fillDimCombination(factsForDimension);
+					break;
+				}
+				case MIXED: {
+					break;
+				}
 			}
 		}
-	}
-
-	private long[] determineRefObjCombinationComponentIds(ArrayList<DataObject> combinedDims) {
-		long[] combination = new long[combinedDims.size()];
-		for (int i = 0; i < combination.length; i++) {
-			combination[i] = ((ReferenceObject)combinedDims.get(i)).getId();
-		}
-
-		return combination;
-	}
-
-	private long[] determineDimCombinationComponentIds(ArrayList<DataObject> combinedDims) {
-		long[] combination = new long[combinedDims.size()];
-		
-		for (int i = 0; i < combination.length; i++) {
-			DataObject currObj = combinedDims.get(i);
-			if (currObj instanceof DimensionHierarchy) {
-				combination[i] = ((DimensionHierarchy)currObj).getTopLevel().getId();
-			} else if (currObj instanceof ReferenceObject) {
-				combination[i] = ((ReferenceObject)currObj).getDimensionId();
-			} else {
-				combination[i] = ((Dimension)currObj).getId();
-			}
-		}
-		
-		return combination;
-	}
-	
-	private ArrayList<TreeMap<Long, ReferenceObject>> loadRefObjs(List<DataObject> dims) {
-		DatabaseReader dbReader = Main.getContext().getBean(DatabaseController.class).getDbReader();
-		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
-
-		
-		ArrayList<TreeMap<Long, ReferenceObject>> result = new ArrayList<TreeMap<Long, ReferenceObject>>();
-		for (DataObject dim : dims) {
-			if (dim instanceof ReferenceObject) {
-				ReferenceObject refObj = refObjManager.getReferenceObject(((ReferenceObject)dim).getId());
-				TreeMap<Long, ReferenceObject> refObjInTreeMap = new TreeMap<Long, ReferenceObject>();
-				refObjInTreeMap.put(refObj.getId(), refObj);
-				result.add(refObjInTreeMap);
-			} else {
-				if (dim instanceof DimensionHierarchy) {
-					dim = ((DimensionHierarchy)dim).getTopLevel();
-				}
-				result.add(dbReader.loadRefObjsForDim(((Dimension)dim).getId()));
-			}
-		}
-		
-		return result;	
 	}
 
 	private QueryType determineQueryType(ArrayList<DataObject> dims) {
@@ -266,9 +248,17 @@ public class QueryPaneController implements Initializable {
 		}
 		
 		if (type == Dimension.class) {
-			return QueryType.DIMENSIONS_ONLY;
+			if (dims.size() == 1) {
+				return QueryType.SINGLE_DIMENSION;
+			} else {
+				return QueryType.DIMENSION_COMBINATION;
+			}
 		} else if (type == ReferenceObject.class) {
-			return QueryType.REFERENCE_OBJECTS_ONLY;
+			if (dims.size() == 1) {
+				return QueryType.SINGLE_REFERENCE_OBJECT;
+			} else {
+				return QueryType.REFERENCE_OBJECT_COMBINATION;
+			}
 		}
 		
 		return null;

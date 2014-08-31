@@ -12,7 +12,7 @@ public class Dimension extends DataObject {
 	@Getter private String category;
 
 	@Getter private ArrayList<Dimension> children = new ArrayList<Dimension>();
-	@Getter private ArrayList<Dimension> components = new ArrayList<Dimension>();
+//	@Getter private ArrayList<Dimension> components = new ArrayList<Dimension>();
 
 	public Dimension(long id, String name, String category) {
 		super(name);
@@ -29,17 +29,17 @@ public class Dimension extends DataObject {
 		children.add(newChildren);
 	}
 
-	public void addComponent(Dimension newComponent) {
-		components.add(newComponent);
-	}
+//	public void addComponent(Dimension newComponent) {
+//		components.add(newComponent);
+//	}
 
 	public boolean isHierarchy() {
 		return !children.isEmpty();
 	}
 
-	public boolean isCombination() {
-		return !components.isEmpty();
-	}
+//	public boolean isCombination() {
+//		return !components.isEmpty();
+//	}
 
 	public int getChildCount() {
 		return children.size();

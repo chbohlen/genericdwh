@@ -1,5 +1,7 @@
 package genericdwh.dataobjects.dimension;
 
+import genericdwh.dataobjects.DataObject;
+import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.db.DatabaseController;
 import genericdwh.db.DatabaseReader;
 import genericdwh.db.DatabaseWriter;
@@ -28,10 +30,10 @@ public class DimensionManager {
 	public void loadDimensions() {
 		dimensions = dbReader.loadDimensions();
 		
-		ArrayList<Entry<Long, Long>> dimCombinations = dbReader.loadDimensionCombinations();
-		for (Entry<Long, Long> combination : dimCombinations) {
-			dimensions.get(combination.getKey()).addComponent(dimensions.get(combination.getValue()));
-		}
+//		ArrayList<Entry<Long, Long>> dimCombinations = dbReader.loadDimensionCombinations();
+//		for (Entry<Long, Long> combination : dimCombinations) {
+//			dimensions.get(combination.getKey()).addComponent(dimensions.get(combination.getValue()));
+//		}
 		
 		ArrayList<Entry<Long, Long>> dimHierarchies = dbReader.loadDimensionHierachies();
 		for (Entry<Long, Long> hierarchy : dimHierarchies) {
@@ -73,18 +75,43 @@ public class DimensionManager {
 		
 		return newHierarchies;
 	}
+		
+	public long findDimAggregateId(ArrayList<DataObject> combinedDims)  {
+		return dbReader.findDimAggregateId(determineDimCombinationComponentIds(combinedDims));
+	}
 	
-	public Dimension findCombination(ArrayList<Dimension> combination) {
-		for (Entry<Long, Dimension> currEntry : dimensions.entrySet()) {
-			Dimension currDim = currEntry.getValue();
-			if (currDim.isCombination() 
-					&& currDim.getComponents().size() == combination.size() 
-					&& currDim.getComponents().containsAll(combination)) {
-				
-				return currDim;
+	private Long[] determineDimCombinationComponentIds(ArrayList<DataObject> combinedDims) {
+		Long[] combination = new Long[combinedDims.size()];
+		
+		for (int i = 0; i < combination.length; i++) {
+			DataObject currObj = combinedDims.get(i);
+			if (currObj instanceof DimensionHierarchy) {
+				combination[i] = ((DimensionHierarchy)currObj).getTopLevel().getId();
+			} else if (currObj instanceof ReferenceObject) {
+				combination[i] = ((ReferenceObject)currObj).getDimensionId();
+			} else {
+				combination[i] = ((Dimension)currObj).getId();
 			}
 		}
-		
-		return null;
+		return combination;
 	}
+	
+	public Dimension getDimension(long id) {
+		return dimensions.get(id);
+	}
+	
+//	public Dimension findCombination(ArrayList<Dimension> combination) {
+//	for (Entry<Long, Dimension> currEntry : dimensions.entrySet()) {
+//		Dimension currDim = currEntry.getValue();
+//		if (currDim.isCombination() 
+//				&& currDim.getComponents().size() == combination.size() 
+//				&& currDim.getComponents().containsAll(combination)) {
+//			
+//			return currDim;
+//		}
+//	}
+//	
+//	return null;
+//}
+	
 }

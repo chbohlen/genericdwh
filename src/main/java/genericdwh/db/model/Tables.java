@@ -39,6 +39,11 @@ public class Tables {
 	public static final genericdwh.db.model.tables.Facts FACTS = genericdwh.db.model.tables.Facts.FACTS;
 
 	/**
+	 * The table fact_units
+	 */
+	public static final genericdwh.db.model.tables.FactUnits FACT_UNITS = genericdwh.db.model.tables.FactUnits.FACT_UNITS;
+
+	/**
 	 * The table ratios
 	 */
 	public static final genericdwh.db.model.tables.Ratios RATIOS = genericdwh.db.model.tables.Ratios.RATIOS;

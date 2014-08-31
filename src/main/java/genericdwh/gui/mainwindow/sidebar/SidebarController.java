@@ -68,11 +68,16 @@ public class SidebarController implements Initializable {
 			categoryTreeItemMap.put(currDimCat.getName(), tiNewCategory);
 		}
 		
+		DimensionCategory noCat = new DimensionCategory(-1, "Uncategorized");
+		DataObjectTreeItem tiNoCat = new DataObjectTreeItem(noCat);
+		
 		for (DimensionHierarchy hierarchy : hierarchies) {
 			DataObjectTreeItem tiNewHierarchy = new DataObjectTreeItem(hierarchy);
 			DataObjectTreeItem tiCat = categoryTreeItemMap.get(hierarchy.getCategory());
 			if (tiCat != null) {
 				tiCat.addChild(tiNewHierarchy);
+			} else {
+				tiNoCat.addChild(tiNewHierarchy);
 			}
 
 			DataObjectTreeItem tiTmp = tiNewHierarchy;
@@ -94,12 +99,18 @@ public class SidebarController implements Initializable {
 			DataObjectTreeItem tiCat = categoryTreeItemMap.get(currDim.getCategory());
 			if (tiCat != null) {
 				tiCat.addChild(tiNewDim);
+			} else {
+				tiNoCat.addChild(tiNewDim);
 			}
 			
 			if (refObjManager.dimensionHasRecords(currDim)) {
 				DataObjectTreeItem tiPlaceholder = new DataObjectTreeItem(currDim);
 				tiNewDim.addChild(tiPlaceholder);
 			}
+		}
+		
+		if (!tiNoCat.getChildren().isEmpty()) {
+			tiRoot.addChild(tiNoCat);
 		}
 		
 		dimensionSidebar.setRoot(tiRoot);

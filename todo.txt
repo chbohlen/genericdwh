@@ -8,7 +8,9 @@ no new connection when connecting to same database
 db-status notification (invalid password etc)/generally better messages
 only unique categories in queries
 no ratio/dimension selected
-"none" category
 refactor statusbar
 totals
-span
+units
+category via id instead of name
+node refactor
+cell padding

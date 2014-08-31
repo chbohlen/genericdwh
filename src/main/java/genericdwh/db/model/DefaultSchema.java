@@ -11,7 +11,7 @@ package genericdwh.db.model;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends org.jooq.impl.SchemaImpl {
 
-	private static final long serialVersionUID = -828446791;
+	private static final long serialVersionUID = 245557241;
 
 	/**
 	 * The singleton instance of <code></code>
@@ -39,6 +39,7 @@ public class DefaultSchema extends org.jooq.impl.SchemaImpl {
 			genericdwh.db.model.tables.DimensionCombinations.DIMENSION_COMBINATIONS,
 			genericdwh.db.model.tables.DimensionHierarchies.DIMENSION_HIERARCHIES,
 			genericdwh.db.model.tables.Facts.FACTS,
+			genericdwh.db.model.tables.FactUnits.FACT_UNITS,
 			genericdwh.db.model.tables.Ratios.RATIOS,
 			genericdwh.db.model.tables.RatioCategories.RATIO_CATEGORIES,
 			genericdwh.db.model.tables.RatioRelations.RATIO_RELATIONS,

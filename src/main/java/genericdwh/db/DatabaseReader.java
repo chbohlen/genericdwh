@@ -8,7 +8,6 @@ import genericdwh.dataobjects.referenceobject.ReferenceObject;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 
 public interface DatabaseReader {
@@ -27,9 +26,11 @@ public interface DatabaseReader {
 	public boolean dimensionHasRecords(long dimId);
 	public boolean dimensionAndRefObjParentHaveRecords(long dimId, long refObjId);
 	
-	public long findDimCombinationId(long[] combination);
-	public long findRefObjCombinationId(long[] combination);
+	public long findDimAggregateId(Long[] componentIds);
+	public long findRefObjAggregateId(Long[] componentIds);
 	
-	public SimpleEntry<Double, Long[]> loadFactForRefObj(long ratioId, long referenceObjectId);
-	public TreeMap<Long, SimpleEntry<Double, Long[]>> loadFactsForDim(long ratioId, long dimensionId);
+	public Entry<Long, Double> loadFactForSingleRefObj(long ratioId, long refObjId);
+	public Entry<Long, Entry<Long[], Double>> loadFactForRefObjCombination(long ratioId, long refObjId);
+	public TreeMap<Long, Double> loadFactsForSingleDim(long ratioId, long dimId);
+	public TreeMap<Long, Entry<Long[], Double>> loadFactsForDimCombination(long ratioId, long dimId);
 }

@@ -3,6 +3,7 @@ package genericdwh.gui;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController;
 import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGrid;
+import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGridManager;
 import genericdwh.gui.mainwindow.sidebar.SidebarController;
 import genericdwh.gui.subwindows.ConnectWindowController;
 
@@ -33,6 +34,11 @@ public class GUIConfig {
 	
 	@Bean
 	public ResultGrid resultGrid() {
-		return new ResultGrid();
+		return new ResultGrid(resultGridNodeManager());
+	}
+	
+	@Bean
+	public ResultGridManager resultGridNodeManager() {
+		return new ResultGridManager();
 	}
 }

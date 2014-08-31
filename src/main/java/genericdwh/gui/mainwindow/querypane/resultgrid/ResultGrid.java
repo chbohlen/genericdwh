@@ -3,18 +3,19 @@ package genericdwh.gui.mainwindow.querypane.resultgrid;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 
 import java.util.ArrayList;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javafx.scene.layout.GridPane;
 
 public class ResultGrid extends GridPane {
-	
-	private ResultGridCellTree resultGridTree;
+		
+	private ResultGridManager gridManager;
 
-	public ResultGrid() {
+	public ResultGrid(ResultGridManager gridManager) {
 		super();
+		
+		this.gridManager = gridManager;
 		
 		setLayoutY(150);
 		setLayoutX(25);
@@ -26,54 +27,32 @@ public class ResultGrid extends GridPane {
 	public void create(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs) {
 		reset();
 		
-		generateHeadersForRefObjs(rowRefObjs, colRefObjs.size(), true);
-		generateHeadersForRefObjs(colRefObjs, rowRefObjs.size(), false);
-		
-		resultGridTree = new ResultGridCellTree(rowRefObjs, colRefObjs);
+		gridManager.initialize(rowRefObjs, colRefObjs);
 	}
 
-	private void generateHeadersForRefObjs(ArrayList<TreeMap<Long, ReferenceObject>> refObjs, int baseOffset, boolean isRowHeader) {
-		for (int i = 0; i < refObjs.size(); i++) {
-			int offset = baseOffset;
-			for (Entry<Long, ReferenceObject> currEntry : refObjs.get(i).entrySet()) {
-				int max;
-				if (i > 0) {
-					max = refObjs.get(i-1).size();
-				} else {
-					max = 1;
-				}
-				
-				int j = offset;
-				for (int k = 0; k < max; k++) {
-					if (isRowHeader) {
-						add(new ResultGridCell(currEntry.getValue().getName()), i, j);
-					} else {
-						add(new ResultGridCell(currEntry.getValue().getName()), j, i);
-					}
+	public void fillSingleRefObj(Entry<Long, Double> factForRefObj) {
+		gridManager.postResult(factForRefObj.getKey(), new Long[] { factForRefObj.getKey() }, factForRefObj.getValue());
+		gridManager.calculateAndPostTotals();
+	}
+	
+	public void fillRefObjCombination(Entry<Long, Entry<Long[], Double>> factForRefObj) {
+		gridManager.postResult(factForRefObj.getKey(), factForRefObj.getValue().getKey(), factForRefObj.getValue().getValue());
+		gridManager.calculateAndPostTotals();
 
-					j += refObjs.get(i).size();
-				}
-				
-				if (i+1 < refObjs.size()) {
-					offset += refObjs.get(i+1).size();
-				} else {
-					offset++;
-				}
-			}
-		}
 	}
 	
-	public void fillWith(SimpleEntry<Double, Long[]> factForRefObj) {
-		ResultGridCell cell = resultGridTree.getResultGridCell(factForRefObj.getValue());
-		cell.setValue(factForRefObj.getKey().toString());
+	public void fillSingleDim(TreeMap<Long, Double> factsForDimensions) {
+		for (Entry<Long, Double> currFact : factsForDimensions.entrySet()) {
+			gridManager.postResult(currFact.getKey(), new Long[] { currFact.getKey() }, currFact.getValue());
+		}
+		gridManager.calculateAndPostTotals();
 	}
 	
-	public void fillWith(TreeMap<Long, SimpleEntry<Double, Long[]>> factsForDimensions) {
-		ResultGridCell cell;
-		for (Entry<Long, SimpleEntry<Double, Long[]>> currFact : factsForDimensions.entrySet()) {
-			cell = resultGridTree.getResultGridCell(currFact.getValue().getValue());
-			cell.setValue(currFact.getValue().getKey().toString());
+	public void fillDimCombination(TreeMap<Long, Entry<Long[], Double>> factsForDimensions) {
+		for (Entry<Long, Entry<Long[], Double>> currFact : factsForDimensions.entrySet()) {
+			gridManager.postResult(currFact.getKey(), currFact.getValue().getKey(), currFact.getValue().getValue());
 		}
+		gridManager.calculateAndPostTotals();
 	}
 	
 	public void reset() {

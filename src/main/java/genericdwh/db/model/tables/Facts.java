@@ -11,7 +11,7 @@ package genericdwh.db.model.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Facts extends org.jooq.impl.TableImpl<genericdwh.db.model.tables.records.FactsRecord> {
 
-	private static final long serialVersionUID = -964330654;
+	private static final long serialVersionUID = -1869791765;
 
 	/**
 	 * The singleton instance of <code>facts</code>
@@ -40,6 +40,11 @@ public class Facts extends org.jooq.impl.TableImpl<genericdwh.db.model.tables.re
 	 * The column <code>facts.value</code>.
 	 */
 	public final org.jooq.TableField<genericdwh.db.model.tables.records.FactsRecord, java.lang.Double> VALUE = createField("value", org.jooq.impl.SQLDataType.DOUBLE.nullable(false), this, "");
+
+	/**
+	 * The column <code>facts.unit_id</code>.
+	 */
+	public final org.jooq.TableField<genericdwh.db.model.tables.records.FactsRecord, java.lang.Long> UNIT_ID = createField("unit_id", org.jooq.impl.SQLDataType.BIGINT, this, "");
 
 	/**
 	 * Create a <code>facts</code> table reference
@@ -84,7 +89,7 @@ public class Facts extends org.jooq.impl.TableImpl<genericdwh.db.model.tables.re
 	 */
 	@Override
 	public java.util.List<org.jooq.ForeignKey<genericdwh.db.model.tables.records.FactsRecord, ?>> getReferences() {
-		return java.util.Arrays.<org.jooq.ForeignKey<genericdwh.db.model.tables.records.FactsRecord, ?>>asList(genericdwh.db.model.Keys.FACTS_IBFK_1, genericdwh.db.model.Keys.FACTS_IBFK_2);
+		return java.util.Arrays.<org.jooq.ForeignKey<genericdwh.db.model.tables.records.FactsRecord, ?>>asList(genericdwh.db.model.Keys.FACTS_IBFK_1, genericdwh.db.model.Keys.FACTS_IBFK_2, genericdwh.db.model.Keys.UNIT_ID);
 	}
 
 	/**
