@@ -48,12 +48,11 @@ public class DimensionManager {
 	}
 	
 	private ArrayList<DimensionHierarchy> generateHierarchies() {
-		ArrayList<DimensionHierarchy> newHierarchies = new ArrayList<DimensionHierarchy>();
+		ArrayList<DimensionHierarchy> newHierarchies = new ArrayList<>();
 		
-		for (Entry<Long, Dimension> currEntry : dimensions.entrySet()) {
-			Dimension currDim = currEntry.getValue();
+		for (Dimension currDim : dimensions.values()) {
 			if (currDim.isHierarchy()) {
-				LinkedList<DimensionHierarchy> tmpNewHierarchies = new LinkedList<DimensionHierarchy>();
+				LinkedList<DimensionHierarchy> tmpNewHierarchies = new LinkedList<>();
 				tmpNewHierarchies.add(new DimensionHierarchy(currDim));
 				
 				do {
@@ -90,7 +89,7 @@ public class DimensionManager {
 			} else if (currObj instanceof ReferenceObject) {
 				combination[i] = ((ReferenceObject)currObj).getDimensionId();
 			} else {
-				combination[i] = ((Dimension)currObj).getId();
+				combination[i] = currObj.getId();
 			}
 		}
 		return combination;

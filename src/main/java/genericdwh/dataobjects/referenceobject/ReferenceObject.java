@@ -7,17 +7,15 @@ import java.util.TreeMap;
 import lombok.Getter;
 
 public class ReferenceObject extends DataObject {
-
-	@Getter private long id;
+	
 	@Getter private long dimensionId;
 
 	@Getter private TreeMap<Long, ReferenceObject> children = new TreeMap<Long, ReferenceObject>();
 //	@Getter private TreeMap<Long, ReferenceObject> components = new TreeMap<Long, ReferenceObject>();
 
 	public ReferenceObject(long id, long dimensionId, String name) {
-		super(name);
+		super(id, name);
 
-		this.id = id;
 		this.dimensionId = dimensionId;
 	}
 	

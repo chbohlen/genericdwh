@@ -54,10 +54,8 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	@Override
 	public TreeMap<Long, Dimension> loadDimensions() {
 		Map<Long, Dimension> result = dslContext
-										.select(DIMENSIONS.DIMENSION_ID, DIMENSIONS.NAME, DIMENSION_CATEGORIES.NAME)
-										.from(DIMENSIONS
-										.leftOuterJoin(DIMENSION_CATEGORIES)
-											.on(DIMENSIONS.CATEGORY_ID.equal(DIMENSION_CATEGORIES.CATEGORY_ID)))
+										.select(DIMENSIONS.DIMENSION_ID, DIMENSIONS.NAME, DIMENSIONS.CATEGORY_ID)
+										.from(DIMENSIONS)
 										.fetch()
 										.intoMap(DIMENSIONS.DIMENSION_ID, Dimension.class);
 		return new TreeMap<>(result);
@@ -94,10 +92,8 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	@Override
 	public TreeMap<Long, Ratio> loadRatios() {
 		Map<Long, Ratio> result = dslContext
-									.select(RATIOS.RATIO_ID, RATIOS.NAME, RATIO_CATEGORIES.NAME)
-									.from(RATIOS
-									.leftOuterJoin(RATIO_CATEGORIES)
-										.on(RATIOS.CATEGORY_ID.equal(RATIO_CATEGORIES.CATEGORY_ID)))
+									.select(RATIOS.RATIO_ID, RATIOS.NAME, RATIOS.CATEGORY_ID)
+									.from(RATIOS)
 									.fetch()
 									.intoMap(RATIOS.RATIO_ID, Ratio.class);
 		return new TreeMap<>(result);

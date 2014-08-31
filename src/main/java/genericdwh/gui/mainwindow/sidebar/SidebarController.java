@@ -2,7 +2,6 @@ package genericdwh.gui.mainwindow.sidebar;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
@@ -59,13 +58,12 @@ public class SidebarController implements Initializable {
 		DataObjectTreeItem tiRoot = new DataObjectTreeItem(new SidebarHeader("Dimensions"));
 		tiRoot.setExpanded(true);
 				
-		TreeMap<String, DataObjectTreeItem> categoryTreeItemMap = new TreeMap<String, DataObjectTreeItem>();
-		for (Entry<Long, DimensionCategory> currEntry : dimensionCategories.entrySet()) {
-			DimensionCategory currDimCat = currEntry.getValue();
-			DataObjectTreeItem tiNewCategory = new DataObjectTreeItem(currDimCat);
+		TreeMap<Long, DataObjectTreeItem> categoryTreeItemMap = new TreeMap<>();
+		for (DimensionCategory currCat : dimensionCategories.values()) {
+			DataObjectTreeItem tiNewCategory = new DataObjectTreeItem(currCat);
 			tiRoot.addChild(tiNewCategory);
 			
-			categoryTreeItemMap.put(currDimCat.getName(), tiNewCategory);
+			categoryTreeItemMap.put(currCat.getId(), tiNewCategory);
 		}
 		
 		DimensionCategory noCat = new DimensionCategory(-1, "Uncategorized");
@@ -73,7 +71,7 @@ public class SidebarController implements Initializable {
 		
 		for (DimensionHierarchy hierarchy : hierarchies) {
 			DataObjectTreeItem tiNewHierarchy = new DataObjectTreeItem(hierarchy);
-			DataObjectTreeItem tiCat = categoryTreeItemMap.get(hierarchy.getCategory());
+			DataObjectTreeItem tiCat = categoryTreeItemMap.get(hierarchy.getCategoryId());
 			if (tiCat != null) {
 				tiCat.addChild(tiNewHierarchy);
 			} else {
@@ -93,10 +91,9 @@ public class SidebarController implements Initializable {
 			}
 		}
 		
-		for (Entry<Long, Dimension> currEntry : dimensions.entrySet()) {
-			Dimension currDim = currEntry.getValue();
+		for (Dimension currDim : dimensions.values()) {
 			DataObjectTreeItem tiNewDim = new DataObjectTreeItem(currDim);
-			DataObjectTreeItem tiCat = categoryTreeItemMap.get(currDim.getCategory());
+			DataObjectTreeItem tiCat = categoryTreeItemMap.get(currDim.getCategoryId());
 			if (tiCat != null) {
 				tiCat.addChild(tiNewDim);
 			} else {
@@ -120,19 +117,17 @@ public class SidebarController implements Initializable {
 		DataObjectTreeItem tiRoot = new DataObjectTreeItem(new SidebarHeader("Ratios"));
 		tiRoot.setExpanded(true);
 		
-		TreeMap<String, DataObjectTreeItem> categoryTreeItemMap = new TreeMap<String, DataObjectTreeItem>();
-		for (Entry<Long, RatioCategory> currEntry : ratioCategories.entrySet()) {
-			RatioCategory currRatioCat = currEntry.getValue();
-			DataObjectTreeItem tiNewCategory = new DataObjectTreeItem(currRatioCat);
+		TreeMap<Long, DataObjectTreeItem> categoryTreeItemMap = new TreeMap<>();
+		for (RatioCategory currCat : ratioCategories.values()) {
+			DataObjectTreeItem tiNewCategory = new DataObjectTreeItem(currCat);
 			tiRoot.addChild(tiNewCategory);
 			
-			categoryTreeItemMap.put(currRatioCat.getName(), tiNewCategory);
+			categoryTreeItemMap.put(currCat.getId(), tiNewCategory);
 		}
 		
-		for (Entry<Long, Ratio> currEntry : ratios.entrySet()) {
-			Ratio currRatio = currEntry.getValue();
+		for (Ratio currRatio : ratios.values()) {
 			DataObjectTreeItem tiNewRatio = new DataObjectTreeItem(currRatio);
-			DataObjectTreeItem tiCat = categoryTreeItemMap.get(currRatio.getCategory());
+			DataObjectTreeItem tiCat = categoryTreeItemMap.get(currRatio.getCategoryId());
 			if (tiCat != null) {
 				tiCat.addChild(tiNewRatio);
 			}

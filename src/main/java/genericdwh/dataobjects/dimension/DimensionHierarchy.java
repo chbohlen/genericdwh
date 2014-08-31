@@ -8,14 +8,14 @@ import lombok.Getter;
 
 public class DimensionHierarchy extends DataObject {
 	
-	@Getter private String category;
+	@Getter private long categoryId;
 	
 	@Getter private LinkedList<Dimension> levels;
 	
 	public DimensionHierarchy() {
 		super();
 		
-		levels = new LinkedList<Dimension>();
+		levels = new LinkedList<>();
 	}
 	
 	public DimensionHierarchy(Dimension top) {
@@ -39,7 +39,7 @@ public class DimensionHierarchy extends DataObject {
 		name += level.getName();
 		
 		if (levels.isEmpty()) {
-			category = level.getCategory();
+			categoryId = level.getCategoryId();
 		}
 		
 		levels.add(level);

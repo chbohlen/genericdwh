@@ -16,7 +16,7 @@ public class ReferenceObjectManager {
 	private DatabaseReader dbReader;
 	private DatabaseWriter dbWriter;
 	
-	private TreeMap<Long, ReferenceObject> referenceObjects = new TreeMap<Long, ReferenceObject>();
+	private TreeMap<Long, ReferenceObject> referenceObjects = new TreeMap<>();
 	
 	public ReferenceObjectManager(DatabaseController dbController) {
 		dbReader = dbController.getDbReader();
@@ -44,11 +44,11 @@ public class ReferenceObjectManager {
 	}
 	
 	public ArrayList<TreeMap<Long, ReferenceObject>> loadRefObjs(List<DataObject> dims) {
-		ArrayList<TreeMap<Long, ReferenceObject>> result = new ArrayList<TreeMap<Long, ReferenceObject>>();
+		ArrayList<TreeMap<Long, ReferenceObject>> result = new ArrayList<>();
 		for (DataObject dim : dims) {
 			if (dim instanceof ReferenceObject) {
-				ReferenceObject refObj = getReferenceObject(((ReferenceObject)dim).getId());
-				TreeMap<Long, ReferenceObject> refObjInTreeMap = new TreeMap<Long, ReferenceObject>();
+				ReferenceObject refObj = getReferenceObject(dim.getId());
+				TreeMap<Long, ReferenceObject> refObjInTreeMap = new TreeMap<>();
 				refObjInTreeMap.put(refObj.getId(), refObj);
 				result.add(refObjInTreeMap);
 			} else {
@@ -69,7 +69,7 @@ public class ReferenceObjectManager {
 	public Long[] readRefObjComponentIds(ArrayList<DataObject> combinedDims) {
 		Long[] combination = new Long[combinedDims.size()];
 		for (int i = 0; i < combination.length; i++) {
-			combination[i] = ((ReferenceObject)combinedDims.get(i)).getId();
+			combination[i] = combinedDims.get(i).getId();
 		}
 		return combination;
 	}

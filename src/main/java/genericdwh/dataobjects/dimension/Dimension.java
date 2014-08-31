@@ -8,21 +8,15 @@ import lombok.Getter;
 
 public class Dimension extends DataObject {
 
-	@Getter private long id;
-	@Getter private String category;
+	@Getter private long categoryId;
 
 	@Getter private ArrayList<Dimension> children = new ArrayList<Dimension>();
 //	@Getter private ArrayList<Dimension> components = new ArrayList<Dimension>();
 
-	public Dimension(long id, String name, String category) {
-		super(name);
+	public Dimension(long id, String name, long categoryId) {
+		super(id, name);
 
-		this.id = id;
-		if (category == null) {
-			this.category = "";
-		} else {
-			this.category = category;
-		}
+		this.categoryId = categoryId;
 	}
 
 	public void addChildren(Dimension newChildren) {

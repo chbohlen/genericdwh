@@ -34,6 +34,19 @@
       
       <outputSchemaToDefault>true</outputSchemaToDefault>
     </database>
+    
+	<generate>
+      <!-- Generation flags: See advanced configuration properties -->
+      
+	  <!-- Generate POJOs in addition to Record classes for usage of the
+       		ResultQuery.fetchInto(Class) API
+       Defaults to false -->
+	  <pojos>false</pojos>
+	  
+	  <!-- Generate DAOs in addition to POJO classes
+	       	Defaults to false -->
+	  <daos>false</daos>
+    </generate>
 
     <target>
       <!-- The destination package of your generated classes (within the destination directory) -->

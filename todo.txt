@@ -9,8 +9,7 @@ db-status notification (invalid password etc)/generally better messages
 only unique categories in queries
 no ratio/dimension selected
 refactor statusbar
-totals
 units
-category via id instead of name
 node refactor
 cell padding
+get span???
