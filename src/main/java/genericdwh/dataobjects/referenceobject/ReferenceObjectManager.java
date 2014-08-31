@@ -1,26 +1,21 @@
 package genericdwh.dataobjects.referenceobject;
 
 import genericdwh.dataobjects.DataObject;
+import genericdwh.dataobjects.DataObjectManager;
 import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.db.DatabaseController;
-import genericdwh.db.DatabaseReader;
-import genericdwh.db.DatabaseWriter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-public class ReferenceObjectManager {
-	
-	private DatabaseReader dbReader;
-	private DatabaseWriter dbWriter;
-	
+public class ReferenceObjectManager extends DataObjectManager {
+
 	private TreeMap<Long, ReferenceObject> referenceObjects = new TreeMap<>();
 	
 	public ReferenceObjectManager(DatabaseController dbController) {
-		dbReader = dbController.getDbReader();
-		dbWriter = dbController.getDbWriter();
+		super(dbController);
 	}
 	
 	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(Dimension dim) {
@@ -67,14 +62,16 @@ public class ReferenceObjectManager {
 	}
 	
 	public Long[] readRefObjComponentIds(ArrayList<DataObject> combinedDims) {
-		Long[] combination = new Long[combinedDims.size()];
-		for (int i = 0; i < combination.length; i++) {
-			combination[i] = combinedDims.get(i).getId();
+		ArrayList<Long> refObjIds = new ArrayList<>();
+		for (DataObject obj : combinedDims) {
+			if (obj instanceof ReferenceObject) {
+				refObjIds.add(obj.getId());
+			}
 		}
-		return combination;
+		return refObjIds.toArray(new Long[0]);
 	}
 	
-	private ReferenceObject getReferenceObject(long refObjId) {
+	public ReferenceObject getReferenceObject(long refObjId) {
 		return referenceObjects.get(refObjId);
 	}
 }

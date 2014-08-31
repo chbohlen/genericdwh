@@ -3,6 +3,7 @@ package genericdwh.dataobjects;
 import genericdwh.dataobjects.dimension.DimensionManager;
 import genericdwh.dataobjects.ratio.RatioManager;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
+import genericdwh.dataobjects.unit.UnitManager;
 import genericdwh.db.DatabaseControllerConfig;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,5 +31,10 @@ public class DataObjectManagerConfig {
 	@Bean
 	public RatioManager ratioManager() {
 		return new RatioManager(dbControllerConfig.databaseController());
+	}
+	
+	@Bean
+	public UnitManager unitManager() {
+		return new UnitManager(dbControllerConfig.databaseController());
 	}
 }

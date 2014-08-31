@@ -11,15 +11,16 @@ import static genericdwh.db.model.tables.ReferenceObjectCombinations.REFERENCE_O
 import static genericdwh.db.model.tables.ReferenceObjectHierarchies.REFERENCE_OBJECT_HIERARCHIES;
 import static genericdwh.db.model.tables.ReferenceObjects.REFERENCE_OBJECTS;
 import static genericdwh.db.model.tables.Facts.FACTS;
+import static genericdwh.db.model.tables.FactUnits.FACT_UNITS;
 import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionCategory;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
+import genericdwh.dataobjects.unit.Unit;
 import genericdwh.db.model.tables.DimensionCombinations;
 import genericdwh.db.model.tables.ReferenceObjectCombinations;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import java.util.TreeMap;
 import lombok.Setter;
 
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.jooq.JoinType;
 import org.jooq.Record;
 import org.jooq.Record1;
@@ -40,6 +42,7 @@ import org.jooq.impl.DSL;
 public class MySQLDatabaseReader implements DatabaseReader {
 	
 	@Setter private DSLContext dslContext;
+	
 	
 	@Override
 	public TreeMap<Long, DimensionCategory> loadDimensionCategories() {
@@ -79,6 +82,33 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		return new ArrayList<>(result);
 	}
 	
+	
+	@Override
+	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(long dimId) {
+		Map<Long, ReferenceObject> result = dslContext
+												.select(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, REFERENCE_OBJECTS.DIMENSION_ID, REFERENCE_OBJECTS.NAME)
+												.from(REFERENCE_OBJECTS)
+												.where(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
+												.fetch()
+												.intoMap(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, ReferenceObject.class);
+		return new TreeMap<>(result);
+	}
+	
+	@Override
+	public TreeMap<Long, ReferenceObject> loadRefObjsForDimAndRefObjParent(long dimId, long refObjId) {
+		Map<Long, ReferenceObject> result = dslContext
+												.select(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, REFERENCE_OBJECTS.DIMENSION_ID, REFERENCE_OBJECTS.NAME)
+												.from(REFERENCE_OBJECTS)
+												.leftOuterJoin(REFERENCE_OBJECT_HIERARCHIES)
+													.on(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID))
+												.where(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
+													.and(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(refObjId))
+												.fetch()
+												.intoMap(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, ReferenceObject.class);
+		return new TreeMap<>(result);
+	}
+		
+	
 	@Override
 	public TreeMap<Long, RatioCategory> loadRatioCategories() {
 		Map<Long, RatioCategory> result = dslContext
@@ -107,30 +137,15 @@ public class MySQLDatabaseReader implements DatabaseReader {
 											.fetch(new EntryLongLongRecordMapper());
 		return new ArrayList<>(result);
 	}
-	
-
-	@Override
-	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(long dimId) {
-		Map<Long, ReferenceObject> result = dslContext
-												.select(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, REFERENCE_OBJECTS.DIMENSION_ID, REFERENCE_OBJECTS.NAME)
-												.from(REFERENCE_OBJECTS)
-												.where(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
-												.fetch()
-												.intoMap(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, ReferenceObject.class);
-		return new TreeMap<>(result);
-	}
+		
 	
 	@Override
-	public TreeMap<Long, ReferenceObject> loadRefObjsForDimAndRefObjParent(long dimId, long refObjId) {
-		Map<Long, ReferenceObject> result = dslContext
-												.select(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, REFERENCE_OBJECTS.DIMENSION_ID, REFERENCE_OBJECTS.NAME)
-												.from(REFERENCE_OBJECTS)
-												.leftOuterJoin(REFERENCE_OBJECT_HIERARCHIES)
-													.on(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID))
-												.where(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
-													.and(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(refObjId))
-												.fetch()
-												.intoMap(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, ReferenceObject.class);
+	public TreeMap<Long, Unit> loadUnits() {
+		Map<Long, Unit> result = dslContext
+									.select(FACT_UNITS.UNIT_ID, FACT_UNITS.UNIT_NAME, FACT_UNITS.UNIT_SYMBOL)
+									.from(FACT_UNITS)
+									.fetch()
+									.intoMap(FACT_UNITS.UNIT_ID, Unit.class);
 		return new TreeMap<>(result);
 	}
 	
@@ -251,60 +266,76 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	
 
 	@Override
-	public Entry<Long, Double> loadFactForSingleRefObj(long ratioId, long refObjId) {
-		List<Entry<Long, Double>> result = dslContext.select(FACTS.REFERENCE_OBJECT_ID, FACTS.VALUE)
-														.from(FACTS)
-														.where(FACTS.RATIO_ID.equal(ratioId)
-															.and(FACTS.REFERENCE_OBJECT_ID.equal(refObjId)))
-														.fetch(new EntryLongDoubleMapper());	
+	public ResultObject loadFactForSingleRefObj(long ratioId, long refObjId) {
+		 Result<Record> result = dslContext
+									.select()
+									.from(FACTS)
+									.where(FACTS.RATIO_ID.equal(ratioId)
+										.and(FACTS.REFERENCE_OBJECT_ID.equal(refObjId)))
+									.fetch();	
 		if (result.isEmpty()) {
 			return null;
 		}
 		
-		return result.get(0);
+		ResultObject resultObject = new ResultObject(result.getValue(0, FACTS.REFERENCE_OBJECT_ID),
+													 null,
+													 result.getValue(0, FACTS.UNIT_ID),
+													 result.getValue(0, FACTS.VALUE));
+		return resultObject;
 	}
 	
 	@Override
-	public Entry<Long, Entry<Long[], Double>> loadFactForRefObjCombination(long ratioId, long refObjId) {
-		Result<Record> result = dslContext.select()
-											.from(FACTS)
-											.join(REFERENCE_OBJECT_COMBINATIONS)
-												.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
-											.where(FACTS.RATIO_ID.equal(ratioId)
-												.and(FACTS.REFERENCE_OBJECT_ID.equal(refObjId)))
-											.fetch();
+	public ResultObject loadFactForRefObjCombination(long ratioId, long refObjId) {
+		Result<Record> result = dslContext
+									.select()
+									.from(FACTS)
+									.join(REFERENCE_OBJECT_COMBINATIONS)
+										.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
+									.where(FACTS.RATIO_ID.equal(ratioId)
+										.and(FACTS.REFERENCE_OBJECT_ID.equal(refObjId)))
+									.fetch();
 		
 		if (result.isEmpty()) {
 			return null;
 		}
 		
-		Long id = result.getValue(0, FACTS.REFERENCE_OBJECT_ID);
-		Long[] combination = result.getValues(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID).toArray(new Long[0]);
-		Double value = result.getValue(0, FACTS.VALUE);
-		
-		return new SimpleEntry<>(id, new SimpleEntry<>(combination, value));
+		ResultObject resultObject = new ResultObject(result.getValue(0, FACTS.REFERENCE_OBJECT_ID),
+													 result.getValues(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID).toArray(new Long[0]),
+													 result.getValue(0, FACTS.UNIT_ID),
+													 result.getValue(0, FACTS.VALUE));
+		return resultObject;
 	}
 	
 	@Override
-	public TreeMap<Long, Double> loadFactsForSingleDim(long ratioId, long dimId) {
-		Map<Long, Double> result = dslContext.select()
+	public ArrayList<ResultObject> loadFactsForSingleDim(long ratioId, long dimId) {
+		Result<Record> result = dslContext
+									.select()
 									.from(FACTS)
 									.join(REFERENCE_OBJECTS)
 										.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID))
 									.where(FACTS.RATIO_ID.equal(ratioId))
 										.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
-									.fetch().intoMap(FACTS.REFERENCE_OBJECT_ID, FACTS.VALUE);
+									.fetch();
 		
 		if (result.isEmpty()) {
 			return null;
 		}
 		
-		return new TreeMap<>(result);
+		ArrayList<ResultObject> resultList = new ArrayList<>();
+		for (Record record : result) {
+			ResultObject resultObject = new ResultObject(record.getValue(FACTS.REFERENCE_OBJECT_ID),
+														 null,
+														 record.getValue(FACTS.UNIT_ID),
+														 record.getValue(FACTS.VALUE));
+			resultList.add(resultObject);
+		}
+		return resultList;
 	}
 	
 	@Override
-	public TreeMap<Long, Entry<Long[], Double>> loadFactsForDimCombination(long ratioId, long dimId) {
-		Result<Record> result = dslContext.select()
+	public ArrayList<ResultObject> loadFactsForDimCombination(long ratioId, long dimId) {
+		Result<Record> result = dslContext
+									.select()
 									.from(FACTS)
 									.join(REFERENCE_OBJECTS)
 										.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID))
@@ -318,13 +349,50 @@ public class MySQLDatabaseReader implements DatabaseReader {
 			return null;
 		}
 
-		TreeMap<Long, Entry<Long[], Double>> resultMap = new TreeMap<>();
-		for (Entry<Long, Result<Record>> currRecord : result.intoGroups(FACTS.REFERENCE_OBJECT_ID).entrySet()) {
-			Long[] combination = currRecord.getValue().getValues(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID).toArray(new Long[0]);
-			Double value = currRecord.getValue().getValue(0, FACTS.VALUE);
-			resultMap.put(currRecord.getKey(), new SimpleEntry<>(combination, value));
-		}
+		ArrayList<ResultObject> resultList = new ArrayList<>();
+		for (Result<Record> record : result.intoGroups(FACTS.REFERENCE_OBJECT_ID).values()) {
+			ResultObject resultObject = new ResultObject(record.getValue(0, FACTS.REFERENCE_OBJECT_ID),
+														 record.getValues(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID).toArray(new Long[0]),
+														 record.getValue(0, FACTS.UNIT_ID),
+														 record.getValue(0, FACTS.VALUE));
+			resultList.add(resultObject);
+		}                                                                                                                                                                                                                                                                                                                                                                           
+		return resultList;
+	}
 
-		return resultMap;
+	@Override
+	public ArrayList<ResultObject> loadFactsForDimCombinationAndRefObjs(long ratioId, long dimId, Long[] refObjIds) {
+		SelectQuery<Record> filterQuery = dslContext.selectQuery();
+		filterQuery.addSelect(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID);		
+		filterQuery.addFrom(REFERENCE_OBJECT_COMBINATIONS);
+		filterQuery.addConditions(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.in(refObjIds));
+		
+		Field<Object> filterField = filterQuery.asField();
+		
+		Result<Record> result = dslContext
+									.select()
+									.from(FACTS)
+									.join(REFERENCE_OBJECTS)
+										.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID))
+									.join(REFERENCE_OBJECT_COMBINATIONS)
+										.on(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
+									.where(FACTS.RATIO_ID.equal(ratioId))
+										.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
+										.and(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.in(filterField))
+									.fetch();
+
+		if (result.isEmpty()) {
+			return null;
+		}
+		
+		ArrayList<ResultObject> resultList = new ArrayList<>();
+		for (Result<Record> record : result.intoGroups(FACTS.REFERENCE_OBJECT_ID).values()) {
+			ResultObject resultObject = new ResultObject(record.getValue(0, FACTS.REFERENCE_OBJECT_ID),
+														 record.getValues(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID).toArray(new Long[0]),
+														 record.getValue(0, FACTS.UNIT_ID),
+														 record.getValue(0, FACTS.VALUE));
+			resultList.add(resultObject);
+		}                                                                                                                                                                                                                                                                                                                                                                           
+		return resultList;
 	}
 }

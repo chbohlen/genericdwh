@@ -282,7 +282,7 @@ public class ResultGrid extends GridPane {
 						if (currHeaderNode != null) {
 							double total = 0;
 							int startIndex = currHeaderNode.getCell().getColIndex();
-							int endIndex = startIndex + getSpan(currHeaderNode);
+							int endIndex = startIndex + getTotalChildCount(currHeaderNode);
 							for (int i = currHeaderNode.getCell().getRowIndex(); i < endIndex; i++) {
 								for (ResultGridNode resultNode : resultsTable.column(i).values()) {
 									total += resultNode.getCell().getValue();
@@ -299,7 +299,7 @@ public class ResultGrid extends GridPane {
 						if (currHeaderNode != null) {
 							double total = 0;
 							int startIndex = currHeaderNode.getCell().getRowIndex();
-							int endIndex = startIndex + getSpan(currHeaderNode);
+							int endIndex = startIndex + getTotalChildCount(currHeaderNode);
 							for (int i = currHeaderNode.getCell().getRowIndex(); i < endIndex; i++) {
 								for (ResultGridNode resultNode : resultsTable.row(i).values()) {
 									total += resultNode.getCell().getValue();
@@ -409,11 +409,11 @@ public class ResultGrid extends GridPane {
 		while(!queue.isEmpty()) {
 			ResultGridNode currNode = queue.pop();
 			if (isRowHeader) {
-				int span = getSpan(currNode);
+				int span = getTotalChildCount(currNode);
 				ResultGrid.setRowSpan(currNode.getCell(), span);
 				currNode.getCell().setRowSpan(span);
 			} else {
-				int span = getSpan(currNode);
+				int span = getTotalChildCount(currNode);
 				ResultGrid.setColumnSpan(currNode.getCell(), span);
 				currNode.getCell().setColSpan(span);
 			}
@@ -424,7 +424,7 @@ public class ResultGrid extends GridPane {
 		}
 	}
 	
-	private int getSpan(ResultGridNode node) {
+	private int getTotalChildCount(ResultGridNode node) {
 		ResultGridNode currNode = node;
 		
 		int count = 1;

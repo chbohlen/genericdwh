@@ -1,10 +1,9 @@
 package genericdwh.dataobjects.dimension;
 
 import genericdwh.dataobjects.DataObject;
+import genericdwh.dataobjects.DataObjectManager;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.db.DatabaseController;
-import genericdwh.db.DatabaseReader;
-import genericdwh.db.DatabaseWriter;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -13,18 +12,14 @@ import java.util.Map.Entry;
 
 import lombok.Getter;
 
-public class DimensionManager {
-	
-	private DatabaseReader dbReader;
-	private DatabaseWriter dbWriter;
-	
+public class DimensionManager extends DataObjectManager {
+
 	@Getter private TreeMap<Long, DimensionCategory> categories;
 	@Getter private TreeMap<Long, Dimension> dimensions;
 	@Getter private ArrayList<DimensionHierarchy> hierarchies;
 	
 	public DimensionManager(DatabaseController dbController) {
-		dbReader = dbController.getDbReader();
-		dbWriter = dbController.getDbWriter();
+		super(dbController);
 	}
 	
 	public void loadDimensions() {
@@ -95,10 +90,6 @@ public class DimensionManager {
 		return combination;
 	}
 	
-	public Dimension getDimension(long id) {
-		return dimensions.get(id);
-	}
-	
 //	public Dimension findCombination(ArrayList<Dimension> combination) {
 //	for (Entry<Long, Dimension> currEntry : dimensions.entrySet()) {
 //		Dimension currDim = currEntry.getValue();
@@ -112,5 +103,7 @@ public class DimensionManager {
 //	
 //	return null;
 //}
-	
+	public Dimension getDimension(long dimId) {
+		return dimensions.get(dimId);
+	}	
 }

@@ -5,6 +5,7 @@ import genericdwh.dataobjects.dimension.DimensionCategory;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
+import genericdwh.dataobjects.unit.Unit;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -22,6 +23,8 @@ public interface DatabaseReader {
 	public TreeMap<Long, RatioCategory> loadRatioCategories();
 	public TreeMap<Long, Ratio> loadRatios();
 	public ArrayList<Entry<Long, Long>> loadRatioRelations();
+	
+	public TreeMap<Long, Unit> loadUnits();
 		
 	public boolean dimensionHasRecords(long dimId);
 	public boolean dimensionAndRefObjParentHaveRecords(long dimId, long refObjId);
@@ -29,8 +32,9 @@ public interface DatabaseReader {
 	public long findDimAggregateId(Long[] componentIds);
 	public long findRefObjAggregateId(Long[] componentIds);
 	
-	public Entry<Long, Double> loadFactForSingleRefObj(long ratioId, long refObjId);
-	public Entry<Long, Entry<Long[], Double>> loadFactForRefObjCombination(long ratioId, long refObjId);
-	public TreeMap<Long, Double> loadFactsForSingleDim(long ratioId, long dimId);
-	public TreeMap<Long, Entry<Long[], Double>> loadFactsForDimCombination(long ratioId, long dimId);
+	public ResultObject loadFactForSingleRefObj(long ratioId, long refObjId);
+	public ResultObject loadFactForRefObjCombination(long ratioId, long refObjId);
+	public ArrayList<ResultObject> loadFactsForSingleDim(long ratioId, long dimId);
+	public ArrayList<ResultObject> loadFactsForDimCombination(long ratioId, long dimId);
+	public ArrayList<ResultObject> loadFactsForDimCombinationAndRefObjs(long ratioId, long dimId, Long[] refObjIds);
 }

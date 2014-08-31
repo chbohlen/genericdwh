@@ -1,9 +1,9 @@
 package genericdwh.gui.mainwindow.querypane.resultgrid;
 
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
+import genericdwh.db.ResultObject;
 
 import java.util.ArrayList;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import lombok.Setter;
@@ -27,25 +27,25 @@ public class ResultGridController {
 		resultGrid.initialize(rowRefObjs, colRefObjs);
 	}
 
-	public void fillSingleRefObj(Entry<Long, Double> factForRefObj) {
-		resultGrid.postResult(factForRefObj.getKey(), new Long[] { factForRefObj.getKey() }, factForRefObj.getValue());
+	public void fillSingleRefObj(ResultObject factForRefObj) {
+		resultGrid.postResult(factForRefObj.getId(), new Long[] { factForRefObj.getId() }, factForRefObj.getValue());
 	}
 	
-	public void fillRefObjCombination(Entry<Long, Entry<Long[], Double>> factForRefObj) {
-		resultGrid.postResult(factForRefObj.getKey(), factForRefObj.getValue().getKey(), factForRefObj.getValue().getValue());
+	public void fillRefObjCombination(ResultObject factForRefObj) {
+		resultGrid.postResult(factForRefObj.getId(), factForRefObj.getComponentIds(), factForRefObj.getValue());
 	}
 	
-	public void fillSingleDim(TreeMap<Long, Double> factsForDimensions) {
-		for (Entry<Long, Double> currFact : factsForDimensions.entrySet()) {
-			resultGrid.postResult(currFact.getKey(), new Long[] { currFact.getKey() }, currFact.getValue());
+	public void fillSingleDim(ArrayList<ResultObject> factsForDimensions) {
+		for (ResultObject currFact : factsForDimensions) {
+			resultGrid.postResult(currFact.getId(), new Long[] { currFact.getId() }, currFact.getValue());
 		}
 		resultGrid.setupTotals(rowRefObjs, colRefObjs);
 		resultGrid.calculateAndPostTotals();
 	}
 	
-	public void fillDimCombination(TreeMap<Long, Entry<Long[], Double>> factsForDimensions) {
-		for (Entry<Long, Entry<Long[], Double>> currFact : factsForDimensions.entrySet()) {
-			resultGrid.postResult(currFact.getKey(), currFact.getValue().getKey(), currFact.getValue().getValue());
+	public void fillDimCombination(ArrayList<ResultObject> factsForDimensions) {
+		for (ResultObject currFact : factsForDimensions) {
+			resultGrid.postResult(currFact.getId(), currFact.getComponentIds(), currFact.getValue());
 		}
 		resultGrid.setupTotals(rowRefObjs, colRefObjs);
 		resultGrid.calculateAndPostTotals();

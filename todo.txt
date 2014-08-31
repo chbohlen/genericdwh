@@ -6,10 +6,11 @@ create/edit/delete objects
 save/discard changes (refetch?)
 no new connection when connecting to same database
 db-status notification (invalid password etc)/generally better messages
-only unique categories in queries
 no ratio/dimension selected
-refactor statusbar
-units
-node refactor
+
+only unique categories in queries
 cell padding
-get span???
+
+
+refactor statusbar
+node refactor

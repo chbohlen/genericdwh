@@ -5,21 +5,16 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import lombok.Getter;
+import genericdwh.dataobjects.DataObjectManager;
 import genericdwh.db.DatabaseController;
-import genericdwh.db.DatabaseReader;
-import genericdwh.db.DatabaseWriter;
 
-public class RatioManager {
-	
-	private DatabaseReader dbReader;
-	private DatabaseWriter dbWriter;
+public class RatioManager extends DataObjectManager {
 	
 	@Getter private TreeMap<Long, RatioCategory> categories;
 	@Getter private TreeMap<Long, Ratio> ratios;
 
 	public RatioManager(DatabaseController dbController) {
-		dbReader = dbController.getDbReader();
-		dbWriter = dbController.getDbWriter();
+		super(dbController);
 	}
 	
 	public void loadRatios() {
