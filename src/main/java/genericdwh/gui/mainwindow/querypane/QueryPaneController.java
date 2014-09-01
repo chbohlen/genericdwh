@@ -27,6 +27,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
@@ -34,6 +35,7 @@ import javafx.util.Callback;
 public class QueryPaneController implements Initializable {
 		
 	@FXML private Pane queryPane;
+	@FXML private ScrollPane resultGridContainer; 
 	
 	@FXML private TableView<DataObject> tvRatio;
 	@FXML private TableView<DataObject> tvRowDims;
@@ -86,7 +88,7 @@ public class QueryPaneController implements Initializable {
         });
 		
 		resultGrid = new ResultGrid();
-		queryPane.getChildren().add(resultGrid);
+		resultGridContainer.setContent(resultGrid);
 		resultGridController.setResultGrid(resultGrid);
 		
 		hideQueryPane();
@@ -131,7 +133,8 @@ public class QueryPaneController implements Initializable {
 			@SuppressWarnings("unchecked")
 			TableView<DataObject> tvSource = (TableView<DataObject>)event.getSource();
 
-			if ((draggedDataObject instanceof Ratio && tvSource != tvRatio) || (!(draggedDataObject instanceof Ratio) && tvSource == tvRatio)) {
+			if ((draggedDataObject instanceof Ratio && tvSource != tvRatio)
+				|| (!(draggedDataObject instanceof Ratio) && tvSource == tvRatio)) {
 				event.consume();
 				return;
 			}
@@ -156,6 +159,8 @@ public class QueryPaneController implements Initializable {
 	}
 
 	@FXML public void buttonExecQueryOnClickHandler() {
+		resultGridController.reset();
+		
 		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
 	
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);

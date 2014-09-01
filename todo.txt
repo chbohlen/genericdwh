@@ -1,15 +1,23 @@
 reorder ratios/dimensions
 ratios/dimensions tableview context menu
+sidebar context menu
+
 refresh sidebar
 duplicate object
 create/edit/delete objects
-save/discard changes (refetch?)
-no new connection when connecting to same database
-db-status notification (invalid password etc)/generally better messages
-no ratio/dimension selected
+save/discard changes(refetch?)
 
-only unique categories in queries
+no new connection when connecting to same database
+
+db-status notification (invalid password etc)/generally better messages
+
+dimension hierarchies
+no ratio/dimension selected
+multiple ratios selected?
+
+dynamic size
+
 cell padding
 
 refactor statusbar
-node refactor
+refactor resultgridnode

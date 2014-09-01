@@ -14,6 +14,7 @@ import java.util.TreeMap;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 
+import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
 
 public class ResultGrid extends GridPane {
@@ -40,13 +41,13 @@ public class ResultGrid extends GridPane {
 
 	public ResultGrid() {
 		super();
-
-		setLayoutY(150);
-		setLayoutX(25);
 		
 		setPrefHeight(525); 
 		setPrefWidth(750);
+		
+		setPadding(new Insets(20));
 	}
+
 	
 	public void initialize(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, String unitSymbol) {
 		this.unitSymbol = unitSymbol;

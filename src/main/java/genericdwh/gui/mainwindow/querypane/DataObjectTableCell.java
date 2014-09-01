@@ -2,7 +2,6 @@ package genericdwh.gui.mainwindow.querypane;
 
 import genericdwh.dataobjects.DataObject;
 import genericdwh.gui.mainwindow.MainWindowController;
-import genericdwh.gui.mainwindow.sidebar.SidebarHeader;
 import genericdwh.main.Main;
 import javafx.event.EventHandler;
 import javafx.scene.control.TableCell;
@@ -18,7 +17,7 @@ public class DataObjectTableCell extends TableCell<DataObject, DataObject> {
 	public DataObjectTableCell() {
         setOnDragDetected(new EventHandler<MouseEvent>() {
         	public void handle(MouseEvent event) {
-                if (obj == null || obj instanceof SidebarHeader) {
+                if (obj == null) {
                     return;
                 }
                 
