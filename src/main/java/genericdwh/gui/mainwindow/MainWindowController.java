@@ -10,7 +10,7 @@ import genericdwh.db.DatabaseController;
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController;
 import genericdwh.gui.mainwindow.sidebar.SidebarController;
-import genericdwh.gui.subwindows.ConnectWindowController;
+import genericdwh.gui.subwindows.connect.ConnectWindowController;
 import genericdwh.main.Main;
 
 import java.net.URL;
@@ -55,7 +55,7 @@ public class MainWindowController implements Initializable{
 		try {
 			this.stage = stage;
 			
-			SpringFXMLLoader loader = new SpringFXMLLoader(getClass().getResource("MainWindow.fxml"), Main.getContext().getBean(MainWindowController.class));
+			SpringFXMLLoader loader = new SpringFXMLLoader(getClass().getResource("/fxml/mainwindow/MainWindow.fxml"), Main.getContext().getBean(MainWindowController.class));
 			Parent root = loader.load();
 			Scene scene = new Scene(root, 1000, 750);
 			scene.getStylesheets().add("/css/StatusBarStyle.css");

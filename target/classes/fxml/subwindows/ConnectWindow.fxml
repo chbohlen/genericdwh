@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane prefHeight="240.0" prefWidth="305.0" onKeyPressed="#onKeyPressedHandler"  xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+   	<GridPane prefHeight="180.0" prefWidth="305.0">
+   	   <columnConstraints>
+   	      <ColumnConstraints halignment="RIGHT" maxWidth="20.0" minWidth="20.0" prefWidth="20.0" />
+   	      <ColumnConstraints halignment="RIGHT" maxWidth="85.0" minWidth="85.0" prefWidth="85.0" />
+   	      <ColumnConstraints halignment="RIGHT" maxWidth="165.0" minWidth="165.0" prefWidth="165.0" />
+   	      <ColumnConstraints halignment="RIGHT" maxWidth="35.0" minWidth="35.0" prefWidth="35.0" />
+   	   </columnConstraints>
+   	   <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="15.0" valignment="CENTER" />
+   	      <RowConstraints prefHeight="35.0" valignment="CENTER" />
+   	      <RowConstraints prefHeight="35.0" />
+   	      <RowConstraints prefHeight="35.0" />
+   	      <RowConstraints prefHeight="35.0" />
+   	      <RowConstraints prefHeight="35.0" />
+   	   </rowConstraints>
+   	   <children>
+   	      <Label alignment="CENTER" prefHeight="20.0" prefWidth="60.0" text="IP:" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+   	      <Label alignment="CENTER" prefHeight="20.0" prefWidth="60.0" text="Port:" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+   	      <Label alignment="CENTER" prefHeight="20.0" prefWidth="60.0" text="Database:" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+   	      <Label alignment="CENTER" prefHeight="20.0" prefWidth="60.0" text="Username:" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+   	      <Label alignment="CENTER" prefHeight="20.0" prefWidth="60.0" text="Password:" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+   	      <TextField fx:id="tfIp" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="145.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+   	      <TextField fx:id="tfPort" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+   	      <TextField fx:id="tfDbName" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="145.0" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+   	      <TextField fx:id="tfUserName" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="145.0" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+   	      <PasswordField fx:id="tfPassword" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="145.0" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+   	   </children>
+   	</GridPane>
+      <Button fx:id="btnConnect" layoutX="63.0" layoutY="205.0" mnemonicParsing="false" onAction="#buttonConnectOnClickHandler" prefHeight="25.0" prefWidth="80.0" text="Connect" />
+      <Button fx:id="btnCancel" layoutX="163.0" layoutY="205.0" mnemonicParsing="false" onAction="#buttonCancelOnClickHandler" prefHeight="25.0" prefWidth="80.0" text="Cancel" />
+   </children>
+</Pane>

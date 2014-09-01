@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.web.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane prefHeight="750.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+		<MenuBar prefHeight="25.0" prefWidth="1000.0">
+		  <menus>
+		    <Menu mnemonicParsing="false" text="File">
+		      <items>
+		        <MenuItem mnemonicParsing="false" onAction="#menuBarConnectOnClickHandler" text="Connect" />
+		        <MenuItem mnemonicParsing="false" onAction="#menuBarDisconnectOnClickHandler" text="Disconnect" />
+		        <MenuItem mnemonicParsing="false" onAction="#menuBarExitOnClickHandler" text="Exit" />
+		      </items>
+		    </Menu>
+		  </menus>
+		</MenuBar>
+		<fx:include layoutY="25.0" source="Sidebar.fxml" />
+		<fx:include layoutX="200" layoutY="25.0" source="QueryPane.fxml" />
+      <Separator layoutY="724.0" prefWidth="1000.0" />
+      <Label fx:id="statusBar" layoutY="725.0" prefHeight="25.0" prefWidth="1000" alignment="CENTER_RIGHT">
+         <padding>
+            <Insets right="10.0" />
+         </padding>
+      </Label>
+	</children>
+</Pane>

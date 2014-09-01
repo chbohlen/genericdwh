@@ -4,7 +4,7 @@ import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController;
 import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGridController;
 import genericdwh.gui.mainwindow.sidebar.SidebarController;
-import genericdwh.gui.subwindows.ConnectWindowController;
+import genericdwh.gui.subwindows.connect.ConnectWindowController;
 
 import org.springframework.context.annotation.*;
 

@@ -35,6 +35,7 @@ C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\db\model\ta
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\gui\GUIConfig.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\db\model\tables\ReferenceObjectCombinations.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\dataobjects\dimension\DimensionCategory.java
+C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\gui\subwindows\connect\ConnectWindowController.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\db\model\tables\records\DimensionCombinationsRecord.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\gui\mainwindow\sidebar\DataObjectTreeCell.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\dataobjects\referenceobject\ReferenceObjectManager.java
@@ -51,7 +52,6 @@ C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\db\model\ta
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\db\model\tables\records\DimensionCategoriesRecord.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\db\model\tables\records\ReferenceObjectCombinationsRecord.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\dataobjects\ratio\RatioManager.java
-C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\gui\subwindows\ConnectWindowController.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\dataobjects\referenceobject\ReferenceObject.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\db\MySQLDatabaseController.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\db\model\DefaultSchema.java

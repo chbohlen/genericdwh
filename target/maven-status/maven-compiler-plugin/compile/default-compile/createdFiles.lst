@@ -55,7 +55,6 @@ genericdwh\db\model\tables\records\DimensionCombinationsRecord.class
 genericdwh\dataobjects\referenceobject\ReferenceObjectManager.class
 genericdwh\gui\mainwindow\sidebar\DataObjectTreeCell$1.class
 genericdwh\gui\mainwindow\querypane\resultgrid\ResultGridNode.class
-genericdwh\gui\subwindows\ConnectWindowController.class
 genericdwh\db\model\tables\records\RatioCategoriesRecord.class
 genericdwh\db\model\tables\ReferenceObjectCombinations.class
 genericdwh\gui\mainwindow\MainWindowController.class
@@ -66,6 +65,7 @@ genericdwh\gui\mainwindow\querypane\QueryPaneController$3.class
 genericdwh\main\Main.class
 genericdwh\gui\mainwindow\querypane\DataObjectTableCell$1.class
 genericdwh\gui\mainwindow\StatusMessage.class
+genericdwh\gui\subwindows\connect\ConnectWindowController.class
 genericdwh\gui\mainwindow\sidebar\DataObjectTreeItem.class
 genericdwh\gui\mainwindow\sidebar\LazyLoadOnExpandListener.class
 genericdwh\db\model\tables\DimensionCombinations.class
