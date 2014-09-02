@@ -18,83 +18,95 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
 
 public class ResultGrid extends GridPane {
-	
+
 	private String unitSymbol;
-	
+
 	private TreeMap<Long, ResultGridNode> rowHeaderTree;
 	private TreeMap<Long, ResultGridNode> colHeaderTree;
-		
+
 	private int firstRowIndex;
 	private int firstColIndex;
-	
+
 	private int colCount;
 	private int rowCount;
-	
+
 	private Table<Integer, Integer, ResultGridNode> resultsTable = TreeBasedTable.create();
-	
+
 	private ArrayList<ResultGridNode> rowTotalHeaders;
 	private ArrayList<ResultGridNode> colTotalHeaders;
-	
+
 	private Table<Integer, Integer, ResultGridCell> totalsTable = TreeBasedTable.create();
 	private int grandTotalCol;
 	private int grandTotalRow;
 
 	public ResultGrid() {
 		super();
-		
-		setPrefHeight(525); 
-		setPrefWidth(750);
-		
+
 		setPadding(new Insets(20));
 	}
 
-	
-	public void initialize(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, String unitSymbol) {
+	public void initialize(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, String ratioName, String unitSymbol) {
 		this.unitSymbol = unitSymbol;
 		
+		setTitle(ratioName);
+
 		rowHeaderTree = createHeaders(rowRefObjs, colRefObjs.size(), true);
 		colHeaderTree = createHeaders(colRefObjs, rowRefObjs.size(), false);
-		
+
 		firstRowIndex = getFirstRowIndex(colRefObjs);
 		firstColIndex = getFirstColIndex(rowRefObjs);
-		
+
 		rowCount = getRefObjCount(rowRefObjs, 0);
 		colCount = getRefObjCount(colRefObjs, 0);
-				
+
 		setHeaderSpans(rowHeaderTree, true);
 		setHeaderSpans(colHeaderTree, false);
-						
+
 		createResultCells();
 	}
 	
-	public void setupTotals(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs) {
+	public void initializeWithTotals(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, String ratioName, String unitSymbol) {
+		initialize(rowRefObjs, colRefObjs, ratioName, unitSymbol);
+		
 		colTotalHeaders = createTotalHeaders(colRefObjs, rowRefObjs.size(), true);
 		rowTotalHeaders = createTotalHeaders(rowRefObjs, colRefObjs.size(), false);
-		
+
 		createTotalCells();
 	}
 
-	private TreeMap<Long, ResultGridNode> createHeaders(ArrayList<TreeMap<Long, ReferenceObject>> refObjs, int baseOffset, boolean isRowHeader) {
- 		TreeMap<Long, ResultGridNode> root = new TreeMap<>();
+	public void initializeNoData(String ratioName) {
+		setTitle(ratioName);
 		
+		ResultGridCell noData = new ResultGridCell("no data", 1, 1);
+		add(noData, 1, 1);
+	}
+	
+	private void setTitle(String ratioName) {
+		ResultGridCell title = new ResultGridCell(ratioName, 0, 0);
+		add(title, 0, 0);
+	}
+
+	private TreeMap<Long, ResultGridNode> createHeaders(ArrayList<TreeMap<Long, ReferenceObject>> refObjs, int baseOffset, boolean isRowHeader) {
+		TreeMap<Long, ResultGridNode> root = new TreeMap<>();
+
 		if (refObjs.isEmpty()) {
 			return root;
 		}
-		
+
 		if (baseOffset < 2) {
 			baseOffset = 2;
 		}
-				
+
 		LinkedList<ResultGridNode> queue = new LinkedList<>();
 		LinkedList<ResultGridNode> tmpQueue = new LinkedList<>();
-		
-		int initOffset = (refObjs.size() == 1) ? 1 : 0; 
-		
-		int offset = baseOffset;	
+
+		int initOffset = (refObjs.size() == 1) ? 1 : 0;
+
+		int offset = baseOffset;
 		int refObjCount = getRefObjCount(refObjs, 1);
 		for (Entry<Long, ReferenceObject> rootEntry : refObjs.get(0).entrySet()) {
 			int j = offset;
-			
+
 			ResultGridNode newRootNode;
 			if (isRowHeader) {
 				newRootNode = new ResultGridNode(rootEntry.getKey(), new ResultGridCell(rootEntry.getValue().getName(), initOffset, j));
@@ -104,23 +116,23 @@ public class ResultGrid extends GridPane {
 				add(newRootNode.getCell(), j, initOffset);
 			}
 			newRootNode.setDimensionId(rootEntry.getValue().getDimensionId());
-			
+
 			if (refObjs.size() > 1) {
 				offset += refObjCount;
 			} else {
 				offset++;
 			}
-			
+
 			root.put(rootEntry.getKey(), newRootNode);
 
 			queue.add(newRootNode);
 		}
 
-		for (int i = 1+initOffset; i < refObjs.size(); i++) {
+		for (int i = 1 + initOffset; i < refObjs.size(); i++) {
 			offset = baseOffset;
 			refObjCount = getRefObjCount(refObjs, i);
 			while (!queue.isEmpty()) {
-				ResultGridNode currNode = queue.pop();			
+				ResultGridNode currNode = queue.pop();
 				int j = offset;
 				for (Entry<Long, ReferenceObject> currEntry : refObjs.get(i).entrySet()) {
 					ResultGridNode newNode;
@@ -132,16 +144,16 @@ public class ResultGrid extends GridPane {
 						add(newNode.getCell(), j, i);
 					}
 					newNode.setDimensionId(currEntry.getValue().getDimensionId());
-					
-					if (refObjs.size() > i+1) {
-						j += refObjs.get(i+1).size();
+
+					if (refObjs.size() > i + 1) {
+						j += refObjs.get(i + 1).size();
 					} else {
 						j++;
 					}
 					currNode.addChild(currEntry.getValue().getId(), newNode);
 					tmpQueue.add(newNode);
 				}
-				
+
 				if (refObjs.size() > i) {
 					offset += refObjCount;
 				} else {
@@ -153,49 +165,49 @@ public class ResultGrid extends GridPane {
 		}
 		return root;
 	}
-	
+
 	private ArrayList<ResultGridNode> createTotalHeaders(ArrayList<TreeMap<Long, ReferenceObject>> refObjs, int offset, boolean isRowHeader) {
 		ArrayList<ResultGridNode> headers = new ArrayList<>();
 		
 		if (refObjs.isEmpty()) {
 			return headers;
 		}
-		
+
 		if (offset == 0) {
 			offset = 1;
 		} else if (offset > 1) {
 			offset--;
 		}
-		
+
 		int span = (refObjs.size() > 0) ? refObjs.size() : 1;
 		if (isRowHeader) {
-			int colIndex = offset-1;
-			int rowIndex = firstRowIndex+rowCount+1;
+			int colIndex = offset - 1;
+			int rowIndex = firstRowIndex + rowCount + 1;
 			ResultGridCell totalsHeader = new ResultGridCell("Subtotals", colIndex, rowIndex);
 			add(totalsHeader, colIndex, rowIndex);
 			ResultGrid.setRowSpan(totalsHeader, span);
 		} else {
-			int colIndex = firstColIndex+colCount+1;
-			int rowIndex = offset-1;
+			int colIndex = firstColIndex + colCount + 1;
+			int rowIndex = offset - 1;
 			ResultGridCell totalsHeader = new ResultGridCell("Subtotals", colIndex, rowIndex);
 			add(totalsHeader, colIndex, rowIndex);
 			ResultGrid.setColumnSpan(totalsHeader, span);
 		}
-		
+
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
-		
+
 		for (int i = refObjs.size(), j = 1; i > 0; i--, j++) {
-			TreeMap<Long, ReferenceObject> currMap = refObjs.get(i-1);
+			TreeMap<Long, ReferenceObject> currMap = refObjs.get(i - 1);
 			Dimension dim = dimManager.getDimension(currMap.firstEntry().getValue().getDimensionId());
 			ResultGridNode newNode;
 			int colIndex;
 			int rowIndex;
 			if (isRowHeader) {
 				colIndex = offset;
-				rowIndex = firstRowIndex+rowCount+j;
+				rowIndex = firstRowIndex + rowCount + j;
 			} else {
-				colIndex = firstColIndex+colCount+j;
+				colIndex = firstColIndex + colCount + j;
 				rowIndex = offset;
 			}
 			newNode = new ResultGridNode(dim.getId(), new ResultGridCell(dim.getName(), colIndex, rowIndex));
@@ -203,13 +215,12 @@ public class ResultGrid extends GridPane {
 			add(newNode.getCell(), colIndex, rowIndex);
 			headers.add(newNode);
 		}
-		
+
 		return headers;
 	}
-	
-	
+
 	private void createResultCells() {
- 		for (int i = firstRowIndex; i < firstRowIndex + rowCount; i++) {
+		for (int i = firstRowIndex; i < firstRowIndex + rowCount; i++) {
 			for (int j = firstColIndex; j < firstColIndex + colCount; j++) {
 				ResultGridNode newNode = new ResultGridNode(0, new ResultGridCell(j, i));
 				add(newNode.getCell(), j, i);
@@ -221,31 +232,31 @@ public class ResultGrid extends GridPane {
 	private void createTotalCells() {
 		for (ResultGridNode currTotalHeader : colTotalHeaders) {
 			int rowIndex = currTotalHeader.getCell().getRowIndex();
-			
-			int span = getHeaderNodeByDimensionId(colHeaderTree.firstEntry().getValue(), currTotalHeader.getId()).getCell().getColSpan();	
-			for (int i = firstColIndex; i < firstColIndex+colCount; i+=span) {
+
+			int span = getHeaderNodeByDimensionId(colHeaderTree.firstEntry().getValue(), currTotalHeader.getId()).getCell().getColSpan();
+			for (int i = firstColIndex; i < firstColIndex + colCount; i += span) {
 				ResultGridCell newCell = new ResultGridCell(i, rowIndex);
 				add(newCell, i, rowIndex);
 				ResultGrid.setColumnSpan(newCell, span);
 				totalsTable.put(rowIndex, i, newCell);
 			}
 		}
-		
+
 		for (ResultGridNode currTotalHeader : rowTotalHeaders) {
 			int colIndex = currTotalHeader.getCell().getColIndex();
-			
+
 			int span = getHeaderNodeByDimensionId(rowHeaderTree.firstEntry().getValue(), currTotalHeader.getId()).getCell().getRowSpan();
-			for (int i = firstRowIndex; i < firstRowIndex+rowCount; i+=span) {
+			for (int i = firstRowIndex; i < firstRowIndex + rowCount; i += span) {
 				ResultGridCell newCell = new ResultGridCell(colIndex, i);
 				add(newCell, colIndex, i);
 				ResultGrid.setRowSpan(newCell, span);
 				totalsTable.put(i, colIndex, newCell);
 			}
 		}
-		
-		grandTotalCol = firstColIndex+colCount+1;
-		grandTotalRow =  firstRowIndex+rowCount+1;
-				
+
+		grandTotalCol = firstColIndex + colCount + 1;
+		grandTotalRow = firstRowIndex + rowCount + 1;
+
 		ResultGridCell grandTotalCell = new ResultGridCell(grandTotalCol, grandTotalRow);
 		add(grandTotalCell, grandTotalCol, grandTotalRow);
 		ResultGrid.setColumnSpan(grandTotalCell, (rowTotalHeaders.size() > 0) ? rowTotalHeaders.size() : 1);
@@ -253,7 +264,6 @@ public class ResultGrid extends GridPane {
 		totalsTable.put(grandTotalRow, grandTotalCol, grandTotalCell);
 	}
 
-	
 	public void postResult(Long id, Long[] componentIds, Double value) {
 		int[] index = getCellIndex(componentIds);
 		ResultGridNode node = resultsTable.get(index[0], index[1]);
@@ -261,13 +271,13 @@ public class ResultGrid extends GridPane {
 		node.setComponentIds(componentIds);
 		node.getCell().setValue(value, unitSymbol);
 	}
-	
-	public void calculateAndPostTotals() {	
- 		calculateAndPostSubtotals(colTotalHeaders, true);
- 		calculateAndPostSubtotals(rowTotalHeaders, false);
- 		calculateAndPostGrandTotal();
+
+	public void calculateAndPostTotals() {
+		calculateAndPostSubtotals(colTotalHeaders, true);
+		calculateAndPostSubtotals(rowTotalHeaders, false);
+		calculateAndPostGrandTotal();
 	}
-	
+
 	private void calculateAndPostGrandTotal() {
 		double total = 0;
 		for (ResultGridNode resultNode : resultsTable.values()) {
@@ -276,9 +286,9 @@ public class ResultGrid extends GridPane {
 		totalsTable.get(grandTotalRow, grandTotalCol).setValue(total, unitSymbol);
 	}
 
-	private void calculateAndPostSubtotals(ArrayList<ResultGridNode> headers, boolean isColTotalHeader) {		
-		for(ResultGridNode currTotal : headers) {
-			Long[] componentIds = currTotal.getComponentIds();		
+	private void calculateAndPostSubtotals(ArrayList<ResultGridNode> headers, boolean isColTotalHeader) {
+		for (ResultGridNode currTotal : headers) {
+			Long[] componentIds = currTotal.getComponentIds();
 			if (isColTotalHeader) {
 				for (ResultGridNode currRootNode : colHeaderTree.values()) {
 					for (long component : componentIds) {
@@ -303,7 +313,8 @@ public class ResultGrid extends GridPane {
 						if (currHeaderNode != null) {
 							double total = 0;
 							int startIndex = currHeaderNode.getCell().getRowIndex();
-							int endIndex = startIndex + getTotalChildCount(currHeaderNode);
+							int endIndex = startIndex
+									+ getTotalChildCount(currHeaderNode);
 							for (int i = currHeaderNode.getCell().getRowIndex(); i < endIndex; i++) {
 								for (ResultGridNode resultNode : resultsTable.row(i).values()) {
 									total += resultNode.getCell().getValue();
@@ -315,18 +326,17 @@ public class ResultGrid extends GridPane {
 				}
 			}
 		}
-	}			
-	
-	
+	}
+
 	private int[] getCellIndex(Long[] componentIds) {
 		return new int[] { getRowIndex(componentIds), getColIndex(componentIds) };
 	}
-	
+
 	private int getRowIndex(Long[] componentIds) {
 		if (rowHeaderTree.isEmpty()) {
 			return firstRowIndex;
 		}
-		
+
 		TreeMap<Long, ResultGridNode> currNodes = rowHeaderTree;
 		int index = -1;
 		ResultGridNode lastMatch = null;
@@ -348,15 +358,15 @@ public class ResultGrid extends GridPane {
 				index = lastMatch.getCell().getRowIndex();
 			}
 		}
-		
+
 		return index;
 	}
-	
+
 	private int getColIndex(Long[] componentIds) {
 		if (colHeaderTree.isEmpty()) {
 			return firstColIndex;
 		}
-		
+
 		TreeMap<Long, ResultGridNode> currNodes = colHeaderTree;
 		int index = -1;
 		ResultGridNode lastMatch = null;
@@ -374,15 +384,15 @@ public class ResultGrid extends GridPane {
 					break;
 				}
 			}
-			
+
 			if (foundNode == null && lastMatch != null) {
 				index = lastMatch.getCell().getColIndex();
 			}
 		}
-		
+
 		return index;
 	}
-	
+
 	private int getFirstRowIndex(ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs) {
 		if (colRefObjs.size() < 2) {
 			return 2;
@@ -390,7 +400,7 @@ public class ResultGrid extends GridPane {
 			return colRefObjs.size();
 		}
 	}
-	
+
 	private int getFirstColIndex(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs) {
 		if (rowRefObjs.size() < 2) {
 			return 2;
@@ -410,7 +420,7 @@ public class ResultGrid extends GridPane {
 	private void setHeaderSpans(TreeMap<Long, ResultGridNode> headerTree, boolean isRowHeader) {
 		LinkedList<ResultGridNode> queue = new LinkedList<>(headerTree.values());
 		
-		while(!queue.isEmpty()) {
+		while (!queue.isEmpty()) {
 			ResultGridNode currNode = queue.pop();
 			if (isRowHeader) {
 				int span = getTotalChildCount(currNode);
@@ -421,18 +431,17 @@ public class ResultGrid extends GridPane {
 				ResultGrid.setColumnSpan(currNode.getCell(), span);
 				currNode.getCell().setColSpan(span);
 			}
-			
+
 			for (ResultGridNode currChild : currNode.getChildren().values()) {
 				queue.add(currChild);
 			}
 		}
 	}
-	
+
 	private int getTotalChildCount(ResultGridNode node) {
 		ResultGridNode currNode = node;
-		
 		int count = 1;
-		while(true) {
+		while (true) {
 			if (!currNode.isLeaf()) {
 				count *= currNode.getChildren().size();
 				currNode = currNode.getChildren().firstEntry().getValue();
@@ -455,7 +464,7 @@ public class ResultGrid extends GridPane {
 		}
 		return null;
 	}
-	
+
 	private ResultGridNode getHeaderNodeByDimensionId(ResultGridNode root, long dimensionId) {
 		LinkedList<ResultGridNode> queue = new LinkedList<>();
 		queue.add(root);
@@ -469,11 +478,4 @@ public class ResultGrid extends GridPane {
 		}
 		return null;
 	}
-
-	public void cleanUp() {
-		getChildren().clear();
-		
-		resultsTable.clear();
-		totalsTable.clear();
-	}	
 }

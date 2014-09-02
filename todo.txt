@@ -11,11 +11,10 @@ no new connection when connecting to same database
 
 db-status notification (invalid password etc)/generally better messages
 
+filter
 dimension hierarchies
-no ratio/dimension selected
-multiple ratios selected?
 
-dynamic size
+more dynamic size
 
 cell padding
 

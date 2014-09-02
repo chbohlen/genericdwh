@@ -24,6 +24,10 @@
       <Button fx:id="btnExecQuery" layoutX="640.0" layoutY="24.0" mnemonicParsing="false" onMouseClicked="#buttonExecQueryOnClickHandler" prefHeight="30.0" prefWidth="120.0" text="Execute Query" />
       <Button fx:id="btnClear" layoutX="640.0" layoutY="73.0" mnemonicParsing="false" onMouseClicked="#buttonClearOnClickHandler" prefHeight="30.0" prefWidth="120.0" text="Clear" />
       <Separator layoutX="600.0" layoutY="124.0" prefWidth="200.0" />
-      <ScrollPane fx:id="resultGridContainer" layoutY="125.0" pannable="true" prefHeight="574.0" prefWidth="800.0" />
+      <ScrollPane layoutY="125.0" pannable="true" prefHeight="574.0" prefWidth="800.0">
+         <content>
+            <VBox fx:id="resultGridContainer" minHeight="569.0" minWidth="795.0" />
+         </content>
+      </ScrollPane>
    </children>
 </Pane>

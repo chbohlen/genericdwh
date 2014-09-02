@@ -4,54 +4,51 @@ import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.db.ResultObject;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.TreeMap;
-
-import lombok.Setter;
 
 public class ResultGridController {
 	
-	@Setter private ResultGrid resultGrid;
-		
-	private ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs;
-	private ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs;
-	
+	private LinkedList<ResultGrid> resultGrids = new LinkedList<>();
+			
 	public ResultGridController() {
 	}
 	
-	public void initializeGrid(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, String unitSymbol) {
-		this.rowRefObjs = rowRefObjs;
-		this.colRefObjs = colRefObjs;
-		
-		reset();
-		
-		resultGrid.initialize(rowRefObjs, colRefObjs, unitSymbol);
+	public void initializeGrid(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, String ratioName, String unitSymbol) {
+		resultGrids.getLast().initialize(rowRefObjs, colRefObjs, ratioName, unitSymbol);
+	}
+	
+	public void initializeGridWithTotals(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, String ratioName, String unitSymbol) {		
+		resultGrids.getLast().initializeWithTotals(rowRefObjs, colRefObjs, ratioName, unitSymbol);
 	}
 
-	public void fillSingleRefObj(ResultObject factForRefObj) {
-		resultGrid.postResult(factForRefObj.getId(), new Long[] { factForRefObj.getId() }, factForRefObj.getValue());
+	public void initializeGridNoData(String ratioName) {
+		resultGrids.getLast().initializeNoData(ratioName);
+	}
+
+	public void fillReferenceObject(ResultObject factForRefObj) {
+		resultGrids.getLast().postResult(factForRefObj.getId(), factForRefObj.getComponentIds(), factForRefObj.getValue());
 	}
 	
-	public void fillRefObjCombination(ResultObject factForRefObj) {
-		resultGrid.postResult(factForRefObj.getId(), factForRefObj.getComponentIds(), factForRefObj.getValue());
-	}
-	
-	public void fillSingleDim(ArrayList<ResultObject> factsForDimensions) {
+	public void fillDimension(ArrayList<ResultObject> factsForDimensions) {
 		for (ResultObject currFact : factsForDimensions) {
-			resultGrid.postResult(currFact.getId(), new Long[] { currFact.getId() }, currFact.getValue());
+			resultGrids.getLast().postResult(currFact.getId(), currFact.getComponentIds(), currFact.getValue());
 		}
-		resultGrid.setupTotals(rowRefObjs, colRefObjs);
-		resultGrid.calculateAndPostTotals();
+		resultGrids.getLast().calculateAndPostTotals();
 	}
 	
-	public void fillDimCombination(ArrayList<ResultObject> factsForDimensions) {
-		for (ResultObject currFact : factsForDimensions) {
-			resultGrid.postResult(currFact.getId(), currFact.getComponentIds(), currFact.getValue());
+	public void fillRatio(ArrayList<ResultObject> factsForRatio) {
+		for (ResultObject currFact : factsForRatio) {
+			resultGrids.getLast().postResult(currFact.getId(), currFact.getComponentIds(), currFact.getValue());
 		}
-		resultGrid.setupTotals(rowRefObjs, colRefObjs);
-		resultGrid.calculateAndPostTotals();
+		// TODO
+	}
+	
+	public void addResultGrid(ResultGrid newResultGrid) {
+		resultGrids.add(newResultGrid);	
 	}
 	
 	public void reset() {
-		resultGrid.cleanUp();
+		resultGrids.clear();
 	}
 }

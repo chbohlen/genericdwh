@@ -18,6 +18,12 @@ public class ReferenceObjectManager extends DataObjectManager {
 		super(dbController);
 	}
 	
+	public ReferenceObject loadRefObj(long refObjId) {
+		ReferenceObject newRefObj = dbReader.loadRefObj(refObjId);
+		referenceObjects.put(newRefObj.getId(), newRefObj);
+		return newRefObj;
+	}
+	
 	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(Dimension dim) {
 		TreeMap<Long, ReferenceObject> newRefObjs = dbReader.loadRefObjsForDim(dim.getId());
 		referenceObjects.putAll(newRefObjs);

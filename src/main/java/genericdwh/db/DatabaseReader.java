@@ -17,6 +17,7 @@ public interface DatabaseReader {
 	public ArrayList<Entry<Long, Long>> loadDimensionHierachies();
 	public ArrayList<Entry<Long, Long>> loadDimensionCombinations();
 	
+	public ReferenceObject loadRefObj(long refObjId);
 	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(long dimId);
 	public TreeMap<Long, ReferenceObject> loadRefObjsForDimAndRefObjParent(long dimId, long refObjId);
 		
@@ -37,4 +38,6 @@ public interface DatabaseReader {
 	public ArrayList<ResultObject> loadFactsForSingleDim(long ratioId, long dimId);
 	public ArrayList<ResultObject> loadFactsForDimCombination(long ratioId, long dimId);
 	public ArrayList<ResultObject> loadFactsForDimCombinationAndRefObjs(long ratioId, long dimId, Long[] refObjIds);
+	
+	public ArrayList<ResultObject> loadAllFactsForRatio(long ratioId);
 }

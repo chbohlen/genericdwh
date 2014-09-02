@@ -42,8 +42,7 @@ import org.jooq.impl.DSL;
 public class MySQLDatabaseReader implements DatabaseReader {
 	
 	@Setter private DSLContext dslContext;
-	
-	
+		
 	@Override
 	public TreeMap<Long, DimensionCategory> loadDimensionCategories() {
 		Map<Long, DimensionCategory> result = dslContext
@@ -82,6 +81,15 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		return new ArrayList<>(result);
 	}
 	
+	@Override
+	public ReferenceObject loadRefObj(long refObjId) {
+		ReferenceObject result = dslContext
+									.select(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, REFERENCE_OBJECTS.DIMENSION_ID, REFERENCE_OBJECTS.NAME)
+									.from(REFERENCE_OBJECTS)
+									.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(refObjId))
+									.fetchOne().into(ReferenceObject.class);
+		return result;
+	}
 	
 	@Override
 	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(long dimId) {
@@ -267,18 +275,19 @@ public class MySQLDatabaseReader implements DatabaseReader {
 
 	@Override
 	public ResultObject loadFactForSingleRefObj(long ratioId, long refObjId) {
-		 Result<Record> result = dslContext
+		Result<Record> result = dslContext
 									.select()
 									.from(FACTS)
 									.where(FACTS.RATIO_ID.equal(ratioId)
 										.and(FACTS.REFERENCE_OBJECT_ID.equal(refObjId)))
 									.fetch();	
+		
 		if (result.isEmpty()) {
 			return null;
 		}
 		
 		ResultObject resultObject = new ResultObject(result.getValue(0, FACTS.REFERENCE_OBJECT_ID),
-													 null,
+													 new Long[] { result.getValue(0, FACTS.REFERENCE_OBJECT_ID) },
 													 result.getValue(0, FACTS.VALUE),
 													 result.getValue(0, FACTS.UNIT_ID));
 		return resultObject;
@@ -324,7 +333,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		ArrayList<ResultObject> resultList = new ArrayList<>();
 		for (Record record : result) {
 			ResultObject resultObject = new ResultObject(record.getValue(FACTS.REFERENCE_OBJECT_ID),
-														 null,
+														 new Long[] { record.getValue(FACTS.REFERENCE_OBJECT_ID) },
 														 record.getValue(FACTS.VALUE),
 														 record.getValue(FACTS.UNIT_ID));
 			resultList.add(resultObject);
@@ -391,6 +400,30 @@ public class MySQLDatabaseReader implements DatabaseReader {
 														 record.getValues(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID).toArray(new Long[0]),
 														 record.getValue(0, FACTS.VALUE),
 														 record.getValue(0, FACTS.UNIT_ID));
+			resultList.add(resultObject);
+		}                                                                                                                                                                                                                                                                                                                                                                           
+		return resultList;
+	}
+
+	@Override
+	public ArrayList<ResultObject> loadAllFactsForRatio(long ratioId) {
+		Result<Record> result = dslContext
+									.select()
+									.from(FACTS)
+									.where(FACTS.RATIO_ID.equal(ratioId))
+									.groupBy(FACTS.REFERENCE_OBJECT_ID)
+									.fetch();
+
+		if (result.isEmpty()) {
+		return null;
+		}
+		
+		ArrayList<ResultObject> resultList = new ArrayList<>();
+		for (Record record : result) {
+			ResultObject resultObject = new ResultObject(record.getValue(FACTS.REFERENCE_OBJECT_ID),
+														 new Long[] { record.getValue(FACTS.REFERENCE_OBJECT_ID) },
+														 record.getValue(FACTS.VALUE),
+														 record.getValue(FACTS.UNIT_ID));
 			resultList.add(resultObject);
 		}                                                                                                                                                                                                                                                                                                                                                                           
 		return resultList;
