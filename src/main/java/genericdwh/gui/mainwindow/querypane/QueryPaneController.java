@@ -96,6 +96,7 @@ public class QueryPaneController implements Initializable {
 		hideQueryPane();
 	}
 	
+	
 	public void showQueryPane() {
 		queryPane.setVisible(true);
 	}
@@ -103,6 +104,7 @@ public class QueryPaneController implements Initializable {
 	public void hideQueryPane() {
 		queryPane.setVisible(false);
 	}
+	
 	
 	@FXML public void onDragDroppedHandler(DragEvent event) {
 		boolean completed = false;
@@ -160,6 +162,7 @@ public class QueryPaneController implements Initializable {
 		event.consume();
 	}
 
+	
 	@FXML public void buttonExecQueryOnClickHandler() {
 		resetResultGrids();
 				
@@ -197,13 +200,14 @@ public class QueryPaneController implements Initializable {
 					break;
 				}
 				case MIXED: {
-					handleMixed(ratios, rowDims, colDims, combinedDims);
+					queryHadResults = handleMixed(ratios, rowDims, colDims, combinedDims);
 					break;
 				}
 			}
 		}
 		
 		if (!queryHadResults) {
+			resetResultGrids();
 			Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessage.NO_DATA_FOR_INPUT);
 		}
 	}
@@ -256,6 +260,7 @@ public class QueryPaneController implements Initializable {
 		
 		return null;
 	}
+
 	
 	private boolean handleNoReferenceObjectsOrDimensions(List<DataObject> ratios) {
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
@@ -285,7 +290,7 @@ public class QueryPaneController implements Initializable {
 				String unitSymbol = unitManager.getUnit(allFactsForRatio.get(0).getUnitId()).getSymbol();
 				resultGridController.initializeGrid(rows, new ArrayList<>(), ratio.getName(), unitSymbol);
 				resultGridController.fillRatio(allFactsForRatio);
-			} else if (queryHadResults){					
+			} else {					
 				resultGridController.initializeGridNoData(ratio.getName());
 			}
 		}
@@ -315,7 +320,7 @@ public class QueryPaneController implements Initializable {
 				String unitSymbol = unitManager.getUnit(factForRefObj.getUnitId()).getSymbol();
 				resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), ratio.getName(), unitSymbol);
 				resultGridController.fillReferenceObject(factForRefObj);
-			} else if (queryHadResults){					
+			} else {					
 				resultGridController.initializeGridNoData(ratio.getName());
 			}
 		}
@@ -345,7 +350,7 @@ public class QueryPaneController implements Initializable {
 				String unitSymbol = unitManager.getUnit(factForRefObj.getUnitId()).getSymbol();
 				resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), ratio.getName(), unitSymbol);
 				resultGridController.fillReferenceObject(factForRefObj);
-			} else if (queryHadResults){					
+			} else {					
 				resultGridController.initializeGridNoData(ratio.getName());
 			}
 		}
@@ -376,7 +381,7 @@ public class QueryPaneController implements Initializable {
 				String unitSymbol = unitManager.getUnit(factsForDimension.get(0).getUnitId()).getSymbol();
 				resultGridController.initializeGridWithTotals(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), ratio.getName(), unitSymbol);
 				resultGridController.fillDimension(factsForDimension);
-			} else if (queryHadResults){					
+			} else {					
 				resultGridController.initializeGridNoData(ratio.getName());
 			}
 		}
@@ -407,7 +412,7 @@ public class QueryPaneController implements Initializable {
 				String unitSymbol = unitManager.getUnit(factsForDimension.get(0).getUnitId()).getSymbol();
 				resultGridController.initializeGridWithTotals(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), ratio.getName(), unitSymbol);
 				resultGridController.fillDimension(factsForDimension);
-			} else if (queryHadResults){					
+			} else {					
 				resultGridController.initializeGridNoData(ratio.getName());
 			}
 		}
@@ -439,7 +444,7 @@ public class QueryPaneController implements Initializable {
 				String unitSymbol = unitManager.getUnit(factsForDimensionAndRefObjs.get(0).getUnitId()).getSymbol();
 				resultGridController.initializeGridWithTotals(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), ratio.getName(), unitSymbol);
 				resultGridController.fillDimension(factsForDimensionAndRefObjs);
-			} else if (queryHadResults){					
+			} else {					
 				resultGridController.initializeGridNoData(ratio.getName());
 			}
 		}

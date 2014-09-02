@@ -295,9 +295,9 @@ public class ResultGrid extends GridPane {
 						ResultGridNode currHeaderNode = getHeaderNodeById(currRootNode, component);
 						if (currHeaderNode != null) {
 							double total = 0;
-							int startIndex = currHeaderNode.getCell().getColIndex();
-							int endIndex = startIndex + getTotalChildCount(currHeaderNode);
-							for (int i = currHeaderNode.getCell().getRowIndex(); i < endIndex; i++) {
+							int colStartIndex = currHeaderNode.getCell().getColIndex();
+							int colEndIndex = colStartIndex + getTotalChildCount(currHeaderNode);
+							for (int i = colStartIndex; i < colEndIndex; i++) {
 								for (ResultGridNode resultNode : resultsTable.column(i).values()) {
 									total += resultNode.getCell().getValue();
 								}
@@ -312,10 +312,10 @@ public class ResultGrid extends GridPane {
 						ResultGridNode currHeaderNode = getHeaderNodeById(currRootNode, component);
 						if (currHeaderNode != null) {
 							double total = 0;
-							int startIndex = currHeaderNode.getCell().getRowIndex();
-							int endIndex = startIndex
+							int rowStartIndex = currHeaderNode.getCell().getRowIndex();
+							int rowEndIndex = rowStartIndex
 									+ getTotalChildCount(currHeaderNode);
-							for (int i = currHeaderNode.getCell().getRowIndex(); i < endIndex; i++) {
+							for (int i = rowStartIndex; i < rowEndIndex; i++) {
 								for (ResultGridNode resultNode : resultsTable.row(i).values()) {
 									total += resultNode.getCell().getValue();
 								}
