@@ -12,7 +12,9 @@ no new connection when connecting to same database
 db-status notification (invalid password etc)/generally better messages
 
 filter
+ratio totals
 dimension hierarchies
+grid collapsible
 
 more dynamic size
 

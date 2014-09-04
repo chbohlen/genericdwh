@@ -14,7 +14,6 @@ import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioManager;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
-import genericdwh.dataobjects.unit.UnitManager;
 import genericdwh.db.DatabaseReader;
 import genericdwh.db.ResultObject;
 import genericdwh.gui.mainwindow.MainWindowController;
@@ -56,8 +55,11 @@ public class QueryPaneController implements Initializable {
 	
 	private enum QueryType {
 		MIXED,
+		MIXED_W_HIERARCHY,
 		SINGLE_DIMENSION,
+		SINGLE_DIMENSION_W_HIERARCHY,
 		DIMENSION_COMBINATION,
+		DIMENSION_COMBINATION_W_HIERARCHY,
 		SINGLE_REFERENCE_OBJECT,
 		REFERENCE_OBJECT_COMBINATION;
 	}
@@ -164,6 +166,7 @@ public class QueryPaneController implements Initializable {
 
 	
 	@FXML public void buttonExecQueryOnClickHandler() {
+		Main.getContext().getBean(MainWindowController.class).clearStatus();
 		resetResultGrids();
 				
 		List<DataObject> ratios = tvRatio.getItems();
@@ -174,9 +177,9 @@ public class QueryPaneController implements Initializable {
 			ratios = new ArrayList<>(Main.getContext().getBean(RatioManager.class).getRatios().values());
 		}
 				
-		boolean queryHadResults = false;
+		boolean hasResults = false;
 		if (rowDims.isEmpty() && colDims.isEmpty()) {
-			queryHadResults = handleNoReferenceObjectsOrDimensions(ratios);
+			hasResults = handleNoReferenceObjectsOrDimensions(ratios);
 		} else {	
 			ArrayList<DataObject> combinedDims = new ArrayList<>();
 			combinedDims.addAll(rowDims);
@@ -184,35 +187,47 @@ public class QueryPaneController implements Initializable {
 			
 			switch (determineQueryType(combinedDims)) {
 				case SINGLE_REFERENCE_OBJECT: {
-					queryHadResults = handleSingleReferenceObject(ratios, rowDims, colDims, combinedDims);
+					hasResults = handleSingleReferenceObject(ratios, rowDims, colDims, combinedDims);
 					break;
 				}
 				case REFERENCE_OBJECT_COMBINATION: {
-					queryHadResults = handleReferenceObjectCombination(ratios, rowDims, colDims, combinedDims);
+					hasResults = handleReferenceObjectCombination(ratios, rowDims, colDims, combinedDims);
 					break;
 				}
 				case SINGLE_DIMENSION: {
-					queryHadResults = handleSingleDimension(ratios, rowDims, colDims, combinedDims);
+					hasResults = handleSingleDimension(ratios, rowDims, colDims, combinedDims);
+					break;
+				}
+				case SINGLE_DIMENSION_W_HIERARCHY: {
+					hasResults = handleSingleDimensionWHierarchy(ratios, rowDims, colDims, combinedDims);
 					break;
 				}
 				case DIMENSION_COMBINATION: {
-					queryHadResults = handleDimensionCombination(ratios, rowDims, colDims, combinedDims);
+					hasResults = handleDimensionCombination(ratios, rowDims, colDims, combinedDims);
+					break;
+				}
+				case DIMENSION_COMBINATION_W_HIERARCHY: {
+					hasResults = handleDimensionCombinationWHierarchy(ratios, rowDims, colDims, combinedDims);
 					break;
 				}
 				case MIXED: {
-					queryHadResults = handleMixed(ratios, rowDims, colDims, combinedDims);
+					hasResults = handleMixed(ratios, rowDims, colDims, combinedDims);
+					break;
+				}
+				case MIXED_W_HIERARCHY: {
 					break;
 				}
 			}
 		}
 		
-		if (!queryHadResults) {
-			resetResultGrids();
+		if (!hasResults) {
 			Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessage.NO_DATA_FOR_INPUT);
 		}
 	}
 	
 	@FXML public void buttonClearOnClickHandler() {
+		Main.getContext().getBean(MainWindowController.class).clearStatus();
+
 		tvRatio.getItems().clear();                    
 		tvRowDims.getItems().clear();
 		tvColDims.getItems().clear();
@@ -227,27 +242,43 @@ public class QueryPaneController implements Initializable {
 	}
 	
 	private QueryType determineQueryType(ArrayList<DataObject> dims) {
-		Class<?> type = dims.get(0).getClass();
+		boolean mixed = false;
+		boolean hasHierarchy = false;
 		
+		Class<?> type = dims.get(0).getClass();
+				
 		if (type == DimensionHierarchy.class) {
+			hasHierarchy = true;
 			type = Dimension.class;
 		}
 		
 		for (DataObject obj : dims) {
 			Class<?> currType = obj.getClass();
 			if (currType == DimensionHierarchy.class) {
+				hasHierarchy = true;
 				currType = Dimension.class;
 			}
 			
 			if (type != currType) {
-				return QueryType.MIXED;
+				mixed = true;
 			}
 		}
 		
-		if (type == Dimension.class) {
+		if (mixed) {
+			if (hasHierarchy) {
+				return QueryType.MIXED_W_HIERARCHY;
+			}
+			return QueryType.MIXED;
+		} else if (type == Dimension.class) {
 			if (dims.size() == 1) {
+				if (hasHierarchy) {
+					return QueryType.SINGLE_DIMENSION_W_HIERARCHY;
+				}
 				return QueryType.SINGLE_DIMENSION;
 			} else {
+				if (hasHierarchy) {
+					return QueryType.DIMENSION_COMBINATION_W_HIERARCHY;
+				}
 				return QueryType.DIMENSION_COMBINATION;
 			}
 		} else if (type == ReferenceObject.class) {
@@ -263,12 +294,10 @@ public class QueryPaneController implements Initializable {
 
 	
 	private boolean handleNoReferenceObjectsOrDimensions(List<DataObject> ratios) {
-		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
-		UnitManager unitManager = Main.getContext().getBean(UnitManager.class);
-		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
+		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
 		
-		boolean queryHadResults = false;
+		boolean hasResults = false;
 		
 		for (DataObject ratio : ratios) {
 			ResultGrid newResultGrid = new ResultGrid();
@@ -277,7 +306,7 @@ public class QueryPaneController implements Initializable {
 			
 			ArrayList<ResultObject> allFactsForRatio = dbReader.loadAllFactsForRatio(ratio.getId());
 			if (allFactsForRatio != null) {
-				queryHadResults = true;
+				hasResults = true;
 				
 				TreeMap<Long, ReferenceObject> refObjs = new TreeMap<>();
 				for (ResultObject resObj : allFactsForRatio) {
@@ -286,26 +315,21 @@ public class QueryPaneController implements Initializable {
 				}
 				ArrayList<TreeMap<Long, ReferenceObject>> rows = new ArrayList<>();
 				rows.add(refObjs);
-									
-				String unitSymbol = unitManager.getUnit(allFactsForRatio.get(0).getUnitId()).getSymbol();
-				resultGridController.initializeGrid(rows, new ArrayList<>(), ratio.getName(), unitSymbol);
+
+				resultGridController.initializeGrid(rows, new ArrayList<>(), (Ratio)ratio);
 				resultGridController.fillRatio(allFactsForRatio);
-			} else {					
-				resultGridController.initializeGridNoData(ratio.getName());
 			}
 		}
 		
-		return queryHadResults;
+		return hasResults;
 	}
 	
 	private boolean handleSingleReferenceObject(List<DataObject> ratios, List<DataObject> rowDims, List<DataObject> colDims, ArrayList<DataObject> combinedDims) {
-		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
-		UnitManager unitManager = Main.getContext().getBean(UnitManager.class);
-		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
+		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
 		
-		boolean queryHadResults = false;
-		
+		boolean hasResults = false;
+				
 		long refObjId = combinedDims.get(0).getId();
 		
 		for (DataObject ratio : ratios) {
@@ -315,27 +339,22 @@ public class QueryPaneController implements Initializable {
 			
 			ResultObject factForRefObj = dbReader.loadFactForSingleRefObj(ratio.getId(), refObjId);
 			if (factForRefObj != null) {
-				queryHadResults = true;
-
-				String unitSymbol = unitManager.getUnit(factForRefObj.getUnitId()).getSymbol();
-				resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), ratio.getName(), unitSymbol);
+				hasResults = true;
+				
+				resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), (Ratio)ratio);
 				resultGridController.fillReferenceObject(factForRefObj);
-			} else {					
-				resultGridController.initializeGridNoData(ratio.getName());
 			}
 		}
 		
-		return queryHadResults;
+		return hasResults;
 	}
 	
 	private boolean handleReferenceObjectCombination(List<DataObject> ratios, List<DataObject> rowDims, List<DataObject> colDims, ArrayList<DataObject> combinedDims) {
-		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
-		UnitManager unitManager = Main.getContext().getBean(UnitManager.class);
-		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
+		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
 		
-		boolean queryHadResults = false;
-		
+		boolean hasResults = false;
+						
 		long refObjId = refObjManager.findRefObjAggregateId(combinedDims);
 		
 		for (DataObject ratio : ratios) {
@@ -345,28 +364,23 @@ public class QueryPaneController implements Initializable {
 			
 			ResultObject factForRefObj = dbReader.loadFactForRefObjCombination(ratio.getId(), refObjId);
 			if (factForRefObj != null) {
-				queryHadResults = true;
+				hasResults = true;
 				
-				String unitSymbol = unitManager.getUnit(factForRefObj.getUnitId()).getSymbol();
-				resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), ratio.getName(), unitSymbol);
+				resultGridController.initializeGrid(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), (Ratio)ratio);
 				resultGridController.fillReferenceObject(factForRefObj);
-			} else {					
-				resultGridController.initializeGridNoData(ratio.getName());
 			}
 		}
-
-		return queryHadResults;
+		
+		return hasResults;
 	}
-
+	
 	
 	private boolean handleSingleDimension(List<DataObject> ratios, List<DataObject> rowDims, List<DataObject> colDims, ArrayList<DataObject> combinedDims) {
-		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
-		UnitManager unitManager = Main.getContext().getBean(UnitManager.class);
-		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
+		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
 		
-		boolean queryHadResults = false;
-
+		boolean hasResults = false;
+		
 		long dimId = combinedDims.get(0).getId();
 		
 		for (DataObject ratio : ratios) {
@@ -376,28 +390,47 @@ public class QueryPaneController implements Initializable {
 			
 			ArrayList<ResultObject> factsForDimension = dbReader.loadFactsForSingleDim(ratio.getId(), dimId);
 			if (factsForDimension != null) {
-				queryHadResults = true;
-											
-				String unitSymbol = unitManager.getUnit(factsForDimension.get(0).getUnitId()).getSymbol();
-				resultGridController.initializeGridWithTotals(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), ratio.getName(), unitSymbol);
+				hasResults = true;
+				
+				resultGridController.initializeGridWTotals(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), (Ratio)ratio);
 				resultGridController.fillDimension(factsForDimension);
-			} else {					
-				resultGridController.initializeGridNoData(ratio.getName());
 			}
 		}
 		
-		return queryHadResults;
+		return hasResults;
+	}	
+	
+	
+	private boolean handleSingleDimensionWHierarchy(List<DataObject> ratios, List<DataObject> rowDims, List<DataObject> colDims, ArrayList<DataObject> combinedDims) {
+		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
+		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
+		
+		long dimId = ((DimensionHierarchy)combinedDims.get(0)).getTopLevel().getId();
+		
+		for (DataObject ratio : ratios) {
+			ResultGrid newResultGrid = new ResultGrid();
+			resultGridContainer.getChildren().add(newResultGrid);
+			newResultGrid.setGridId(resultGridController.addResultGrid(newResultGrid));
+			
+			ArrayList<ResultObject> factsForDimension = dbReader.loadFactsForSingleDim(ratio.getId(), dimId);	
+			
+			ArrayList<DimensionHierarchy> hierarchies = new ArrayList<>();
+			hierarchies.add((DimensionHierarchy)combinedDims.get(0));
+			
+			resultGridController.initializeGridWHierarchiesWTotals(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), hierarchies, (Ratio)ratio);
+			resultGridController.fillDimension(factsForDimension);
+		}
+		
+		return true;		
 	}
-
+	
 	private boolean handleDimensionCombination(List<DataObject> ratios, List<DataObject> rowDims, List<DataObject> colDims, ArrayList<DataObject> combinedDims) {
+		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
-		UnitManager unitManager = Main.getContext().getBean(UnitManager.class);
+			
+		boolean hasResults = false;
 		
-		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
-		
-		boolean queryHadResults = false;
-
 		long dimId = dimManager.findDimAggregateId(combinedDims);
 		
 		for (DataObject ratio : ratios) {
@@ -407,28 +440,50 @@ public class QueryPaneController implements Initializable {
 			
 			ArrayList<ResultObject> factsForDimension = dbReader.loadFactsForDimCombination(ratio.getId(), dimId);
 			if (factsForDimension != null) {
-				queryHadResults = true;
-
-				String unitSymbol = unitManager.getUnit(factsForDimension.get(0).getUnitId()).getSymbol();
-				resultGridController.initializeGridWithTotals(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), ratio.getName(), unitSymbol);
+				hasResults = true;
+				
+				resultGridController.initializeGridWTotals(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), (Ratio)ratio);
 				resultGridController.fillDimension(factsForDimension);
-			} else {					
-				resultGridController.initializeGridNoData(ratio.getName());
 			}
 		}
 		
-		return queryHadResults;
+		return hasResults;
 	}
-
-	private boolean handleMixed(List<DataObject> ratios, List<DataObject> rowDims, List<DataObject> colDims, ArrayList<DataObject> combinedDims) {
+	
+	private boolean handleDimensionCombinationWHierarchy(List<DataObject> ratios, List<DataObject> rowDims, List<DataObject> colDims, ArrayList<DataObject> combinedDims) {
+		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
-		UnitManager unitManager = Main.getContext().getBean(UnitManager.class);
 		
+		long dimId = dimManager.findDimAggregateId(combinedDims);
+		
+		for (DataObject ratio : ratios) {
+			ResultGrid newResultGrid = new ResultGrid();
+			resultGridContainer.getChildren().add(newResultGrid);
+			resultGridController.addResultGrid(newResultGrid);
+			
+			ArrayList<ResultObject> factsForDimension = dbReader.loadFactsForDimCombination(ratio.getId(), dimId);
+			
+			ArrayList<DimensionHierarchy> hierarchies = new ArrayList<>();
+			for (DataObject obj : combinedDims) {
+				if (obj instanceof DimensionHierarchy) {
+					hierarchies.add((DimensionHierarchy)obj);
+				}
+			}
+			
+			resultGridController.initializeGridWHierarchiesWTotals(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), hierarchies,(Ratio)ratio);
+			resultGridController.fillDimension(factsForDimension);
+		}
+		
+		return true;
+	}
+	private boolean handleMixed(List<DataObject> ratios, List<DataObject> rowDims, List<DataObject> colDims, ArrayList<DataObject> combinedDims) {
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
+		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
+		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
+				
+		boolean hasResults = false;
 		
-		boolean queryHadResults = false;
-
 		long dimId = dimManager.findDimAggregateId(combinedDims);
 		Long[] refObjIds = refObjManager.readRefObjComponentIds(combinedDims);
 		
@@ -438,18 +493,16 @@ public class QueryPaneController implements Initializable {
 			resultGridController.addResultGrid(newResultGrid);
 			
 			ArrayList<ResultObject> factsForDimensionAndRefObjs = dbReader.loadFactsForDimCombinationAndRefObjs(ratio.getId(), dimId, refObjIds);
+			
 			if (factsForDimensionAndRefObjs != null) {
-				queryHadResults = true;
-				
-				String unitSymbol = unitManager.getUnit(factsForDimensionAndRefObjs.get(0).getUnitId()).getSymbol();
-				resultGridController.initializeGridWithTotals(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), ratio.getName(), unitSymbol);
-				resultGridController.fillDimension(factsForDimensionAndRefObjs);
-			} else {					
-				resultGridController.initializeGridNoData(ratio.getName());
+				hasResults = true;
 			}
+			
+			resultGridController.initializeGridWTotals(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), (Ratio)ratio);
+			resultGridController.fillDimension(factsForDimensionAndRefObjs);
 		}
 		
-		return queryHadResults;
+		return hasResults;
 	}
 
 }

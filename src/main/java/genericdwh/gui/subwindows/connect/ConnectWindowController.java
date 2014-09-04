@@ -17,8 +17,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 
 public class ConnectWindowController {
 	
@@ -130,18 +128,5 @@ public class ConnectWindowController {
 
 	@FXML public void buttonCancelOnClickHandler() {
 		closeWindow();
-	}
-
-	@FXML public void onKeyPressedHandler(KeyEvent event) {
-		KeyCode pressedKeyCode = event.getCode();
-		
-		if (pressedKeyCode == KeyCode.ESCAPE) {
-			closeWindow();
-		}
-		else if (pressedKeyCode == KeyCode.ENTER) {
-			connectToDatabase();
-		}
-		
-		event.consume();
 	}
 }

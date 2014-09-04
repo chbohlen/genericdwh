@@ -92,6 +92,10 @@ public class MainWindowController implements Initializable{
 	public void postStatus(String status) {
 		statusBar.setText(status);
 	}
+	
+	public void clearStatus() {
+		statusBar.setText("");
+	}
 		
 	@FXML protected void menuBarExitOnClickHandler() {
 		Main.getContext().getBean(DatabaseController.class).disconnect();

@@ -1,6 +1,8 @@
 package genericdwh.gui.mainwindow.querypane.resultgrid;
 
+import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import lombok.Getter;
@@ -19,6 +21,7 @@ public class ResultGridCell extends BorderPane {
 	@Getter private boolean hasChanged = false;
 	
 	private Label label;
+	private Button button;
 		
 	public ResultGridCell(int colIndex, int rowIndex) {
 		this.colIndex = colIndex;
@@ -34,11 +37,19 @@ public class ResultGridCell extends BorderPane {
 		
 		setText("no data");
 	}
-	
+		
 	public ResultGridCell(String text, int colIndex, int rowIndex) {
 		this(colIndex, rowIndex);
 			
 		setText(text);
+	}
+	
+	public ResultGridCell(String text, int colIndex, int rowIndex, DimensionHierarchy hierarchy, int currLevel) {
+		this(text, colIndex, rowIndex);
+		
+		button = new Button("+");
+		setRight(button);
+		ResultGridCell.setMargin(button, new Insets(0, 0, 0, 3));
 	}
 
 	public void setValue(Double value, String symbol) {
