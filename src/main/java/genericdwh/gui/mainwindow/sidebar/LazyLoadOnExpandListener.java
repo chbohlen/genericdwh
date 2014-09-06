@@ -32,9 +32,9 @@ public 	class LazyLoadOnExpandListener implements ChangeListener<Boolean> {
     		
     		TreeMap<Long, ReferenceObject> refObjs;
     		if (tiObj.getValue() instanceof ReferenceObject) {
-    			refObjs = refObjManager.loadRefObjsForDimAndRefObjParent((Dimension)tiObj.getFirstChild().getValue(), (ReferenceObject)tiObj.getValue());
+    			refObjs = refObjManager.loadRefObjsForDimAndRefObjParent(tiObj.getFirstChild().getValue().getId(), tiObj.getValue().getId());
     		} else {
-    			refObjs = refObjManager.loadRefObjsForDim((Dimension)tiObj.getFirstChild().getValue());
+    			refObjs = refObjManager.loadRefObjsForDim(tiObj.getFirstChild().getValue().getId());
     		}
     		
     		DataObjectTreeItem nextLvl = tiObj.getFirstChild().getFirstChild();

@@ -17,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Callback;
 
@@ -157,5 +158,10 @@ public class SidebarController implements Initializable {
 
 	@FXML public void contextMenuNewRatioOnClickHandler() {
 		
+	}
+	
+	public void updateLayout(double width, double height) {
+		AnchorPane.setBottomAnchor(dimensionSidebar , (height - 50) * 0.40);
+		AnchorPane.setTopAnchor(ratioSidebar , (height - 50) * 0.60);
 	}
 }

@@ -1,15 +1,19 @@
 package genericdwh.gui.mainwindow.querypane.resultgrid;
 
+import genericdwh.dataobjects.DataObject;
 import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.dimension.DimensionManager;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
+import genericdwh.gui.mainwindow.querypane.QueryPaneController.QueryType;
 import genericdwh.main.Main;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -25,10 +29,7 @@ public class ResultGrid extends GridPane {
 	
 	@Getter @Setter private int gridId = -1;
 	
-	private ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs;
-	private ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs;
-	
-	private Ratio ratio;
+	@Getter private Ratio ratio;
 	
 	@Setter private String unitSymbol;
 
@@ -50,8 +51,13 @@ public class ResultGrid extends GridPane {
 	private int grandTotalCol;
 	private int grandTotalRow;
 	
-	private ArrayList<DimensionHierarchy> hierarchies = new ArrayList<>();
+	@Getter private ArrayList<Entry<DimensionHierarchy, Integer>> hierarchies = new ArrayList<>();
 	private boolean hasHierarchies = false;
+	
+	@Getter @Setter private List<DataObject> rowDims;
+	@Getter @Setter private List<DataObject> colDims;
+	@Getter @Setter private ArrayList<DataObject> combinedDims;
+	@Getter @Setter private QueryType queryType;
 
 	public ResultGrid() {
 		super();
@@ -59,15 +65,13 @@ public class ResultGrid extends GridPane {
 		setPadding(new Insets(20));
 	}
 
-	public void initialize(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, Ratio ratio) {
-		this.rowRefObjs = rowRefObjs;
-		this.colRefObjs = colRefObjs;
+	
+	private void initialize(Ratio ratio, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, DimensionHierarchy changedHierarchy, Dimension newLevel) {
 		this.ratio = ratio;
-		
 		setTitle(ratio.getName());
-
-		rowHeaderTree = createHeaders(rowRefObjs, colRefObjs.size(), true);
-		colHeaderTree = createHeaders(colRefObjs, rowRefObjs.size(), false);
+		
+		rowHeaderTree = createHeaders(rowRefObjs, colRefObjs.size(), true, changedHierarchy, newLevel);
+		colHeaderTree = createHeaders(colRefObjs, rowRefObjs.size(), false, changedHierarchy, newLevel);
 
 		firstRowIndex = getFirstRowIndex(colRefObjs);
 		firstColIndex = getFirstColIndex(rowRefObjs);
@@ -81,8 +85,12 @@ public class ResultGrid extends GridPane {
 		createResultCells();
 	}
 	
-	public void initializeWTotals(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, Ratio ratio) {
-		initialize(rowRefObjs, colRefObjs, ratio);
+	public void initializeDefault(Ratio ratio, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs) {
+		initialize(ratio, rowRefObjs, colRefObjs, null, null);
+	}
+	
+	public void initializeWTotals(Ratio ratio, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs) {
+		initialize(ratio, rowRefObjs, colRefObjs, null, null);
 		
 		colTotalHeaders = createTotalHeaders(colRefObjs, rowRefObjs.size(), true);
 		rowTotalHeaders = createTotalHeaders(rowRefObjs, colRefObjs.size(), false);
@@ -90,11 +98,13 @@ public class ResultGrid extends GridPane {
 		createTotalCells();
 	}
 	
-	public void initializeWHierarchiesWTotals(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, ArrayList<DimensionHierarchy> hierarchies, Ratio ratio) {
-		this.hierarchies.addAll(hierarchies);
+	public void initializeWHierarchiesWTotals(Ratio ratio, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, ArrayList<DimensionHierarchy> hierarchies) {
+		for(DimensionHierarchy hierarchy : hierarchies) {
+			this.hierarchies.add(new SimpleEntry<>(hierarchy, 0));
+		}
 		hasHierarchies = true;
 		
-		initialize(rowRefObjs, colRefObjs, ratio);
+		initialize(ratio, rowRefObjs, colRefObjs, null, null);
 				
 		colTotalHeaders = createTotalHeaders(colRefObjs, rowRefObjs.size(), true);
 		rowTotalHeaders = createTotalHeaders(rowRefObjs, colRefObjs.size(), false);
@@ -102,19 +112,27 @@ public class ResultGrid extends GridPane {
 		createTotalCells();
 	}
 
-	public void initializeNoData(Ratio ratio) {
-		setTitle(ratio.getName());
+	public void reinitializeWHierarchiesWTotals(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, DimensionHierarchy changedHierarchy, Dimension newLevel) {
+		getChildren().clear();
+		resultsTable.clear();
+		totalsTable.clear();
 		
-		ResultGridCell noData = new ResultGridCell("no data", 1, 1);
-		add(noData, 1, 1);
+		initialize(ratio, rowRefObjs, colRefObjs, changedHierarchy, newLevel);
+		
+		colTotalHeaders = createTotalHeaders(colRefObjs, rowRefObjs.size(), true);
+		rowTotalHeaders = createTotalHeaders(rowRefObjs, colRefObjs.size(), false);
+
+		createTotalCells();
 	}
+
 	
 	private void setTitle(String ratioName) {
 		ResultGridCell title = new ResultGridCell(ratioName, 0, 0);
 		add(title, 0, 0);
 	}
 
-	private TreeMap<Long, ResultGridNode> createHeaders(ArrayList<TreeMap<Long, ReferenceObject>> refObjs, int baseOffset, boolean isRowHeader) {
+	
+	private TreeMap<Long, ResultGridNode> createHeaders(ArrayList<TreeMap<Long, ReferenceObject>> refObjs, int baseOffset, boolean isRowHeader, DimensionHierarchy changedHierarchy, Dimension newLevel) {
 		TreeMap<Long, ResultGridNode> root = new TreeMap<>();
 
 		if (refObjs.isEmpty()) {
@@ -134,8 +152,17 @@ public class ResultGrid extends GridPane {
 		int refObjCount = getRefObjCount(refObjs, 1);
 		
 		DimensionHierarchy currHierarchy = null;
+		boolean collapsed = true;
 		if (hasHierarchies) {
-			currHierarchy = findHierarchy(refObjs.get(0).firstEntry().getValue().getDimensionId());
+			Entry<DimensionHierarchy, Integer> currHierarchyEntry = getCurrentHierarchy(refObjs.get(0).firstEntry().getValue().getDimensionId());
+			if (currHierarchyEntry != null) {
+				currHierarchy = currHierarchyEntry.getKey();
+				int currMaxLevelNo = currHierarchyEntry.getValue();
+				
+				if (currMaxLevelNo > 0) {
+					collapsed = false;
+				}
+			}
 		}
 		
 		for (Entry<Long, ReferenceObject> rootEntry : refObjs.get(0).entrySet()) {
@@ -144,16 +171,20 @@ public class ResultGrid extends GridPane {
 			ResultGridNode newRootNode;
 			if (isRowHeader) {
 				if (currHierarchy != null) {
-					newRootNode = new ResultGridNode(rootEntry.getKey(), new ResultGridCell(rootEntry.getValue().getName(), initOffset, j, currHierarchy, 0));
+					newRootNode = new ResultGridNode(rootEntry.getKey(),
+									new ResultGridCell(rootEntry.getValue().getName(), initOffset, j, currHierarchy, currHierarchy.getTopLevel(), collapsed));
 				} else {
-					newRootNode = new ResultGridNode(rootEntry.getKey(), new ResultGridCell(rootEntry.getValue().getName(), initOffset, j));
+					newRootNode = new ResultGridNode(rootEntry.getKey(),
+									new ResultGridCell(rootEntry.getValue().getName(), initOffset, j));
 				}
 				add(newRootNode.getCell(), initOffset, j);
 			} else {
 				if (currHierarchy != null) {
-					newRootNode = new ResultGridNode(rootEntry.getKey(), new ResultGridCell(rootEntry.getValue().getName(), j, initOffset, currHierarchy, 0));
+					newRootNode = new ResultGridNode(rootEntry.getKey(),
+									new ResultGridCell(rootEntry.getValue().getName(), j, initOffset, currHierarchy, currHierarchy.getTopLevel(), collapsed));
 				} else {
-					newRootNode = new ResultGridNode(rootEntry.getKey(), new ResultGridCell(rootEntry.getValue().getName(), j, initOffset));
+					newRootNode = new ResultGridNode(rootEntry.getKey(),
+									new ResultGridCell(rootEntry.getValue().getName(), j, initOffset));
 				}
 				add(newRootNode.getCell(), j, initOffset);
 			}
@@ -172,8 +203,28 @@ public class ResultGrid extends GridPane {
 
 		for (int i = 1 + initOffset; i < refObjs.size(); i++) {
 			currHierarchy = null;
+			collapsed = true;
+			Dimension currLevel = null;
+			boolean isLastLevel = true;
 			if (hasHierarchies) {
-				currHierarchy = findHierarchy(refObjs.get(i).firstEntry().getValue().getDimensionId());
+				long dimId = refObjs.get(i).firstEntry().getValue().getDimensionId();
+				
+				Entry<DimensionHierarchy, Integer> currHierarchyEntry = getCurrentHierarchy(dimId);				
+				if (currHierarchyEntry != null) {
+					currHierarchy = currHierarchyEntry.getKey();
+					int currMaxLevelNo = currHierarchyEntry.getValue();
+					
+					Entry<Integer, Dimension> currLevelEntry = getCurrentLevel(currHierarchy, dimId);
+					int currLevelNo = currLevelEntry.getKey();
+					currLevel = currLevelEntry.getValue();
+					
+					if (currLevelNo + 1 < currHierarchy.getLevels().size()) {
+						isLastLevel = false;
+						if (currMaxLevelNo > currLevelNo) {
+							collapsed = false;
+						}
+					}	
+				}
 			}
 			
 			offset = baseOffset;
@@ -185,20 +236,23 @@ public class ResultGrid extends GridPane {
 				for (Entry<Long, ReferenceObject> currEntry : refObjs.get(i).entrySet()) {
 					ResultGridNode newNode;
 					if (isRowHeader) {
-						if (currHierarchy != null) {
-							newNode = new ResultGridNode(currEntry.getKey(), new ResultGridCell(currEntry.getValue().getName(), i, j, currHierarchy, 0));
+						if (currHierarchy != null && !isLastLevel) {
+							newNode = new ResultGridNode(currEntry.getKey(),
+										new ResultGridCell(currEntry.getValue().getName(), i, j, currHierarchy, currLevel, collapsed));
 						}
 						else {
-							newNode = new ResultGridNode(currEntry.getKey(), new ResultGridCell(currEntry.getValue().getName(), i, j));
+							newNode = new ResultGridNode(currEntry.getKey(),
+										new ResultGridCell(currEntry.getValue().getName(), i, j));
 						}
 						add(newNode.getCell(), i, j);
 					} else {
-						if (currHierarchy != null) {
-							newNode = new ResultGridNode(currEntry.getKey(), new ResultGridCell(currEntry.getValue().getName(), j, i, currHierarchy, 0));
+						if (currHierarchy != null && !isLastLevel) {
+							newNode = new ResultGridNode(currEntry.getKey(),
+										new ResultGridCell(currEntry.getValue().getName(), j, i, currHierarchy, currLevel, collapsed));
 						} else {
-							newNode = new ResultGridNode(currEntry.getKey(), new ResultGridCell(currEntry.getValue().getName(), j, i));
+							newNode = new ResultGridNode(currEntry.getKey(),
+										new ResultGridCell(currEntry.getValue().getName(), j, i));
 						}
-						newNode = new ResultGridNode(currEntry.getKey(), new ResultGridCell(currEntry.getValue().getName(), j, i));
 						add(newNode.getCell(), j, i);
 					}
 					newNode.setDimensionId(currEntry.getValue().getDimensionId());
@@ -222,16 +276,6 @@ public class ResultGrid extends GridPane {
 			tmpQueue.clear();
 		}
 		return root;
-	}
-	
-	private DimensionHierarchy findHierarchy(long dimId) {
-		for (DimensionHierarchy hierarchy : hierarchies) {
-			if (hierarchy.getTopLevel().getId() == dimId)  {
-				return hierarchy;
-			}
-		}
-		
-		return null;
 	}
 
 	private ArrayList<ResultGridNode> createTotalHeaders(ArrayList<TreeMap<Long, ReferenceObject>> refObjs, int offset, boolean isRowHeader) {
@@ -287,6 +331,7 @@ public class ResultGrid extends GridPane {
 		return headers;
 	}
 
+	
 	private void createResultCells() {
 		for (int i = firstRowIndex; i < firstRowIndex + rowCount; i++) {
 			for (int j = firstColIndex; j < firstColIndex + colCount; j++) {
@@ -332,6 +377,7 @@ public class ResultGrid extends GridPane {
 		totalsTable.put(grandTotalRow, grandTotalCol, grandTotalCell);
 	}
 
+	
 	public void postResult(Long id, Long[] componentIds, Double value) {
 		int[] index = getCellIndex(componentIds);
 		ResultGridNode node = resultsTable.get(index[0], index[1]);
@@ -339,7 +385,7 @@ public class ResultGrid extends GridPane {
 		node.setComponentIds(componentIds);
 		node.getCell().setValue(value, unitSymbol);
 	}
-
+	
 	public void calculateAndPostTotals() {
 		calculateAndPostSubtotals(colTotalHeaders, true);
 		calculateAndPostSubtotals(rowTotalHeaders, false);
@@ -403,10 +449,11 @@ public class ResultGrid extends GridPane {
 		}
 	}
 
+	
 	private int[] getCellIndex(Long[] componentIds) {
 		return new int[] { getRowIndex(componentIds), getColIndex(componentIds) };
 	}
-
+	
 	private int getRowIndex(Long[] componentIds) {
 		if (rowHeaderTree.isEmpty()) {
 			return firstRowIndex;
@@ -467,7 +514,7 @@ public class ResultGrid extends GridPane {
 
 		return index;
 	}
-
+	
 	private int getFirstRowIndex(ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs) {
 		if (colRefObjs.size() < 2) {
 			return 2;
@@ -484,14 +531,7 @@ public class ResultGrid extends GridPane {
 		}
 	}
 
-	private int getRefObjCount(ArrayList<TreeMap<Long, ReferenceObject>> refObjs, int startIndex) {
-		int count = 1;
-		for (int i = startIndex; i < refObjs.size(); i++) {
-			count *= refObjs.get(i).size();
-		}
-		return count;
-	}
-
+	
 	private void setHeaderSpans(TreeMap<Long, ResultGridNode> headerTree, boolean isRowHeader) {
 		LinkedList<ResultGridNode> queue = new LinkedList<>(headerTree.values());
 		
@@ -513,6 +553,15 @@ public class ResultGrid extends GridPane {
 		}
 	}
 
+	
+	private int getRefObjCount(ArrayList<TreeMap<Long, ReferenceObject>> refObjs, int startIndex) {
+		int count = 1;
+		for (int i = startIndex; i < refObjs.size(); i++) {
+			count *= refObjs.get(i).size();
+		}
+		return count;
+	}
+	
 	private int getTotalChildCount(ResultGridNode node) {
 		ResultGridNode currNode = node;
 		int count = 1;
@@ -526,6 +575,7 @@ public class ResultGrid extends GridPane {
 		}
 	}
 
+	
 	private ResultGridNode getHeaderNodeById(ResultGridNode root, long id) {
 		LinkedList<ResultGridNode> queue = new LinkedList<>();
 		queue.add(root);
@@ -551,6 +601,29 @@ public class ResultGrid extends GridPane {
 				queue.addAll(currBranch.getChildren().values());
 			}
 		}
+		return null;
+	}
+
+	
+	private Entry<DimensionHierarchy, Integer> getCurrentHierarchy(long dimId) {
+		for (Entry<DimensionHierarchy, Integer> currEntry : hierarchies) {
+			for (Dimension level : currEntry.getKey().getLevels())
+			if (level.getId() == dimId)  {
+				return currEntry;
+			}
+		}
+		
+		return null;
+	}
+	
+	private Entry<Integer, Dimension> getCurrentLevel(DimensionHierarchy hierarchy, long dimId) {
+		LinkedList<Dimension> levels = hierarchy.getLevels();
+		for (Dimension level : levels) {
+			if (level.getId() == dimId) {
+				return new SimpleEntry<>(levels.indexOf(level), level);
+			}
+		}
+		
 		return null;
 	}
 }

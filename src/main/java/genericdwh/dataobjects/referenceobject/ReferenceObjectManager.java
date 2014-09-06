@@ -24,14 +24,14 @@ public class ReferenceObjectManager extends DataObjectManager {
 		return newRefObj;
 	}
 	
-	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(Dimension dim) {
-		TreeMap<Long, ReferenceObject> newRefObjs = dbReader.loadRefObjsForDim(dim.getId());
+	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(long dimId) {
+		TreeMap<Long, ReferenceObject> newRefObjs = dbReader.loadRefObjsForDim(dimId);
 		referenceObjects.putAll(newRefObjs);
 		return newRefObjs;
 	}
 	
-	public TreeMap<Long, ReferenceObject> loadRefObjsForDimAndRefObjParent(Dimension dim, ReferenceObject refObjParent) {
-		TreeMap<Long, ReferenceObject> newRefObjs = dbReader.loadRefObjsForDimAndRefObjParent(dim.getId(), refObjParent.getId());
+	public TreeMap<Long, ReferenceObject> loadRefObjsForDimAndRefObjParent(long dimId, long refObjParentId) {
+		TreeMap<Long, ReferenceObject> newRefObjs = dbReader.loadRefObjsForDimAndRefObjParent(dimId, refObjParentId);
 		referenceObjects.putAll(newRefObjs);
 		return newRefObjs;
 	}
@@ -56,7 +56,7 @@ public class ReferenceObjectManager extends DataObjectManager {
 				if (dim instanceof DimensionHierarchy) {
 					dim = ((DimensionHierarchy)dim).getTopLevel();
 				}
-				result.add(loadRefObjsForDim((Dimension)dim));
+				result.add(loadRefObjsForDim(dim.getId()));
 			}
 		}
 		

@@ -1,6 +1,10 @@
 package genericdwh.gui.mainwindow.querypane.resultgrid;
 
+import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionHierarchy;
+import genericdwh.main.Main;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,6 +26,9 @@ public class ResultGridCell extends BorderPane {
 	
 	private Label label;
 	private Button button;
+	
+	private DimensionHierarchy hierarchy;
+	private Dimension currLevel;
 		
 	public ResultGridCell(int colIndex, int rowIndex) {
 		this.colIndex = colIndex;
@@ -44,10 +51,32 @@ public class ResultGridCell extends BorderPane {
 		setText(text);
 	}
 	
-	public ResultGridCell(String text, int colIndex, int rowIndex, DimensionHierarchy hierarchy, int currLevel) {
+	public ResultGridCell(String text, int colIndex, int rowIndex, DimensionHierarchy hierarchy, Dimension currLevel, boolean collapsed) {
 		this(text, colIndex, rowIndex);
 		
-		button = new Button("+");
+		this.hierarchy = hierarchy;
+		this.currLevel = currLevel;
+		
+		button = new Button();
+		
+		if (collapsed) {
+			button.setText("+");
+			button.setOnAction(new EventHandler<ActionEvent>() {
+			    @Override
+			    public void handle(ActionEvent e) {
+			    	expand();
+			    }
+			});
+		} else {
+			button.setText("-");
+			button.setOnAction(new EventHandler<ActionEvent>() {
+			    @Override
+			    public void handle(ActionEvent e) {
+			    	collapse();
+			    }
+			});
+		}
+
 		setRight(button);
 		ResultGridCell.setMargin(button, new Insets(0, 0, 0, 3));
 	}
@@ -61,9 +90,19 @@ public class ResultGridCell extends BorderPane {
 		} else {
 			setText(value.toString() + symbol);
 		}		
-	}
+	}		
 	
 	public void setText(String text) {
 		label.setText(text);
+	}
+	
+	private void expand() {
+    	Main.getContext().getBean(ResultGridController.class)
+			.expandCollapseGridHandler(((ResultGrid)getParent()).getGridId(), hierarchy, currLevel, true);
+	}
+	
+	private void collapse() {
+    	Main.getContext().getBean(ResultGridController.class)
+			.expandCollapseGridHandler(((ResultGrid)getParent()).getGridId(), hierarchy, currLevel, false);
 	}
 }

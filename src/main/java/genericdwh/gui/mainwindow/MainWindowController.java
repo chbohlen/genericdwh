@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -57,8 +59,20 @@ public class MainWindowController implements Initializable{
 			
 			SpringFXMLLoader loader = new SpringFXMLLoader(getClass().getResource("/fxml/mainwindow/MainWindow.fxml"), Main.getContext().getBean(MainWindowController.class));
 			Parent root = loader.load();
-			Scene scene = new Scene(root, 1000, 750);
+			Scene scene = new Scene(root, 1030, 750);
 			scene.getStylesheets().add("/css/StatusBarStyle.css");
+
+			scene.widthProperty().addListener(new ChangeListener<Number>() {
+			    @Override public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
+			    	updateLayouts();
+			    }
+			});
+			scene.heightProperty().addListener(new ChangeListener<Number>() {
+			    @Override public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneHeight, Number newSceneHeight) {
+			    	updateLayouts();
+			    }
+			});
+			
 			stage.setScene(scene);
 			stage.setTitle("Generic DWH");
 			stage.show();
@@ -97,19 +111,25 @@ public class MainWindowController implements Initializable{
 		statusBar.setText("");
 	}
 		
-	@FXML protected void menuBarExitOnClickHandler() {
+	@FXML private void menuBarExitOnClickHandler() {
 		Main.getContext().getBean(DatabaseController.class).disconnect();
 		stage.close();
     }
 
-	@FXML public void menuBarConnectOnClickHandler() {
+	@FXML private void menuBarConnectOnClickHandler() {
 		connectWindowController.createWindow();
 	}
 
-	@FXML public void menuBarDisconnectOnClickHandler() {
+	@FXML private void menuBarDisconnectOnClickHandler() {
 		Main.getContext().getBean(DatabaseController.class).disconnect();
 		
 		hideSidebars();
 		hideQueryPane();
+	}
+	
+	private void updateLayouts() {
+		double width = stage.getScene().getWidth();
+		double height = stage.getScene().getHeight();
+		sidebarController.updateLayout(width, height);
 	}
 }
