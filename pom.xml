@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.thesis</groupId>
   <artifactId>genericdwh</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
   <name>Generic DWH</name>
   <build>
   	<plugins>
@@ -90,11 +90,6 @@
   		<groupId>com.google.guava</groupId>
   		<artifactId>guava</artifactId>
   		<version>18.0-rc2</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.controlsfx</groupId>
-  		<artifactId>controlsfx</artifactId>
-  		<version>8.0.6</version>
   	</dependency>
   </dependencies>
 </project>

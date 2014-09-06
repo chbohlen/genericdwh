@@ -15,8 +15,6 @@ filter
 ratio totals
 grid collapsible
 
-more dynamic size
-
 cell padding
 
 refactor statusbar

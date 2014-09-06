@@ -176,7 +176,7 @@ CREATE TABLE `facts` (
 
 LOCK TABLES `facts` WRITE;
 /*!40000 ALTER TABLE `facts` DISABLE KEYS */;
-INSERT INTO `facts` VALUES (2,67,3200,1),(2,68,1200,1),(2,69,5090,1),(2,70,3900,1),(2,71,1700,1),(2,72,3600,1),(2,73,2220,1),(2,74,1700,1),(2,75,1800,1),(2,76,6000,1),(2,77,4590,1),(2,78,4250,1),(2,79,5780,1),(2,80,5100,1),(2,81,3500,1),(2,82,100,1),(2,83,230,1),(2,84,220,1),(2,85,225,1),(2,86,190,1),(2,87,350,1),(2,88,345,1),(2,89,380,1),(2,90,380,1),(2,91,310,1),(2,92,270,1),(2,93,200,1);
+INSERT INTO `facts` VALUES (2,12,21100,1),(2,62,9490,1),(2,67,3200,1),(2,68,1200,1),(2,69,5090,1),(2,70,3900,1),(2,71,1700,1),(2,72,3600,1),(2,73,2220,1),(2,74,1700,1),(2,75,1800,1),(2,76,6000,1),(2,77,4590,1),(2,78,4250,1),(2,79,5780,1),(2,80,5100,1),(2,81,3500,1),(2,82,100,1),(2,83,230,1),(2,84,220,1),(2,85,225,1),(2,86,190,1),(2,87,350,1),(2,88,345,1),(2,89,380,1),(2,90,380,1),(2,91,310,1),(2,92,270,1),(2,93,200,1);
 /*!40000 ALTER TABLE `facts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -255,7 +255,7 @@ CREATE TABLE `ratios` (
 
 LOCK TABLES `ratios` WRITE;
 /*!40000 ALTER TABLE `ratios` DISABLE KEYS */;
-INSERT INTO `ratios` VALUES (1,'Gewinn',1),(2,'Umsatz',1),(3,'Kosten',1);
+INSERT INTO `ratios` VALUES (1,'Gewinne',1),(2,'Umsätze',1),(3,'Kosten',1);
 /*!40000 ALTER TABLE `ratios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -309,7 +309,7 @@ CREATE TABLE `reference_object_hierarchies` (
 
 LOCK TABLES `reference_object_hierarchies` WRITE;
 /*!40000 ALTER TABLE `reference_object_hierarchies` DISABLE KEYS */;
-INSERT INTO `reference_object_hierarchies` VALUES (12,16),(12,17),(12,18),(12,19),(12,20),(12,21),(12,22),(12,23),(12,24),(12,25),(12,26),(15,27),(15,28),(15,29),(15,30),(15,31),(15,32),(15,33),(15,34),(15,35),(15,36),(15,37),(15,38),(15,39),(15,40),(15,41),(15,42),(15,43),(15,44),(15,45),(15,46),(15,47),(15,48),(15,49),(15,50),(15,51),(15,52),(15,53),(15,54),(15,55),(15,56),(15,57),(58,59),(58,60),(58,61);
+INSERT INTO `reference_object_hierarchies` VALUES (12,15),(12,16),(12,17),(12,18),(12,19),(12,20),(12,21),(12,22),(12,23),(12,24),(12,25),(12,26),(15,27),(15,28),(15,29),(15,30),(15,31),(15,32),(15,33),(15,34),(15,35),(15,36),(15,37),(15,38),(15,39),(15,40),(15,41),(15,42),(15,43),(15,44),(15,45),(15,46),(15,47),(15,48),(15,49),(15,50),(15,51),(15,52),(15,53),(15,54),(15,55),(15,56),(15,57),(58,59),(58,60),(58,61);
 /*!40000 ALTER TABLE `reference_object_hierarchies` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -328,7 +328,7 @@ CREATE TABLE `reference_objects` (
   UNIQUE KEY `reference_object_id` (`reference_object_id`),
   KEY `dimension_id` (`dimension_id`),
   CONSTRAINT `reference_objects_ibfk_1` FOREIGN KEY (`dimension_id`) REFERENCES `dimensions` (`dimension_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=95 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -350,4 +350,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-09-01  5:03:37
+-- Dump completed on 2014-09-06 11:20:09
