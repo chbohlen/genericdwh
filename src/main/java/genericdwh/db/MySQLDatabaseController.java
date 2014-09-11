@@ -1,5 +1,7 @@
 package genericdwh.db;
 
+import genericdwh.main.Main;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -52,6 +54,7 @@ public class MySQLDatabaseController implements DatabaseController {
 		try {
 			if (dbConnection != null) {
 				dbConnection.close();
+				Main.getContext().getBean(QueryCache.class).clear();
 				logger.info("Database connection closed.");
 			}
 			else {

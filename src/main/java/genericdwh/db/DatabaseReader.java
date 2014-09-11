@@ -8,10 +8,11 @@ import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.unit.Unit;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-public interface DatabaseReader {
+public interface DatabaseReader {	
 	public TreeMap<Long, DimensionCategory> loadDimensionCategories();
 	public TreeMap<Long, Dimension> loadDimensions();
 	public ArrayList<Entry<Long, Long>> loadDimensionHierachies();
@@ -20,6 +21,7 @@ public interface DatabaseReader {
 	public ReferenceObject loadRefObj(long refObjId);
 	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(long dimId);
 	public TreeMap<Long, ReferenceObject> loadRefObjsForDimAndRefObjParent(long dimId, long refObjId);
+	public List<Long> loadRefObjChildrenIds(long refObjId);
 		
 	public TreeMap<Long, RatioCategory> loadRatioCategories();
 	public TreeMap<Long, Ratio> loadRatios();
@@ -30,14 +32,16 @@ public interface DatabaseReader {
 	public boolean dimensionHasRecords(long dimId);
 	public boolean dimensionAndRefObjParentHaveRecords(long dimId, long refObjId);
 	
+	public boolean dimensionIsCombination(long dimId);
+	
 	public long findDimAggregateId(Long[] componentIds);
 	public long findRefObjAggregateId(Long[] componentIds);
 	
 	public ResultObject loadFactForSingleRefObj(long ratioId, long refObjId);
 	public ResultObject loadFactForRefObjCombination(long ratioId, long refObjId);
-	public ArrayList<ResultObject> loadFactsForSingleDim(long ratioId, long dimId);
-	public ArrayList<ResultObject> loadFactsForDimCombination(long ratioId, long dimId);
-	public ArrayList<ResultObject> loadFactsForDimCombinationAndRefObjs(long ratioId, long dimId, Long[] refObjIds);
+	public List<ResultObject> loadFactsForSingleDim(long ratioId, long dimId, Long[] filterRefObjIds);
+	public List<ResultObject> loadFactsForDimCombination(long ratioId, long dimId, Long[] filterRefObjIds);
+	public List<ResultObject> loadFactsForDimCombinationAndRefObjs(long ratioId, long dimId, Long[] refObjIds, Long[] filterRefObjIds);
 	
-	public ArrayList<ResultObject> loadAllFactsForRatio(long ratioId);
+	public List<ResultObject> loadAllFactsForRatio(long ratioId, Long[] filterRefObjIds);
 }

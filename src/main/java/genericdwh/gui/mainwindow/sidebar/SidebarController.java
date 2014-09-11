@@ -66,7 +66,7 @@ public class SidebarController implements Initializable {
 			
 			categoryTreeItemMap.put(currCat.getId(), tiNewCategory);
 		}
-		
+				
 		DimensionCategory noCat = new DimensionCategory(-1, "Uncategorized");
 		DataObjectTreeItem tiNoCat = new DataObjectTreeItem(noCat);
 		
@@ -92,11 +92,16 @@ public class SidebarController implements Initializable {
 			}
 		}
 		
+		DimensionCategory combinations = new DimensionCategory(-1, "Combinations");
+		DataObjectTreeItem tiCombinations = new DataObjectTreeItem(combinations);
+		
 		for (Dimension currDim : dimensions.values()) {
 			DataObjectTreeItem tiNewDim = new DataObjectTreeItem(currDim);
 			DataObjectTreeItem tiCat = categoryTreeItemMap.get(currDim.getCategoryId());
 			if (tiCat != null) {
 				tiCat.addChild(tiNewDim);
+			} else if (currDim.isCombination()) {
+				tiCombinations.addChild(tiNewDim);
 			} else {
 				tiNoCat.addChild(tiNewDim);
 			}
@@ -105,6 +110,10 @@ public class SidebarController implements Initializable {
 				DataObjectTreeItem tiPlaceholder = new DataObjectTreeItem(currDim);
 				tiNewDim.addChild(tiPlaceholder);
 			}
+		}
+		
+		if (!tiCombinations.getChildren().isEmpty()) {
+			tiRoot.addChild(tiCombinations);
 		}
 		
 		if (!tiNoCat.getChildren().isEmpty()) {

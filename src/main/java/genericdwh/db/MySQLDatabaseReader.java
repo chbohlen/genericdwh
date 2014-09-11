@@ -115,6 +115,21 @@ public class MySQLDatabaseReader implements DatabaseReader {
 												.intoMap(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, ReferenceObject.class);
 		return new TreeMap<>(result);
 	}
+	
+	@Override
+	public List<Long> loadRefObjChildrenIds(long refObjId) {
+		Result<Record1<Long>> result = dslContext
+										.select(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID)
+										.from(REFERENCE_OBJECT_HIERARCHIES)
+										.where(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(refObjId))
+										.fetch();
+		
+		if (result.isEmpty()) {
+			return null;
+		}
+		
+		return result.into(Long.class);
+	}
 		
 	
 	@Override
@@ -178,6 +193,18 @@ public class MySQLDatabaseReader implements DatabaseReader {
 								.on(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID))
 							.where(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
 								.and(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(refObjId))
+							.fetch()
+							.isEmpty();
+		return !isEmpty;
+	}
+
+	
+	@Override
+	public boolean dimensionIsCombination(long dimId) {
+		boolean isEmpty = dslContext
+							.select()
+							.from(DIMENSION_COMBINATIONS)
+							.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(dimId))
 							.fetch()
 							.isEmpty();
 		return !isEmpty;
@@ -274,7 +301,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	
 
 	@Override
-	public ResultObject loadFactForSingleRefObj(long ratioId, long refObjId) {
+	public ResultObject loadFactForSingleRefObj(long ratioId, long refObjId) {		
 		Result<Record> result = dslContext
 									.select()
 									.from(FACTS)
@@ -316,7 +343,14 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	}
 	
 	@Override
-	public ArrayList<ResultObject> loadFactsForSingleDim(long ratioId, long dimId) {
+	public List<ResultObject> loadFactsForSingleDim(long ratioId, long dimId, Long[] filterRefObjIds) {		
+		SelectQuery<Record> filterCombinationsQuery = dslContext.selectQuery();
+		filterCombinationsQuery.addSelect(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID);		
+		filterCombinationsQuery.addFrom(REFERENCE_OBJECT_COMBINATIONS);
+		filterCombinationsQuery.addConditions(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.in(filterRefObjIds));
+		
+		Field<Object> filterCombinationField = filterCombinationsQuery.asField();
+		
 		Result<Record> result = dslContext
 									.select()
 									.from(FACTS)
@@ -324,6 +358,8 @@ public class MySQLDatabaseReader implements DatabaseReader {
 										.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID))
 									.where(FACTS.RATIO_ID.equal(ratioId))
 										.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
+										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
+										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField))
 									.fetch();
 		
 		if (result.isEmpty()) {
@@ -342,7 +378,14 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	}
 	
 	@Override
-	public ArrayList<ResultObject> loadFactsForDimCombination(long ratioId, long dimId) {
+	public List<ResultObject> loadFactsForDimCombination(long ratioId, long dimId, Long[] filterRefObjIds) {
+		SelectQuery<Record> filterCombinationsQuery = dslContext.selectQuery();
+		filterCombinationsQuery.addSelect(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID);		
+		filterCombinationsQuery.addFrom(REFERENCE_OBJECT_COMBINATIONS);
+		filterCombinationsQuery.addConditions(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.in(filterRefObjIds));
+		
+		Field<Object> filterCombinationField = filterCombinationsQuery.asField();
+		
 		Result<Record> result = dslContext
 									.select()
 									.from(FACTS)
@@ -352,6 +395,8 @@ public class MySQLDatabaseReader implements DatabaseReader {
 										.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
 									.where(FACTS.RATIO_ID.equal(ratioId))
 										.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
+										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
+										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField))
 									.fetch();
 		
 		if (result.isEmpty()) {
@@ -365,18 +410,25 @@ public class MySQLDatabaseReader implements DatabaseReader {
 														 record.getValue(0, FACTS.VALUE),
 														 record.getValue(0, FACTS.UNIT_ID));
 			resultList.add(resultObject);
-		}                                                                                                                                                                                                                                                                                                                                                                           
+		}
 		return resultList;
 	}
 
 	@Override
-	public ArrayList<ResultObject> loadFactsForDimCombinationAndRefObjs(long ratioId, long dimId, Long[] refObjIds) {
-		SelectQuery<Record> filterQuery = dslContext.selectQuery();
-		filterQuery.addSelect(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID);		
-		filterQuery.addFrom(REFERENCE_OBJECT_COMBINATIONS);
-		filterQuery.addConditions(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.in(refObjIds));
+	public List<ResultObject> loadFactsForDimCombinationAndRefObjs(long ratioId, long dimId, Long[] refObjIds, Long[] filterRefObjIds) {	
+		SelectQuery<Record> filterCombinationsQuery = dslContext.selectQuery();
+		filterCombinationsQuery.addSelect(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID);		
+		filterCombinationsQuery.addFrom(REFERENCE_OBJECT_COMBINATIONS);
+		filterCombinationsQuery.addConditions(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.in(filterRefObjIds));
 		
-		Field<Object> filterField = filterQuery.asField();
+		Field<Object> filterCombinationField = filterCombinationsQuery.asField();
+		
+		SelectQuery<Record> componentQuery = dslContext.selectQuery();
+		componentQuery.addSelect(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID);		
+		componentQuery.addFrom(REFERENCE_OBJECT_COMBINATIONS);
+		componentQuery.addConditions(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.in(refObjIds));
+		
+		Field<Object> componentField = componentQuery.asField();
 		
 		Result<Record> result = dslContext
 									.select()
@@ -387,7 +439,9 @@ public class MySQLDatabaseReader implements DatabaseReader {
 										.on(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
 									.where(FACTS.RATIO_ID.equal(ratioId))
 										.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
-										.and(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.in(filterField))
+										.and(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.in(componentField))
+										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
+										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField))
 									.fetch();
 
 		if (result.isEmpty()) {
@@ -401,21 +455,30 @@ public class MySQLDatabaseReader implements DatabaseReader {
 														 record.getValue(0, FACTS.VALUE),
 														 record.getValue(0, FACTS.UNIT_ID));
 			resultList.add(resultObject);
-		}                                                                                                                                                                                                                                                                                                                                                                           
+		}
 		return resultList;
 	}
 
 	@Override
-	public ArrayList<ResultObject> loadAllFactsForRatio(long ratioId) {
+	public List<ResultObject> loadAllFactsForRatio(long ratioId, Long[] filterRefObjIds) {
+		SelectQuery<Record> filterCombinationsQuery = dslContext.selectQuery();
+		filterCombinationsQuery.addSelect(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID);		
+		filterCombinationsQuery.addFrom(REFERENCE_OBJECT_COMBINATIONS);
+		filterCombinationsQuery.addConditions(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.in(filterRefObjIds));
+		
+		Field<Object> filterCombinationField = filterCombinationsQuery.asField();
+	
 		Result<Record> result = dslContext
 									.select()
 									.from(FACTS)
 									.where(FACTS.RATIO_ID.equal(ratioId))
+										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
+										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField))
 									.groupBy(FACTS.REFERENCE_OBJECT_ID)
 									.fetch();
 
 		if (result.isEmpty()) {
-		return null;
+			return null;
 		}
 		
 		ArrayList<ResultObject> resultList = new ArrayList<>();
@@ -425,7 +488,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 														 record.getValue(FACTS.VALUE),
 														 record.getValue(FACTS.UNIT_ID));
 			resultList.add(resultObject);
-		}                                                                                                                                                                                                                                                                                                                                                                           
+		}
 		return resultList;
 	}
 }

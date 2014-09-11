@@ -14,7 +14,7 @@ public class DatabaseControllerConfig {
 	public DatabaseReader databaseReader() {
 		return new MySQLDatabaseReader();
 	}
-	
+
 	@Bean
 	public DatabaseWriter databaseWriter() {
 		return new MySQLDatabaseWriter();

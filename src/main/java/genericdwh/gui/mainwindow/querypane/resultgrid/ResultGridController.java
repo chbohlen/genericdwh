@@ -38,7 +38,9 @@ public class ResultGridController {
 		resultGrids.getLast().initializeWTotals(ratio, rowRefObjs, colRefObjs);
 	}
 	
-	public void initializeGridWHierarchiesWTotals(Ratio ratio, List<DataObject> rowDims, List<DataObject> colDims, ArrayList<DataObject> combinedDims, ArrayList<DimensionHierarchy> hierarchies, QueryType queryType) {
+	public void initializeGridWHierarchiesWTotals(Ratio ratio, List<DataObject> rowDims, List<DataObject> colDims,
+			ArrayList<DataObject> combinedDims, List<DataObject> filter, List<DimensionHierarchy> hierarchies, QueryType queryType) {
+		
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
 		
 		ResultGrid grid = resultGrids.getLast();
@@ -46,58 +48,59 @@ public class ResultGridController {
 		grid.setColDims(colDims);
 		grid.setCombinedDims(combinedDims);
 		grid.setQueryType(queryType);
+		grid.setFilter(filter);
 		
-		grid.initializeWHierarchiesWTotals(ratio, refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), hierarchies);
+		grid.initializeWHierarchiesWTotals(ratio, refObjManager.loadRefObjs(rowDims, filter), refObjManager.loadRefObjs(colDims, filter), filter, hierarchies);
 	}
 
 	
-	public void fillReferenceObject(ResultObject factForRefObj) {
-		if (factForRefObj == null) {
+	public void fillReferenceObject(ResultObject fact) {
+		if (fact == null) {
 			return;
 		}
 		
-		Unit unit = Main.getContext().getBean(UnitManager.class).getUnit(factForRefObj.getUnitId());
+		Unit unit = Main.getContext().getBean(UnitManager.class).getUnit(fact.getUnitId());
 		resultGrids.getLast().setUnitSymbol(unit.getSymbol());
-		resultGrids.getLast().postResult(factForRefObj.getId(), factForRefObj.getComponentIds(), factForRefObj.getValue());
+		resultGrids.getLast().postResult(fact.getId(), fact.getComponentIds(), fact.getValue());
 	}
 	
-	public void fillDimension(ArrayList<ResultObject> factsForDimensions) {
-		if (factsForDimensions == null) {
+	public void fillDimension(List<ResultObject> facts) {
+		if (facts == null) {
 			return;
 		}
 		
-		Unit unit = Main.getContext().getBean(UnitManager.class).getUnit(factsForDimensions.get(0).getUnitId());
+		Unit unit = Main.getContext().getBean(UnitManager.class).getUnit(facts.get(0).getUnitId());
 		resultGrids.getLast().setUnitSymbol(unit.getSymbol());
-		for (ResultObject currFact : factsForDimensions) {
+		for (ResultObject currFact : facts) {
 			resultGrids.getLast().postResult(currFact.getId(), currFact.getComponentIds(), currFact.getValue());
 		}
 		resultGrids.getLast().calculateAndPostTotals();
 	}
 	
-	public void fillDimensionWHierarchy(int gridId, ArrayList<ResultObject> factsForDimensions, Long[] hierarchyComponentIds) {
-		if (factsForDimensions == null) {
+	public void fillDimensionWHierarchy(int gridId, List<ResultObject> facts, Long[] hierarchyComponentIds) {
+		if (facts == null) {
 			return;
 		}
 		
 		ResultGrid grid = resultGrids.get(gridId);
 		
-		Unit unit = Main.getContext().getBean(UnitManager.class).getUnit(factsForDimensions.get(0).getUnitId());
+		Unit unit = Main.getContext().getBean(UnitManager.class).getUnit(facts.get(0).getUnitId());
 		grid.setUnitSymbol(unit.getSymbol());
-		for (ResultObject currFact : factsForDimensions) {
+		for (ResultObject currFact : facts) {
 			Long[] componentIds = ObjectArrays.concat(hierarchyComponentIds, currFact.getComponentIds(), Long.class);
 			grid.postResult(currFact.getId(), componentIds, currFact.getValue());
 		}
 		grid.calculateAndPostTotals();
 	}
 	
-	public void fillRatio(ArrayList<ResultObject> factsForRatio) {
-		if (factsForRatio == null) {
+	public void fillRatio(List<ResultObject> facts) {
+		if (facts == null) {
 			return;
 		}
 		
-		Unit unit = Main.getContext().getBean(UnitManager.class).getUnit(factsForRatio.get(0).getUnitId());
+		Unit unit = Main.getContext().getBean(UnitManager.class).getUnit(facts.get(0).getUnitId());
 		resultGrids.getLast().setUnitSymbol(unit.getSymbol());
-		for (ResultObject currFact : factsForRatio) {
+		for (ResultObject currFact : facts) {
 			resultGrids.getLast().postResult(currFact.getId(), currFact.getComponentIds(), currFact.getValue());
 		}
 	}
@@ -112,87 +115,91 @@ public class ResultGridController {
 		resultGrids.clear();
 	}
 
-	public void expandCollapseGridHandler(int gridId, DimensionHierarchy hierarchy, Dimension currLevel, boolean expand) {
-			DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
-			DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
-			ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
-			
-			ResultGrid grid = resultGrids.get(gridId);
-			
-			List<DataObject> rowDims = grid.getRowDims();
-			List<DataObject> colDims = grid.getColDims();
-					
-			int currIndex = hierarchy.getLevels().indexOf(currLevel);
-			Dimension newLevel;
-			int inserted = 0;
-			int removed = 0;
-			if (expand) {
-				newLevel = hierarchy.getLevels().get(currIndex + 1);	
-				inserted = insertHierarchyLevel(rowDims, hierarchy, currLevel, newLevel);
-				if (inserted < 1) {
-					inserted = insertHierarchyLevel(colDims, hierarchy, currLevel, newLevel);
-				}
-			} else {
-				newLevel = currLevel;
+	
+	public void expandCollapseGridHandler(int gridId, DimensionHierarchy hierarchy, Dimension currLevel, boolean expand) {		
+		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
+		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
+		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
+		
+		ResultGrid grid = resultGrids.get(gridId);
+		
+		List<DataObject> rowDims = grid.getRowDims();
+		List<DataObject> colDims = grid.getColDims();
+				
+		int currIndex = hierarchy.getLevels().indexOf(currLevel);
+		Dimension newLevel;
+		int inserted = 0;
+		int removed = 0;
+		if (expand) {
+			newLevel = hierarchy.getLevels().get(currIndex + 1);	
+			inserted = insertHierarchyLevel(rowDims, hierarchy, currLevel, newLevel);
+			if (inserted < 1) {
+				inserted = insertHierarchyLevel(colDims, hierarchy, currLevel, newLevel);
+			}
+		} else {
+			newLevel = currLevel;
 
-				removed = removeHierarchyLevel(rowDims, hierarchy, currLevel);
-				if (removed < 1) {
-					removed = removeHierarchyLevel(colDims, hierarchy, currLevel);
+			removed = removeHierarchyLevel(rowDims, hierarchy, currLevel);
+			if (removed < 1) {
+				removed = removeHierarchyLevel(colDims, hierarchy, currLevel);
+			}
+		}
+		
+		ArrayList<DataObject> combinedDims = grid.getCombinedDims();
+		
+		for (Dimension level : hierarchy.getLevels()) {
+			combinedDims.remove(level);
+		}
+		if (newLevel != hierarchy.getTopLevel()) {
+			combinedDims.remove(hierarchy);
+		}
+		combinedDims.add(newLevel);
+		
+		ArrayList<Entry<DimensionHierarchy, Integer>> allHierarchies = grid.getHierarchies();
+		
+		Long[] hierarchyComponentIds = new Long[0];
+		for (Entry<DimensionHierarchy, Integer> currHierarchy : allHierarchies) {
+			if (currHierarchy.getKey() == hierarchy) {
+				if (expand) {
+					currHierarchy.setValue(currHierarchy.getValue() + inserted);
+				} else {
+					currHierarchy.setValue(currHierarchy.getValue() - removed);
 				}
 			}
-			
-			ArrayList<DataObject> combinedDims = grid.getCombinedDims();
-			
-			for (Dimension level : hierarchy.getLevels()) {
-				combinedDims.remove(level);
+			for (int i = 0; i < currHierarchy.getValue(); i++) {
+				hierarchyComponentIds = ObjectArrays.concat(hierarchyComponentIds,
+						refObjManager.loadRefObjsForDim(currHierarchy.getKey().getLevels().get(i).getId()).keySet().toArray(new Long[0]), Long.class);
 			}
-			if (newLevel != hierarchy.getTopLevel()) {
-				combinedDims.remove(hierarchy);
+		}
+		
+		grid.reinitializeWHierarchiesWTotals(refObjManager.loadRefObjs(rowDims, grid.getFilter()), refObjManager.loadRefObjs(colDims, grid.getFilter()), hierarchy, newLevel);
+		
+		Long[] filterRefObjIds = refObjManager.readRefObjIds(grid.getFilter());
+		long dimId = dimManager.findDimAggregateId(combinedDims);
+		
+		List<ResultObject> facts = null;
+		switch (grid.getQueryType()) {
+			case SINGLE_DIMENSION_W_HIERARCHY: {
+				facts = dbReader.loadFactsForSingleDim(grid.getRatio().getId(), dimId, filterRefObjIds);
+				break;
 			}
-			combinedDims.add(newLevel);
-			
-			ArrayList<Entry<DimensionHierarchy, Integer>> allHierarchies = grid.getHierarchies();
-			
-			Long[] hierarchyComponentIds = new Long[0];
-			for (Entry<DimensionHierarchy, Integer> currHierarchy : allHierarchies) {
-				if (currHierarchy.getKey() == hierarchy) {
-					if (expand) {
-						currHierarchy.setValue(currHierarchy.getValue() + inserted);
-					} else {
-						currHierarchy.setValue(currHierarchy.getValue() - removed);
-					}
-				}
-				for (int i = 0; i < currHierarchy.getValue(); i++) {
-					hierarchyComponentIds = ObjectArrays.concat(hierarchyComponentIds,
-							refObjManager.loadRefObjsForDim(currHierarchy.getKey().getLevels().get(i).getId()).keySet().toArray(new Long[0]), Long.class);
-				}
+			case DIMENSION_COMBINATION_W_HIERARCHY: {
+				facts = dbReader.loadFactsForDimCombination(grid.getRatio().getId(), dimId, filterRefObjIds);
+				break;
 			}
-			
-			grid.reinitializeWHierarchiesWTotals(refObjManager.loadRefObjs(rowDims), refObjManager.loadRefObjs(colDims), hierarchy, newLevel);
-			
-			ArrayList<ResultObject> facts = null;
-			switch (grid.getQueryType()) {
-				case SINGLE_DIMENSION_W_HIERARCHY: {
-					long dimId = combinedDims.get(0).getId();
-					facts = dbReader.loadFactsForSingleDim(grid.getRatio().getId(), dimId);
-					break;
-				}
-				case DIMENSION_COMBINATION_W_HIERARCHY: {
-					long dimId = dimManager.findDimAggregateId(combinedDims);
-					facts = dbReader.loadFactsForDimCombination(grid.getRatio().getId(), dimId);
-					break;
-				}
-				case MIXED_W_HIERARCHY: {
-					long dimId = dimManager.findDimAggregateId(combinedDims);
-					Long[] refObjIds = refObjManager.readRefObjComponentIds(combinedDims);
-					facts = dbReader.loadFactsForDimCombinationAndRefObjs(grid.getRatio().getId(), dimId, refObjIds);
-					break;
-				}
-				default: {
-					break;
-				}
+			case MIXED_W_HIERARCHY: {
+				Long[] refObjIds = refObjManager.readRefObjIds(combinedDims);
+				facts = dbReader.loadFactsForDimCombinationAndRefObjs(grid.getRatio().getId(), dimId, refObjIds, filterRefObjIds);
+				break;
 			}
+			default: {
+				break;
+			}
+		}
+		
+		if (facts != null) {
 			fillDimensionWHierarchy(gridId, facts, hierarchyComponentIds);
+		}
 	}
 	
 	private int insertHierarchyLevel(List<DataObject> dims, DimensionHierarchy hierarchy, Dimension currLevel, Dimension newLevel) {

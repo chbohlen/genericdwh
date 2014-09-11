@@ -1,21 +1,37 @@
-reorder ratios/dimensions
-ratios/dimensions tableview context menu
-sidebar context menu
-
-refresh sidebar
-duplicate object
 create/edit/delete objects
 save/discard changes(refetch?)
+
+Sidebar
+a------
+context menu
+refresh sidebar on save
+b------
+no expand on dclick
+duplicate object
+
+QueryPane
+a------
+ratios/dimensions tableview context menu
+reorder ratios/dimensions
+
+ResultGrid
+a------
+unnecessary load of higher hierarchy levels
+filter hierarchies
+b------
+grid collapsible
+button style
+result grid highlighting
+cell padding
 
 no new connection when connecting to same database
 
 db-status notification (invalid password etc)/generally better messages
 
-filter
-ratio totals
-grid collapsible
-
-cell padding
-
 refactor statusbar
 refactor resultgridnode
+
+plaintext queries
+
+
+arraylist->list

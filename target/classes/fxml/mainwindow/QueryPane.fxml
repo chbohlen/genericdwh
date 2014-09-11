@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="queryPane" prefWidth="800.0" prefHeight="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.mainwindow.querypane.QueryPaneController">
+<AnchorPane fx:id="queryPane" prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.mainwindow.querypane.QueryPaneController">
    <children>
       <TableView fx:id="tvColDims" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="150.0" prefWidth="200.0">
         <columns>
@@ -18,19 +18,19 @@
           <TableColumn fx:id="tcRowDims" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Row Dimensions" />
         </columns>
       </TableView>
-      <TableView fx:id="tvFilter" layoutY="300.0" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="150.0" prefWidth="200.0">
-         <columns>
-            <TableColumn fx:id="tcFilter" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Filter" />
-         </columns>
-      </TableView>
-      <TableView fx:id="tvRatio" layoutY="450.0" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="150.0" prefWidth="200.0">
+      <TableView fx:id="tvRatio" layoutY="300.0" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="150.0" prefWidth="200.0">
          <columns>
             <TableColumn fx:id="tcRatio" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Ratio" />
          </columns>
       </TableView>
-      <ScrollPane layoutX="200.0" prefWidth="600.0" prefHeight="700.0" pannable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <TableView fx:id="tvFilter" layoutY="450.0" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="150.0" prefWidth="200.0">
+         <columns>
+            <TableColumn fx:id="tcFilter" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Filter" />
+         </columns>
+      </TableView>
+      <ScrollPane layoutX="200.0" pannable="true" prefHeight="700.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
-            <VBox fx:id="resultGridContainer" minWidth="595.0" minHeight="695.0" />
+            <VBox fx:id="resultGridContainer" minHeight="695.0" minWidth="595.0" />
          </content>
       </ScrollPane>
       <HBox layoutY="607.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.bottomAnchor="15.0">

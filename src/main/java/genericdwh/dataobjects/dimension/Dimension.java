@@ -5,10 +5,12 @@ import genericdwh.dataobjects.DataObject;
 import java.util.ArrayList;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class Dimension extends DataObject {
 
 	@Getter private long categoryId;
+	@Getter @Setter private boolean isCombination;
 
 	@Getter private ArrayList<Dimension> children = new ArrayList<Dimension>();
 //	@Getter private ArrayList<Dimension> components = new ArrayList<Dimension>();

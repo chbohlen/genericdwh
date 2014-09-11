@@ -44,11 +44,12 @@ public class ReferenceObjectManager extends DataObjectManager {
 		return dbReader.dimensionAndRefObjParentHaveRecords(dim.getId(), refObj.getId());
 	}
 	
-	public ArrayList<TreeMap<Long, ReferenceObject>> loadRefObjs(List<DataObject> dims) {
+	public ArrayList<TreeMap<Long, ReferenceObject>> loadRefObjs(List<DataObject> dims, List<DataObject> filter) {
 		ArrayList<TreeMap<Long, ReferenceObject>> result = new ArrayList<>();
 		for (DataObject dim : dims) {
 			if (dim instanceof ReferenceObject) {
 				ReferenceObject refObj = getReferenceObject(dim.getId());
+				refObj.setChildrenIds(dbReader.loadRefObjChildrenIds(refObj.getId()));
 				TreeMap<Long, ReferenceObject> refObjInTreeMap = new TreeMap<>();
 				refObjInTreeMap.put(refObj.getId(), refObj);
 				result.add(refObjInTreeMap);
@@ -56,7 +57,18 @@ public class ReferenceObjectManager extends DataObjectManager {
 				if (dim instanceof DimensionHierarchy) {
 					dim = ((DimensionHierarchy)dim).getTopLevel();
 				}
-				result.add(loadRefObjsForDim(dim.getId()));
+				TreeMap<Long, ReferenceObject> refObjs = loadRefObjsForDim(dim.getId());
+				for (ReferenceObject refObj : refObjs.values()) {
+					refObj.setChildrenIds(dbReader.loadRefObjChildrenIds(refObj.getId()));
+				}
+				result.add(refObjs);
+			}
+		}
+		
+		Long[] filterRefObjIds = readRefObjIds(filter);
+		for (long filterRefObjId : filterRefObjIds) {
+			for (TreeMap<Long, ReferenceObject> dim : result) {
+				dim.remove(filterRefObjId);
 			}
 		}
 		
@@ -64,15 +76,21 @@ public class ReferenceObjectManager extends DataObjectManager {
 	}
 		
 	public long findRefObjAggregateId(ArrayList<DataObject> combinedDims) {
-		return dbReader.findRefObjAggregateId(readRefObjComponentIds(combinedDims));
+		if (combinedDims.size() < 2) {
+			return readRefObjIds(combinedDims)[0];
+		}
+		return dbReader.findRefObjAggregateId(readRefObjIds(combinedDims));
 	}
 	
-	public Long[] readRefObjComponentIds(ArrayList<DataObject> combinedDims) {
+	public Long[] readRefObjIds(List<DataObject> list) {
 		ArrayList<Long> refObjIds = new ArrayList<>();
-		for (DataObject obj : combinedDims) {
+		for (DataObject obj : list) {
 			if (obj instanceof ReferenceObject) {
 				refObjIds.add(obj.getId());
 			}
+		}
+		if (refObjIds.isEmpty()) {
+			return new Long[] { (long)-1 };
 		}
 		return refObjIds.toArray(new Long[0]);
 	}

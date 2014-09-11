@@ -30,7 +30,7 @@ public class ResultGridCell extends BorderPane {
 	private DimensionHierarchy hierarchy;
 	private Dimension currLevel;
 		
-	public ResultGridCell(int colIndex, int rowIndex) {
+	public ResultGridCell(String text, int colIndex, int rowIndex) {
 		this.colIndex = colIndex;
 		this.rowIndex = rowIndex;
 		
@@ -42,17 +42,18 @@ public class ResultGridCell extends BorderPane {
 		label = new Label();
 		setCenter(label);
 		
-		setText("no data");
-	}
-		
-	public ResultGridCell(String text, int colIndex, int rowIndex) {
-		this(colIndex, rowIndex);
-			
 		setText(text);
 	}
-	
-	public ResultGridCell(String text, int colIndex, int rowIndex, DimensionHierarchy hierarchy, Dimension currLevel, boolean collapsed) {
+		
+	public ResultGridCell(String text, int colIndex, int rowIndex, int colSpan, int rowSpan) {
 		this(text, colIndex, rowIndex);
+		
+		this.colSpan = colSpan;
+		this.rowSpan = rowSpan;
+	}
+	
+	public ResultGridCell(String text, int colIndex, int rowIndex, int colSpan, int rowSpan, DimensionHierarchy hierarchy, Dimension currLevel, boolean collapsed) {
+		this(text, colIndex, rowIndex, colSpan, rowSpan);
 		
 		this.hierarchy = hierarchy;
 		this.currLevel = currLevel;

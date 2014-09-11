@@ -35,6 +35,10 @@ public class DimensionManager extends DataObjectManager {
 			dimensions.get(hierarchy.getKey()).addChildren(dimensions.get(hierarchy.getValue()));
 		}
 		
+		for (Dimension dim : dimensions.values()) {
+			dim.setCombination(dbReader.dimensionIsCombination(dim.getId()));
+		}
+		
 		hierarchies = generateHierarchies();
 	}
 	
@@ -71,23 +75,28 @@ public class DimensionManager extends DataObjectManager {
 	}
 		
 	public long findDimAggregateId(ArrayList<DataObject> combinedDims)  {
+		if (combinedDims.size() < 2) {
+			return determineDimCombinationComponentIds(combinedDims)[0];
+		}
 		return dbReader.findDimAggregateId(determineDimCombinationComponentIds(combinedDims));
 	}
 	
 	private Long[] determineDimCombinationComponentIds(ArrayList<DataObject> combinedDims) {
-		Long[] combination = new Long[combinedDims.size()];
+		ArrayList<Long> combination = new ArrayList<>();
 		
-		for (int i = 0; i < combination.length; i++) {
-			DataObject currObj = combinedDims.get(i);
-			if (currObj instanceof DimensionHierarchy) {
-				combination[i] = ((DimensionHierarchy)currObj).getTopLevel().getId();
-			} else if (currObj instanceof ReferenceObject) {
-				combination[i] = ((ReferenceObject)currObj).getDimensionId();
+		for (DataObject obj : combinedDims) {
+			if (obj instanceof DimensionHierarchy) {
+				combination.add(((DimensionHierarchy)obj).getTopLevel().getId());
+			} else if (obj instanceof ReferenceObject) {
+				combination.add(((ReferenceObject)obj).getDimensionId());
 			} else {
-				combination[i] = currObj.getId();
+				combination.add(obj.getId());
 			}
 		}
-		return combination;
+		if (combination.isEmpty()) {
+			return new Long[] { (long)-1 };
+		}
+		return combination.toArray(new Long[0]);
 	}
 	
 //	public Dimension findCombination(ArrayList<Dimension> combination) {

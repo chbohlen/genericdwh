@@ -6,6 +6,7 @@ genericdwh\db\model\Keys.class
 genericdwh\dataobjects\dimension\DimensionCategory.class
 genericdwh\db\model\tables\RatioCategories.class
 genericdwh\db\model\tables\RatioRelations.class
+genericdwh\db\QueryCache.class
 genericdwh\db\model\tables\DimensionCategories.class
 genericdwh\db\model\tables\Ratios.class
 genericdwh\db\MySQLDatabaseReader.class
