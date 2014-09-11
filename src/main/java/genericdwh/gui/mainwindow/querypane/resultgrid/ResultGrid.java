@@ -97,6 +97,7 @@ public class ResultGrid extends GridPane {
 	
 	public void initializeWHierarchiesWTotals(Ratio ratio, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs,
 			List<DataObject> filter, List<DimensionHierarchy> hierarchies) {
+		
 		for(DimensionHierarchy hierarchy : hierarchies) {
 			this.hierarchies.add(new SimpleEntry<>(hierarchy, 0));
 		}
@@ -470,6 +471,9 @@ public class ResultGrid extends GridPane {
 		int count = 0;
 		for (ResultGridNode currNode : refObjs.values()) {
 			count += getChildCount(currNode);
+		}
+		if (count == 0) {
+			return 1;
 		}
 		return count;
 	}

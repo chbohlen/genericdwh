@@ -19,6 +19,7 @@ a------
 unnecessary load of higher hierarchy levels
 filter hierarchies
 b------
+empty cells
 grid collapsible
 button style
 result grid highlighting
