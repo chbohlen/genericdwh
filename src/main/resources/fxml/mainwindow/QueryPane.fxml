@@ -18,14 +18,14 @@
           <TableColumn fx:id="tcRowDims" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Row Dimensions" />
         </columns>
       </TableView>
-      <TableView fx:id="tvRatio" layoutY="300.0" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="150.0" prefWidth="200.0">
+      <TableView fx:id="tvRatios" layoutY="300.0" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="150.0" prefWidth="200.0">
          <columns>
-            <TableColumn fx:id="tcRatio" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Ratio" />
+            <TableColumn fx:id="tcRatios" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Ratio" />
          </columns>
       </TableView>
-      <TableView fx:id="tvFilter" layoutY="450.0" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="150.0" prefWidth="200.0">
+      <TableView fx:id="tvFilters" layoutY="450.0" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="150.0" prefWidth="200.0">
          <columns>
-            <TableColumn fx:id="tcFilter" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Filter" />
+            <TableColumn fx:id="tcFilters" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Filter" />
          </columns>
       </TableView>
       <ScrollPane layoutX="200.0" pannable="true" prefHeight="700.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

@@ -23,6 +23,10 @@ public 	class LazyLoadOnExpandListener implements ChangeListener<Boolean> {
     	if (newValue) {
 			DataObjectTreeItem tiObj = (DataObjectTreeItem)((BooleanProperty)observable).getBean();
 			
+			if (tiObj.getFirstChild() == null) {
+				return;
+			}
+			
 			if (tiObj.isLoaded() || tiObj.getValue() instanceof SidebarHeader
 					|| tiObj.getValue() instanceof DimensionCategory || tiObj.getValue() instanceof RatioCategory
 					|| tiObj.getValue() instanceof Ratio) {

@@ -9,24 +9,25 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import lombok.Getter;
 
 public class DataObjectTableCell extends TableCell<DataObject, DataObject> {
 	
-	private DataObject obj;
+	@Getter private DataObject dataObj;
 	
-	public DataObjectTableCell() {
+	public DataObjectTableCell() {		
         setOnDragDetected(new EventHandler<MouseEvent>() {
         	public void handle(MouseEvent event) {
-                if (obj == null) {
+                if (dataObj == null) {
                     return;
                 }
                 
                 Dragboard dragboard = getTableView().startDragAndDrop(TransferMode.ANY);
                 ClipboardContent content = new ClipboardContent();
-                content.putString(obj.getName());
+                content.putString(dataObj.getName());
                 dragboard.setContent(content);
                 
-                Main.getContext().getBean(MainWindowController.class).setDraggedDataObject(obj);
+                Main.getContext().getBean(MainWindowController.class).setDraggedDataObject(dataObj);
                 
                 event.consume();
             }
@@ -37,8 +38,8 @@ public class DataObjectTableCell extends TableCell<DataObject, DataObject> {
     protected void updateItem(DataObject obj, boolean empty) {
         super.updateItem(obj, empty);
         
-        this.obj = obj = (DataObject)getTableRow().getItem();
+        this.dataObj = (DataObject)getTableRow().getItem();
         
-        setText((obj == null) ? null : obj.toString());
+        setText((dataObj == null) ? null : dataObj.toString());
     }
 }

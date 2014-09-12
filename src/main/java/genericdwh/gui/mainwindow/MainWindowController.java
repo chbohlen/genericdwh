@@ -132,4 +132,20 @@ public class MainWindowController implements Initializable{
 		double height = stage.getScene().getHeight();
 		sidebarController.updateLayout(width, height);
 	}
+
+	public void addColDimension(DataObject dim) {
+		queryPaneController.addColDimension(dim);
+	}
+
+	public void addRowDimension(DataObject dim) {
+		queryPaneController.addRowDimension(dim);
+	}
+	
+	public void addFilter(DataObject dim) {
+		queryPaneController.addFilter(dim);
+	}
+	
+	public void addRatio(DataObject dim) {
+		queryPaneController.addRatio(dim);
+	}
 }

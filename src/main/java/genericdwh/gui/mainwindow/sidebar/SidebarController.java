@@ -12,13 +12,19 @@ import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
+import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.main.Main;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
 public class SidebarController implements Initializable {
@@ -29,22 +35,106 @@ public class SidebarController implements Initializable {
 	
 	public SidebarController() {
 	}
-	
+
 	public void initialize(URL location, ResourceBundle resources) {		
 		hideSidebars();
 		
 		dimensionSidebar.setCellFactory(new Callback<TreeView<DataObject>, TreeCell<DataObject>>() {
             public TreeCell<DataObject> call(TreeView<DataObject> param) {
-                return new DataObjectTreeCell();
+            	DataObjectTreeCell treeCell = new DataObjectTreeCell();
+            	
+            	treeCell.setOnMouseClicked(new SidebarRightClickHandler(dimensionSidebar));
+            	treeCell.setContextMenu(createDimensionContextMenu(treeCell));
+            	
+                return treeCell;
             }
         });
 		
 		ratioSidebar.setCellFactory(new Callback<TreeView<DataObject>, TreeCell<DataObject>>() {
             public TreeCell<DataObject> call(TreeView<DataObject> param) {
-                return new DataObjectTreeCell();
+            	DataObjectTreeCell treeCell = new DataObjectTreeCell();
+            	
+            	treeCell.setOnMouseClicked(new SidebarRightClickHandler(ratioSidebar));
+            	treeCell.setContextMenu(createRatioContextMenu(treeCell));
+            	
+                return treeCell;
             }
         });
 	}
+
+	
+	private ContextMenu createDimensionContextMenu(DataObjectTreeCell treeCell) {		
+		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
+		
+		ContextMenu contextMenu = new ContextMenu();
+		
+		MenuItem addColDimension = new MenuItem("Add to Column Dimension");
+		addColDimension.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+            public void handle(ActionEvent event) {
+				mainWindowController.addColDimension(treeCell.getDataObj());
+            }
+        });
+		
+		MenuItem addRowDimension = new MenuItem("Add to Row Dimension");
+		addRowDimension.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+            public void handle(ActionEvent event) {
+				mainWindowController.addRowDimension(treeCell.itemProperty().get());
+            }
+        });
+		
+		MenuItem addFilter = new MenuItem("Add to Filters");
+		addFilter.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+            public void handle(ActionEvent event) {
+				mainWindowController.addFilter(treeCell.itemProperty().get());
+            }
+        });
+		
+		contextMenu.getItems().addAll(addColDimension, addRowDimension, addFilter);
+						
+		contextMenu.setOnShowing(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent event) {				
+				if (treeCell.getItem() instanceof SidebarHeader || treeCell.getItem() instanceof DimensionCategory) {
+					addColDimension.setVisible(false);
+					addRowDimension.setVisible(false);
+					addFilter.setVisible(false);
+				}
+			}
+		});
+		
+		return contextMenu;
+	}
+	
+	private ContextMenu createRatioContextMenu(DataObjectTreeCell treeCell) {
+		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
+
+		ContextMenu contextMenu = new ContextMenu();
+		
+		MenuItem addRatio = new MenuItem("Add to Ratios");
+		addRatio.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+            public void handle(ActionEvent event) {
+				mainWindowController.addRatio(treeCell.getItem());
+            }
+        });	
+		
+		contextMenu.getItems().addAll(addRatio);
+		
+		contextMenu.setOnShowing(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent event) {				
+				if (treeCell.getItem() instanceof SidebarHeader || treeCell.getItem() instanceof RatioCategory) {
+					addRatio.setVisible(false);
+				}
+			}
+		});
+		
+		return contextMenu;
+	}
+
 	
 	public void createSidebars(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions, 
 			TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
@@ -153,6 +243,7 @@ public class SidebarController implements Initializable {
 		ratioSidebar.setRoot(tiRoot);
 	}
 
+	
 	public void showSidebars() {
 		sidebars.setVisible(true);
 	}
@@ -160,14 +251,7 @@ public class SidebarController implements Initializable {
 	public void hideSidebars() {
 		sidebars.setVisible(false);
 	}
-	
-	@FXML public void contextMenuNewDimensionOnClickHandler() {
-		
-	}
 
-	@FXML public void contextMenuNewRatioOnClickHandler() {
-		
-	}
 	
 	public void updateLayout(double width, double height) {
 		AnchorPane.setBottomAnchor(dimensionSidebar , (height - 50) * 0.40);

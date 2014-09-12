@@ -11,39 +11,41 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import lombok.Getter;
 
 public class DataObjectTreeCell extends TreeCell<DataObject>{
 	
-	private DataObject obj;
-	
+	@Getter private DataObject dataObj;
+		
 	public DataObjectTreeCell() {
         setOnDragDetected(new EventHandler<MouseEvent>() {
         	public void handle(MouseEvent event) {
-                if (obj == null || obj instanceof SidebarHeader
-                		|| obj instanceof DimensionCategory
-                		|| obj instanceof RatioCategory) {
+                if (dataObj == null
+                		|| dataObj instanceof SidebarHeader
+                		|| dataObj instanceof DimensionCategory
+                		|| dataObj instanceof RatioCategory) {
                 	
                     return;
                 }
                 
                 Dragboard dragboard = getTreeView().startDragAndDrop(TransferMode.ANY);
                 ClipboardContent content = new ClipboardContent();
-                content.putString(obj.getName());
+                content.putString(getItem().getName());
                 dragboard.setContent(content);
                 
-                Main.getContext().getBean(MainWindowController.class).setDraggedDataObject(obj);
+                Main.getContext().getBean(MainWindowController.class).setDraggedDataObject(getItem());
                 
                 event.consume();
             }
-        });
+        });        
 	}
 	
     @Override
     protected void updateItem(DataObject obj, boolean empty) {
         super.updateItem(obj, empty);
         
-        this.obj = obj;
+        this.dataObj = obj;
         
-        setText((obj == null) ? null : obj.toString());
+        setText((dataObj == null) ? null : dataObj.toString());
     }
 }
