@@ -86,7 +86,7 @@ public class SidebarController implements Initializable {
             }
         });
 		
-		MenuItem expandAll = new MenuItem("Expand All");
+		MenuItem expandAll = new MenuItem("Expand all");
 		expandAll.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {
@@ -102,7 +102,7 @@ public class SidebarController implements Initializable {
             }
         });
 		
-		MenuItem collapseAll = new MenuItem("Collapse All");
+		MenuItem collapseAll = new MenuItem("Collapse all");
 		collapseAll.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {

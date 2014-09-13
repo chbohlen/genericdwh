@@ -6,7 +6,6 @@ a------
 context menu
 refresh sidebar on save
 b------
-no expand on dclick
 duplicate object
 
 QueryPane

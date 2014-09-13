@@ -238,7 +238,15 @@ public class QueryPaneController implements Initializable {
             }
         });
 		
-		contextMenu.getItems().addAll(moveUp, moveDown, new SeparatorMenuItem(), remove);		
+		MenuItem removeAll = new MenuItem("Remove all");
+		removeAll.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+            public void handle(ActionEvent event) {
+				tableView.getItems().clear();
+            }
+        });
+		
+		contextMenu.getItems().addAll(moveUp, moveDown, new SeparatorMenuItem(), remove, removeAll);		
 				
 		return contextMenu;
 	}
