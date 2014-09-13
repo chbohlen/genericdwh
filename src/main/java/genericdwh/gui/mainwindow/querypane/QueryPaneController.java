@@ -35,6 +35,7 @@ import javafx.scene.text.Text;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
@@ -92,40 +93,51 @@ public class QueryPaneController implements Initializable {
 		tcColDims.setCellFactory(new Callback<TableColumn<DataObject, DataObject>, TableCell<DataObject, DataObject>>() {
             public TableCell<DataObject, DataObject> call(TableColumn<DataObject, DataObject> param) {
             	DataObjectTableCell tableCell =  new DataObjectTableCell();
+            	
+            	tableCell.setOnMouseClicked(new TableCellRightClickHandler(tvColDims));
             	tableCell.contextMenuProperty().bind(Bindings
             				.when(tableCell.emptyProperty())
             				.then((ContextMenu)null)
-            				.otherwise(createContextMenu(tvColDims, tableCell))); 
+            				.otherwise(createTableCellContextMenu(tvColDims, tableCell))); 
             	return tableCell;            
             }
         });
+		
 		tcRowDims.setCellFactory(new Callback<TableColumn<DataObject, DataObject>, TableCell<DataObject, DataObject>>() {
             public TableCell<DataObject, DataObject> call(TableColumn<DataObject, DataObject> param) {
             	DataObjectTableCell tableCell =  new DataObjectTableCell();
+            	
+            	tableCell.setOnMouseClicked(new TableCellRightClickHandler(tvRowDims));
             	tableCell.contextMenuProperty().bind(Bindings
         				.when(tableCell.emptyProperty())
         				.then((ContextMenu)null)
-        				.otherwise(createContextMenu(tvRowDims, tableCell))); 
+        				.otherwise(createTableCellContextMenu(tvRowDims, tableCell))); 
             	return tableCell;
             }
         });
+		
 		tcFilters.setCellFactory(new Callback<TableColumn<DataObject, DataObject>, TableCell<DataObject, DataObject>>() {
             public TableCell<DataObject, DataObject> call(TableColumn<DataObject, DataObject> param) {
             	DataObjectTableCell tableCell =  new DataObjectTableCell();
+            	
+            	tableCell.setOnMouseClicked(new TableCellRightClickHandler(tvFilters));
             	tableCell.contextMenuProperty().bind(Bindings
         				.when(tableCell.emptyProperty())
         				.then((ContextMenu)null)
-        				.otherwise(createContextMenu(tvFilters, tableCell))); 
+        				.otherwise(createTableCellContextMenu(tvFilters, tableCell))); 
             	return tableCell;            
             }
         });
+		
 		tcRatios.setCellFactory(new Callback<TableColumn<DataObject, DataObject>, TableCell<DataObject, DataObject>>() {
             public TableCell<DataObject, DataObject> call(TableColumn<DataObject, DataObject> param) {
             	DataObjectTableCell tableCell =  new DataObjectTableCell();
+            	
+            	tableCell.setOnMouseClicked(new TableCellRightClickHandler(tvRatios));
             	tableCell.contextMenuProperty().bind(Bindings
         				.when(tableCell.emptyProperty())
         				.then((ContextMenu)null)
-        				.otherwise(createContextMenu(tvRatios, tableCell))); 
+        				.otherwise(createTableCellContextMenu(tvRatios, tableCell))); 
             	return tableCell;
             }
         });
@@ -133,8 +145,90 @@ public class QueryPaneController implements Initializable {
 		hideQueryPane();
 	}
 	
-	private ContextMenu createContextMenu(TableView<DataObject> tableView, DataObjectTableCell tableCell) {
+	private ContextMenu createTableCellContextMenu(TableView<DataObject> tableView, DataObjectTableCell tableCell) {
 		ContextMenu contextMenu = new ContextMenu();
+				
+		if (tableView != tvRatios) {
+			if (tableView != tvColDims) {
+				MenuItem changeToColDimension = new MenuItem("Change to Column Dimension");
+				changeToColDimension.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+		            public void handle(ActionEvent event) {
+						DataObject obj = tableCell.getDataObj();
+						tableView.getItems().remove(obj);
+						tvColDims.getItems().add(obj);
+		            }
+		        });
+				
+				contextMenu.getItems().add(changeToColDimension);
+			}
+			
+			if (tableView != tvRowDims) {
+				MenuItem changeToRowDimension = new MenuItem("Change to Row Dimension");
+				changeToRowDimension.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+		            public void handle(ActionEvent event) {
+						DataObject obj = tableCell.getDataObj();
+						tableView.getItems().remove(obj);
+						tvRowDims.getItems().add(obj);
+
+		            }
+		        });
+				
+				contextMenu.getItems().add(changeToRowDimension);
+			}
+			
+			if (tableView != tvFilters) {
+				MenuItem changeToFilter = new MenuItem("Change to Filter");
+				changeToFilter.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+		            public void handle(ActionEvent event) {
+						DataObject obj = tableCell.getDataObj();
+						tableView.getItems().remove(obj);
+						tvFilters.getItems().add(obj);
+
+		            }
+		        });
+				
+				contextMenu.getItems().add(changeToFilter);
+			}
+			
+			contextMenu.getItems().add(new SeparatorMenuItem());
+		}
+		
+		MenuItem moveUp = new MenuItem("Move up");
+		moveUp.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+            public void handle(ActionEvent event) {
+				if (tableView.getItems().size() == 1) {
+					return;
+				}
+				
+				DataObject obj = tableCell.getDataObj();
+				int index = tableView.getItems().indexOf(obj);
+				tableView.getItems().remove(obj);
+				tableView.getItems().add(index - 1, obj);
+				
+				tableView.getSelectionModel().select(obj);
+            }
+        });
+		
+		MenuItem moveDown = new MenuItem("Move down");
+		moveDown.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+            public void handle(ActionEvent event) {
+				if (tableView.getItems().size() == 1) {
+					return;
+				}
+				
+				DataObject obj = tableCell.getDataObj();
+				int index = tableView.getItems().indexOf(obj);
+				tableView.getItems().remove(obj);
+				tableView.getItems().add(index + 1, obj);
+				
+				tableView.getSelectionModel().select(obj);
+            }
+        });
 		
 		MenuItem remove = new MenuItem("Remove");
 		remove.setOnAction(new EventHandler<ActionEvent>() {
@@ -144,51 +238,7 @@ public class QueryPaneController implements Initializable {
             }
         });
 		
-		contextMenu.getItems().add(remove);
-		
-		if (tableView != tvColDims) {
-			MenuItem moveToColDimension = new MenuItem("Move to Column Dimensions");
-			moveToColDimension.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-	            public void handle(ActionEvent event) {
-					DataObject obj = tableCell.getDataObj();
-					tableView.getItems().remove(obj);
-					tvColDims.getItems().add(obj);
-	            }
-	        });
-			
-			contextMenu.getItems().add(moveToColDimension);
-		}
-		
-		if (tableView != tvRowDims) {
-			MenuItem moveToRowDimension = new MenuItem("Move to Row Dimensions");
-			moveToRowDimension.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-	            public void handle(ActionEvent event) {
-					DataObject obj = tableCell.getDataObj();
-					tableView.getItems().remove(obj);
-					tvRowDims.getItems().add(obj);
-
-	            }
-	        });
-			
-			contextMenu.getItems().add(moveToRowDimension);
-		}
-		
-		if (tableView != tvFilters) {
-			MenuItem moveToFilter = new MenuItem("Move to Filters");
-			moveToFilter.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-	            public void handle(ActionEvent event) {
-					DataObject obj = tableCell.getDataObj();
-					tableView.getItems().remove(obj);
-					tvFilters.getItems().add(obj);
-
-	            }
-	        });
-			
-			contextMenu.getItems().add(moveToFilter);
-		}
+		contextMenu.getItems().addAll(moveUp, moveDown, new SeparatorMenuItem(), remove);		
 				
 		return contextMenu;
 	}

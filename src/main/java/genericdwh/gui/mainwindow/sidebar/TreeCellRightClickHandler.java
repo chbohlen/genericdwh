@@ -6,11 +6,11 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
-public class SidebarRightClickHandler implements EventHandler<MouseEvent> {
+public class TreeCellRightClickHandler implements EventHandler<MouseEvent> {
 	
 	private TreeView<DataObject> sidebar;
 	
-	public SidebarRightClickHandler(TreeView<DataObject> sidebar) {
+	public TreeCellRightClickHandler(TreeView<DataObject> sidebar) {
 		this.sidebar = sidebar;
 	}
 	

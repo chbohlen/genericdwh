@@ -54,7 +54,6 @@ public class MySQLDatabaseController implements DatabaseController {
 		try {
 			if (dbConnection != null) {
 				dbConnection.close();
-				Main.getContext().getBean(QueryCache.class).clear();
 				logger.info("Database connection closed.");
 			}
 			else {

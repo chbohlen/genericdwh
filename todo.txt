@@ -11,8 +11,8 @@ duplicate object
 
 QueryPane
 a------
-ratios/dimensions tableview context menu
-reorder ratios/dimensions
+tableview context menus: remove all
+reorder ratios/dimensions per dnd
 
 ResultGrid
 a------
