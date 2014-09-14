@@ -50,7 +50,7 @@
 
     <target>
       <!-- The destination package of your generated classes (within the destination directory) -->
-      <packageName>genericdwh.db.model</packageName>
+      <packageName>genericdwh.db.jooq</packageName>
 
       <!-- The destination directory of your generated classes -->
       <directory>./src/main/java</directory>

@@ -4,20 +4,21 @@ import static genericdwh.db.model.tables.DimensionCategories.DIMENSION_CATEGORIE
 import static genericdwh.db.model.tables.DimensionCombinations.DIMENSION_COMBINATIONS;
 import static genericdwh.db.model.tables.DimensionHierarchies.DIMENSION_HIERARCHIES;
 import static genericdwh.db.model.tables.Dimensions.DIMENSIONS;
+import static genericdwh.db.model.tables.FactUnits.FACT_UNITS;
+import static genericdwh.db.model.tables.Facts.FACTS;
 import static genericdwh.db.model.tables.RatioCategories.RATIO_CATEGORIES;
 import static genericdwh.db.model.tables.RatioRelations.RATIO_RELATIONS;
 import static genericdwh.db.model.tables.Ratios.RATIOS;
 import static genericdwh.db.model.tables.ReferenceObjectCombinations.REFERENCE_OBJECT_COMBINATIONS;
 import static genericdwh.db.model.tables.ReferenceObjectHierarchies.REFERENCE_OBJECT_HIERARCHIES;
 import static genericdwh.db.model.tables.ReferenceObjects.REFERENCE_OBJECTS;
-import static genericdwh.db.model.tables.Facts.FACTS;
-import static genericdwh.db.model.tables.FactUnits.FACT_UNITS;
 import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionCategory;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.unit.Unit;
+import genericdwh.db.jooqutils.EntryLongLongRecordMapper;
 import genericdwh.db.model.tables.DimensionCombinations;
 import genericdwh.db.model.tables.ReferenceObjectCombinations;
 

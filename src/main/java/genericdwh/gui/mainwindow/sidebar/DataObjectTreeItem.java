@@ -17,11 +17,7 @@ public class DataObjectTreeItem extends TreeItem<DataObject> {
 		this.obj = obj;
 		this.loaded = false;
 		
-		if (obj instanceof SidebarHeader) {
-			expandedProperty().addListener(new DontCollapseOnCollapseListener());
-		} else {
-			expandedProperty().addListener(new LazyLoadOnExpandListener());
-		}
+		expandedProperty().addListener(new LazyLoadOnExpandListener());
 	}
 	
 	public void addChild(DataObjectTreeItem newChild) {

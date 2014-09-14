@@ -6,6 +6,7 @@ import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
+import genericdwh.gui.general.sidebar.SidebarHeader;
 import genericdwh.main.Main;
 
 import java.util.TreeMap;
@@ -27,7 +28,7 @@ public 	class LazyLoadOnExpandListener implements ChangeListener<Boolean> {
 				return;
 			}
 			
-			if (tiObj.isLoaded() || tiObj.getValue() instanceof SidebarHeader
+			if (tiObj.isLoaded() || tiObj instanceof SidebarHeader
 					|| tiObj.getValue() instanceof DimensionCategory || tiObj.getValue() instanceof RatioCategory
 					|| tiObj.getValue() instanceof Ratio) {
 				

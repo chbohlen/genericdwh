@@ -1,11 +1,11 @@
 package genericdwh.db;
 
-import genericdwh.main.Main;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import lombok.Getter;
 
 import org.apache.logging.log4j.Logger;
@@ -19,6 +19,8 @@ public class MySQLDatabaseController implements DatabaseController {
 	private final Logger logger = LogManager.getLogger(this.getClass());
 	
 	private Connection dbConnection;
+	
+	@Getter private BooleanProperty isConnected = new SimpleBooleanProperty(false);
 
 	@Getter private MySQLDatabaseReader dbReader;
 	@Getter private MySQLDatabaseWriter dbWriter;
@@ -30,7 +32,6 @@ public class MySQLDatabaseController implements DatabaseController {
 	
 	public boolean connect(String ip, String port, String dbName, String userName, String password) {
 		String dbDriver = com.mysql.jdbc.Driver.class.getName();
-		
 		try {
 			Class.forName(dbDriver);
 			dbConnection = DriverManager.getConnection("jdbc:mysql://"+ip+":"+port+"/"+dbName, userName, password);
@@ -47,6 +48,7 @@ public class MySQLDatabaseController implements DatabaseController {
 		dbReader.setDslContext(context);
 		dbWriter.setDslContext(context);
 		
+		isConnected.set(true);
 		return true;
 	}
 	
@@ -62,5 +64,7 @@ public class MySQLDatabaseController implements DatabaseController {
 		} catch (SQLException e) {
 			logger.error("Could not close database connection!");
 		}
+		
+		isConnected.set(false);
 	}
 }

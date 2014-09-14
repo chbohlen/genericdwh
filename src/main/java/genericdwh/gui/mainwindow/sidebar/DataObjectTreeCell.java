@@ -3,6 +3,7 @@ package genericdwh.gui.mainwindow.sidebar;
 import genericdwh.dataobjects.DataObject;
 import genericdwh.dataobjects.dimension.DimensionCategory;
 import genericdwh.dataobjects.ratio.RatioCategory;
+import genericdwh.gui.general.sidebar.SidebarHeader;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.main.Main;
 import javafx.beans.property.SimpleStringProperty;
@@ -13,17 +14,18 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import lombok.Getter;
 
 public class DataObjectTreeCell extends TreeCell<DataObject>{
 		
-	public StringProperty title = new SimpleStringProperty("");
+	@Getter private StringProperty title = new SimpleStringProperty("");
 		
 	public DataObjectTreeCell() {
         setOnDragDetected(new EventHandler<MouseEvent>() {
         	public void handle(MouseEvent event) {
         		DataObject item = getItem();
                 if (item == null
-                		|| item instanceof SidebarHeader
+                		|| getTreeItem() instanceof SidebarHeader
                 		|| item instanceof DimensionCategory
                 		|| item instanceof RatioCategory) {
                 	
