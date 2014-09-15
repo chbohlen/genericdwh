@@ -18,6 +18,7 @@ public interface DatabaseReader {
 	public ArrayList<Entry<Long, Long>> loadDimensionHierachies();
 	public ArrayList<Entry<Long, Long>> loadDimensionCombinations();
 	
+	public TreeMap<Long, ReferenceObject> loadRefObjs(int from, int to);
 	public ReferenceObject loadRefObj(long refObjId);
 	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(long dimId);
 	public TreeMap<Long, ReferenceObject> loadRefObjsForDimAndRefObjParent(long dimId, long refObjId);

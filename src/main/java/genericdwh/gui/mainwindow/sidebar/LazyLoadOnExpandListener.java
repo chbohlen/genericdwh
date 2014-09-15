@@ -6,7 +6,7 @@ import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
-import genericdwh.gui.general.sidebar.SidebarHeader;
+import genericdwh.gui.general.sidebar.HeaderItem;
 import genericdwh.main.Main;
 
 import java.util.TreeMap;
@@ -22,13 +22,17 @@ public 	class LazyLoadOnExpandListener implements ChangeListener<Boolean> {
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
 		
     	if (newValue) {
-			DataObjectTreeItem tiObj = (DataObjectTreeItem)((BooleanProperty)observable).getBean();
+    		if (((BooleanProperty)observable).getBean() instanceof HeaderItem) {
+    			return;
+    		}
+    		
+			LazyLoadDataObjectTreeItem tiObj = (LazyLoadDataObjectTreeItem)((BooleanProperty)observable).getBean();
 			
 			if (tiObj.getFirstChild() == null) {
 				return;
 			}
 			
-			if (tiObj.isLoaded() || tiObj instanceof SidebarHeader
+			if (tiObj.isLoaded()
 					|| tiObj.getValue() instanceof DimensionCategory || tiObj.getValue() instanceof RatioCategory
 					|| tiObj.getValue() instanceof Ratio) {
 				
@@ -42,12 +46,12 @@ public 	class LazyLoadOnExpandListener implements ChangeListener<Boolean> {
     			refObjs = refObjManager.loadRefObjsForDim(tiObj.getFirstChild().getValue().getId());
     		}
     		
-    		DataObjectTreeItem nextLvl = tiObj.getFirstChild().getFirstChild();
+    		LazyLoadDataObjectTreeItem nextLvl = tiObj.getFirstChild().getFirstChild();
     		
     		tiObj.getChildren().clear();
     		
     		for (Entry<Long, ReferenceObject> currEntry : refObjs.entrySet()) {
-    			DataObjectTreeItem tiRefObjNode = new DataObjectTreeItem(currEntry.getValue());
+    			LazyLoadDataObjectTreeItem tiRefObjNode = new LazyLoadDataObjectTreeItem(currEntry.getValue());
     			if (nextLvl != null && refObjManager.dimensionAndRefObjParentHaveRecords((Dimension)nextLvl.getValue(), currEntry.getValue())) {
 	    			tiRefObjNode.addChild(nextLvl);
     			}

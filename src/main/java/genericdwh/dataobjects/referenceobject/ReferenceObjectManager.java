@@ -18,6 +18,12 @@ public class ReferenceObjectManager extends DataObjectManager {
 		super(dbController);
 	}
 	
+	public TreeMap<Long, ReferenceObject> loadRefObjsRange(int from, int to) {
+		TreeMap<Long, ReferenceObject> refObjs = dbReader.loadRefObjs(from, to);
+		referenceObjects.putAll(refObjs);
+		return refObjs;
+	}
+	
 	public ReferenceObject loadRefObj(long refObjId) {
 		ReferenceObject newRefObj = dbReader.loadRefObj(refObjId);
 		referenceObjects.put(newRefObj.getId(), newRefObj);

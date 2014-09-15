@@ -36,7 +36,7 @@ public class DimensionManager extends DataObjectManager {
 		}
 		
 		for (Dimension dim : dimensions.values()) {
-			dim.setCombination(dbReader.dimensionIsCombination(dim.getId()));
+			dim.setIsCombination(dbReader.dimensionIsCombination(dim.getId()));
 		}
 		
 		hierarchies = generateHierarchies();

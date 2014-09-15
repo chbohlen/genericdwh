@@ -83,6 +83,17 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	}
 	
 	@Override
+	public TreeMap<Long, ReferenceObject> loadRefObjs(int from, int to) {
+		Map<Long, ReferenceObject> result = dslContext
+												.select(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, REFERENCE_OBJECTS.DIMENSION_ID, REFERENCE_OBJECTS.NAME)
+												.from(REFERENCE_OBJECTS)
+												.limit(from, to - from)
+												.fetch()
+												.intoMap(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, ReferenceObject.class);
+		return new TreeMap<>(result);
+	}
+	
+	@Override
 	public ReferenceObject loadRefObj(long refObjId) {
 		ReferenceObject result = dslContext
 									.select(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, REFERENCE_OBJECTS.DIMENSION_ID, REFERENCE_OBJECTS.NAME)

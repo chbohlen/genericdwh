@@ -4,13 +4,16 @@ import genericdwh.dataobjects.DataObject;
 
 import java.util.ArrayList;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 public class Dimension extends DataObject {
 
-	@Getter private long categoryId;
-	@Getter @Setter private boolean isCombination;
+	@Getter @Setter private long categoryId;
+	@Getter private BooleanProperty isCombination = new SimpleBooleanProperty(false);
+	public void setIsCombination(boolean value) { isCombination.set(value); };
 
 	@Getter private ArrayList<Dimension> children = new ArrayList<Dimension>();
 //	@Getter private ArrayList<Dimension> components = new ArrayList<Dimension>();
@@ -39,5 +42,9 @@ public class Dimension extends DataObject {
 
 	public int getChildCount() {
 		return children.size();
+	}
+	
+	public boolean isCombination() {
+		return isCombination.get();
 	}
 }

@@ -1,7 +1,6 @@
 package genericdwh.gui.general.sidebar;
 
 import genericdwh.dataobjects.DataObject;
-import genericdwh.gui.mainwindow.sidebar.DataObjectTreeCell;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseButton;

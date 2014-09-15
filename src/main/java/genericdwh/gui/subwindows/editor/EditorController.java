@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.mainwindow.MainWindowController;
+import genericdwh.gui.subwindows.editor.editingview.EditingViewController;
 import genericdwh.gui.subwindows.editor.sidebar.EditorSidebarController;
 import genericdwh.main.Main;
 import javafx.fxml.Initializable;
@@ -15,9 +16,11 @@ import javafx.stage.Stage;
 public class EditorController implements Initializable{
 	
 	private EditorSidebarController sidebarController;
+	private EditingViewController resultViewController;
 	
-	public EditorController(EditorSidebarController sidebarController) {
+	public EditorController(EditorSidebarController sidebarController, EditingViewController resultViewController) {
 		this.sidebarController = sidebarController;
+		this.resultViewController = resultViewController;
 	}
 	
 	public void createWindow() {
@@ -40,6 +43,11 @@ public class EditorController implements Initializable{
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		sidebarController.createSidebar();	
+		resultViewController.hide();		
+		sidebarController.createSidebar();
+	}
+	
+	public void createEditorTreeTable(int id) {
+		resultViewController.createEditorTreeTable(id);
 	}
 }

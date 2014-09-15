@@ -1,11 +1,14 @@
 package genericdwh.dataobjects;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public abstract class DataObject {
 	
 	@Getter protected long id;
-	@Getter protected String name;
+	@Getter @Setter protected String name;
+	
+	@Getter @Setter private boolean hasChanged = false;
 	
 	public DataObject(long id, String name) {
 		this.id = id;

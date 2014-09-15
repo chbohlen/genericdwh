@@ -26,16 +26,16 @@
 		  </menus>
 		</MenuBar>
 		<AnchorPane layoutY="25" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
-   <children>
-   			<fx:include source="MainWindowSidebar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0" />
-   			<fx:include layoutX="230" source="QueryPane.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="230.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-   </children>
+   			<children>
+	   			<fx:include source="MainWindowSidebar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0" />
+	   			<fx:include layoutX="230" source="QueryPane.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="230.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+   			</children>
 		</AnchorPane>
-      <Separator layoutY="724.0" prefWidth="1000.0" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      <Label fx:id="statusBar" alignment="CENTER_RIGHT" layoutY="725.0" maxHeight="25" minHeight="25.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-         <padding>
-            <Insets right="10.0" />
-         </padding>
-      </Label>
+     	<Separator layoutY="724.0" prefWidth="1000.0" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      	<Label fx:id="statusBar" alignment="CENTER_RIGHT" layoutY="725.0" maxHeight="25" minHeight="25.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+			<padding>
+			   <Insets right="10.0" />
+			</padding>
+      	</Label>
 	</children>
 </AnchorPane>

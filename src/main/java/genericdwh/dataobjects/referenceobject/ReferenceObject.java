@@ -9,7 +9,7 @@ import lombok.Setter;
 
 public class ReferenceObject extends DataObject {
 	
-	@Getter private long dimensionId;
+	@Getter @Setter private long dimensionId;
 	@Getter @Setter private List<Long> childrenIds;
 
 //	@Getter private TreeMap<Long, ReferenceObject> components = new TreeMap<Long, ReferenceObject>();

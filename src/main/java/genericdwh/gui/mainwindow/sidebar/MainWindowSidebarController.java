@@ -13,7 +13,7 @@ import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
-import genericdwh.gui.general.sidebar.SidebarHeader;
+import genericdwh.gui.general.sidebar.HeaderItem;
 import genericdwh.gui.general.sidebar.TreeCellRightClickHandler;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.main.Main;
@@ -46,7 +46,7 @@ public class MainWindowSidebarController implements Initializable {
 		
 		dimensionSidebar.setCellFactory(new Callback<TreeView<DataObject>, TreeCell<DataObject>>() {
             public TreeCell<DataObject> call(TreeView<DataObject> param) {
-            	DataObjectTreeCell treeCell = new DataObjectTreeCell();
+            	DraggableDataObjectTreeCell treeCell = new DraggableDataObjectTreeCell();
             	
             	treeCell.setOnMouseClicked(new TreeCellRightClickHandler(dimensionSidebar));
             	treeCell.contextMenuProperty().bind(Bindings
@@ -60,7 +60,7 @@ public class MainWindowSidebarController implements Initializable {
 		
 		ratioSidebar.setCellFactory(new Callback<TreeView<DataObject>, TreeCell<DataObject>>() {
             public TreeCell<DataObject> call(TreeView<DataObject> param) {
-            	DataObjectTreeCell treeCell = new DataObjectTreeCell();
+            	DraggableDataObjectTreeCell treeCell = new DraggableDataObjectTreeCell();
             	
             	treeCell.setOnMouseClicked(new TreeCellRightClickHandler(ratioSidebar));
             	treeCell.contextMenuProperty().bind(Bindings
@@ -74,7 +74,113 @@ public class MainWindowSidebarController implements Initializable {
 	}
 
 	
-	private ContextMenu createDimensionContextMenu(DataObjectTreeCell treeCell) {		
+	public void createSidebars(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions, 
+			TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
+		
+		createDimensionSidebar(dimensionCategories, hierarchies, dimensions);
+		createRatioSidebar(ratioCategories, ratios);
+	}
+	
+	private void createDimensionSidebar(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions) {
+		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
+		
+		HeaderItem tiRoot = new HeaderItem("Dimensions", 0, true, false);
+				
+		TreeMap<Long, LazyLoadDataObjectTreeItem> categoryTreeItemMap = new TreeMap<>();
+		for (DimensionCategory currCat : dimensionCategories.values()) {
+			LazyLoadDataObjectTreeItem tiNewCategory = new LazyLoadDataObjectTreeItem(currCat);
+			tiRoot.addChild(tiNewCategory);
+			
+			categoryTreeItemMap.put(currCat.getId(), tiNewCategory);
+		}
+				
+		DimensionCategory noCat = new DimensionCategory(-1, "Uncategorized");
+		LazyLoadDataObjectTreeItem tiNoCat = new LazyLoadDataObjectTreeItem(noCat);
+		
+		for (DimensionHierarchy hierarchy : hierarchies) {
+			LazyLoadDataObjectTreeItem tiNewHierarchy = new LazyLoadDataObjectTreeItem(hierarchy);
+			LazyLoadDataObjectTreeItem tiCat = categoryTreeItemMap.get(hierarchy.getCategoryId());
+			if (tiCat != null) {
+				tiCat.addChild(tiNewHierarchy);
+			} else {
+				tiNoCat.addChild(tiNewHierarchy);
+			}
+
+			LazyLoadDataObjectTreeItem tiTmp = tiNewHierarchy;
+			
+			for (Dimension lvl : hierarchy.getLevels()) {
+				if (!refObjManager.dimensionHasRecords(lvl)) {
+					break;
+				}
+				
+				LazyLoadDataObjectTreeItem tiNewLevel = new LazyLoadDataObjectTreeItem(lvl);
+				tiTmp.addChild(tiNewLevel);
+				tiTmp = tiNewLevel;
+			}
+		}
+		
+		DimensionCategory combinations = new DimensionCategory(-1, "Combinations");
+		LazyLoadDataObjectTreeItem tiCombinations = new LazyLoadDataObjectTreeItem(combinations);
+		
+		for (Dimension currDim : dimensions.values()) {
+			LazyLoadDataObjectTreeItem tiNewDim = new LazyLoadDataObjectTreeItem(currDim);
+			LazyLoadDataObjectTreeItem tiCat = categoryTreeItemMap.get(currDim.getCategoryId());
+			if (tiCat != null) {
+				tiCat.addChild(tiNewDim);
+			} else if (currDim.isCombination()) {
+				tiCombinations.addChild(tiNewDim);
+			} else {
+				tiNoCat.addChild(tiNewDim);
+			}
+			
+			if (refObjManager.dimensionHasRecords(currDim)) {
+				LazyLoadDataObjectTreeItem tiPlaceholder = new LazyLoadDataObjectTreeItem(currDim);
+				tiNewDim.addChild(tiPlaceholder);
+			}
+		}
+		
+		if (tiCombinations.hasChildren()) {
+			tiRoot.addChild(tiCombinations);
+		}
+		if (tiNoCat.hasChildren()) {
+			tiRoot.addChild(tiNoCat);
+		}
+		
+		dimensionSidebar.setRoot(tiRoot);
+	}
+	
+	private void createRatioSidebar(TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
+		HeaderItem tiRoot = new HeaderItem("Ratios", 1, true, false);
+		tiRoot.setExpanded(true);
+		
+		TreeMap<Long, LazyLoadDataObjectTreeItem> categoryTreeItemMap = new TreeMap<>();
+		for (RatioCategory currCat : ratioCategories.values()) {
+			LazyLoadDataObjectTreeItem tiNewCategory = new LazyLoadDataObjectTreeItem(currCat);
+			tiRoot.addChild(tiNewCategory);
+			
+			categoryTreeItemMap.put(currCat.getId(), tiNewCategory);
+		}
+		
+		for (Ratio currRatio : ratios.values()) {
+			LazyLoadDataObjectTreeItem tiNewRatio = new LazyLoadDataObjectTreeItem(currRatio);
+			LazyLoadDataObjectTreeItem tiCat = categoryTreeItemMap.get(currRatio.getCategoryId());
+			if (tiCat != null) {
+				tiCat.addChild(tiNewRatio);
+			}
+			
+			if (currRatio.isRelation()) {
+				for (Ratio dependency : currRatio.getDependencies()) {
+					LazyLoadDataObjectTreeItem tiNewDependency = new LazyLoadDataObjectTreeItem(dependency);
+					tiNewRatio.addChild(tiNewDependency);
+				}
+			}
+		}
+		
+		ratioSidebar.setRoot(tiRoot);
+	}
+
+	
+	private ContextMenu createDimensionContextMenu(DraggableDataObjectTreeCell treeCell) {		
 		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
 		
 		ContextMenu contextMenu = new ContextMenu();
@@ -143,7 +249,7 @@ public class MainWindowSidebarController implements Initializable {
 			@Override
 			public void handle(WindowEvent event) {
 				if (treeCell.getItem().getName() != "Dimensions") {
-					if (treeCell.getTreeItem() instanceof SidebarHeader || treeCell.getItem() instanceof DimensionCategory) {
+					if (treeCell.getTreeItem() instanceof HeaderItem || treeCell.getItem() instanceof DimensionCategory) {
 						addColDimension.setVisible(false);
 						addRowDimension.setVisible(false);
 						addFilter.setVisible(false);
@@ -183,7 +289,7 @@ public class MainWindowSidebarController implements Initializable {
 		return contextMenu;
 	}
 	
-	private ContextMenu createRatioContextMenu(DataObjectTreeCell treeCell) {
+	private ContextMenu createRatioContextMenu(DraggableDataObjectTreeCell treeCell) {
 		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
 
 		ContextMenu contextMenu = new ContextMenu();
@@ -235,7 +341,7 @@ public class MainWindowSidebarController implements Initializable {
 		contextMenu.setOnShowing(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent event) {
-				if (treeCell.getTreeItem() instanceof SidebarHeader || treeCell.getItem() instanceof RatioCategory) {
+				if (treeCell.getTreeItem() instanceof HeaderItem || treeCell.getItem() instanceof RatioCategory) {
 					addRatio.setVisible(false);
 					contextMenu.getItems().remove(separator);
 				} else {
@@ -271,6 +377,7 @@ public class MainWindowSidebarController implements Initializable {
 		
 		return contextMenu;
 	}
+
 	
 	private void expandAll(TreeItem<DataObject> root) {
 		expandCollapseAll(root, true);
@@ -289,115 +396,8 @@ public class MainWindowSidebarController implements Initializable {
 			queue.addAll(currNode.getChildren());
 		}
 	}
-	
-	public void createSidebars(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions, 
-			TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
-		
-		createDimensionSidebar(dimensionCategories, hierarchies, dimensions);
-		createRatioSidebar(ratioCategories, ratios);
-	}
-	
-	private void createDimensionSidebar(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions) {
-		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
-		
-		SidebarHeader tiRoot = new SidebarHeader("Dimensions", false);
-		tiRoot.setExpanded(true);
-				
-		TreeMap<Long, DataObjectTreeItem> categoryTreeItemMap = new TreeMap<>();
-		for (DimensionCategory currCat : dimensionCategories.values()) {
-			DataObjectTreeItem tiNewCategory = new DataObjectTreeItem(currCat);
-			tiRoot.addChild(tiNewCategory);
-			
-			categoryTreeItemMap.put(currCat.getId(), tiNewCategory);
-		}
-				
-		DimensionCategory noCat = new DimensionCategory(-1, "Uncategorized");
-		DataObjectTreeItem tiNoCat = new DataObjectTreeItem(noCat);
-		
-		for (DimensionHierarchy hierarchy : hierarchies) {
-			DataObjectTreeItem tiNewHierarchy = new DataObjectTreeItem(hierarchy);
-			DataObjectTreeItem tiCat = categoryTreeItemMap.get(hierarchy.getCategoryId());
-			if (tiCat != null) {
-				tiCat.addChild(tiNewHierarchy);
-			} else {
-				tiNoCat.addChild(tiNewHierarchy);
-			}
 
-			DataObjectTreeItem tiTmp = tiNewHierarchy;
-			
-			for (Dimension lvl : hierarchy.getLevels()) {
-				if (!refObjManager.dimensionHasRecords(lvl)) {
-					break;
-				}
-				
-				DataObjectTreeItem tiNewLevel = new DataObjectTreeItem(lvl);
-				tiTmp.addChild(tiNewLevel);
-				tiTmp = tiNewLevel;
-			}
-		}
-		
-		DimensionCategory combinations = new DimensionCategory(-1, "Combinations");
-		DataObjectTreeItem tiCombinations = new DataObjectTreeItem(combinations);
-		
-		for (Dimension currDim : dimensions.values()) {
-			DataObjectTreeItem tiNewDim = new DataObjectTreeItem(currDim);
-			DataObjectTreeItem tiCat = categoryTreeItemMap.get(currDim.getCategoryId());
-			if (tiCat != null) {
-				tiCat.addChild(tiNewDim);
-			} else if (currDim.isCombination()) {
-				tiCombinations.addChild(tiNewDim);
-			} else {
-				tiNoCat.addChild(tiNewDim);
-			}
-			
-			if (refObjManager.dimensionHasRecords(currDim)) {
-				DataObjectTreeItem tiPlaceholder = new DataObjectTreeItem(currDim);
-				tiNewDim.addChild(tiPlaceholder);
-			}
-		}
-		
-		if (!tiCombinations.getChildren().isEmpty()) {
-			tiRoot.addChild(tiCombinations);
-		}
-		
-		if (!tiNoCat.getChildren().isEmpty()) {
-			tiRoot.addChild(tiNoCat);
-		}
-		
-		dimensionSidebar.setRoot(tiRoot);
-	}
-	
-	private void createRatioSidebar(TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
-		SidebarHeader tiRoot = new SidebarHeader("Ratios", false);
-		tiRoot.setExpanded(true);
-		
-		TreeMap<Long, DataObjectTreeItem> categoryTreeItemMap = new TreeMap<>();
-		for (RatioCategory currCat : ratioCategories.values()) {
-			DataObjectTreeItem tiNewCategory = new DataObjectTreeItem(currCat);
-			tiRoot.addChild(tiNewCategory);
-			
-			categoryTreeItemMap.put(currCat.getId(), tiNewCategory);
-		}
-		
-		for (Ratio currRatio : ratios.values()) {
-			DataObjectTreeItem tiNewRatio = new DataObjectTreeItem(currRatio);
-			DataObjectTreeItem tiCat = categoryTreeItemMap.get(currRatio.getCategoryId());
-			if (tiCat != null) {
-				tiCat.addChild(tiNewRatio);
-			}
-			
-			if (currRatio.isRelation()) {
-				for (Ratio dependency : currRatio.getDependencies()) {
-					DataObjectTreeItem tiNewDependency = new DataObjectTreeItem(dependency);
-					tiNewRatio.addChild(tiNewDependency);
-				}
-			}
-		}
-		
-		ratioSidebar.setRoot(tiRoot);
-	}
 
-	
 	public void showSidebars() {
 		sidebars.setVisible(true);
 	}

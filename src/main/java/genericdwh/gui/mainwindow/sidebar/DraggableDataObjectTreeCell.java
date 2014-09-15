@@ -3,29 +3,24 @@ package genericdwh.gui.mainwindow.sidebar;
 import genericdwh.dataobjects.DataObject;
 import genericdwh.dataobjects.dimension.DimensionCategory;
 import genericdwh.dataobjects.ratio.RatioCategory;
-import genericdwh.gui.general.sidebar.SidebarHeader;
+import genericdwh.gui.general.sidebar.DataObjectTreeCell;
+import genericdwh.gui.general.sidebar.HeaderItem;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.main.Main;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.EventHandler;
-import javafx.scene.control.TreeCell;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
-import lombok.Getter;
 
-public class DataObjectTreeCell extends TreeCell<DataObject>{
-		
-	@Getter private StringProperty title = new SimpleStringProperty("");
-		
-	public DataObjectTreeCell() {
+public class DraggableDataObjectTreeCell extends DataObjectTreeCell {
+			
+	public DraggableDataObjectTreeCell() {
         setOnDragDetected(new EventHandler<MouseEvent>() {
         	public void handle(MouseEvent event) {
         		DataObject item = getItem();
                 if (item == null
-                		|| getTreeItem() instanceof SidebarHeader
+                		|| getTreeItem() instanceof HeaderItem
                 		|| item instanceof DimensionCategory
                 		|| item instanceof RatioCategory) {
                 	
@@ -43,16 +38,4 @@ public class DataObjectTreeCell extends TreeCell<DataObject>{
             }
         });        
 	}
-	
-    @Override
-    protected void updateItem(DataObject obj, boolean empty) {
-        super.updateItem(obj, empty);
-
-        if (obj != null) {
-        	setText(obj.toString());
-            title.set(obj.toString());
-        } else {
-        	setText(null);
-        }
-    }
 }

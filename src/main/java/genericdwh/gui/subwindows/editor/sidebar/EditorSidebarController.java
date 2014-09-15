@@ -1,51 +1,108 @@
 package genericdwh.gui.subwindows.editor.sidebar;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.TreeView;
-import genericdwh.dataobjects.DataObject;
-import genericdwh.gui.general.sidebar.SidebarHeader;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class EditorSidebarController {
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeView;
+import javafx.util.Callback;
+import genericdwh.dataobjects.DataObject;
+import genericdwh.gui.general.sidebar.DataObjectTreeCell;
+import genericdwh.gui.general.sidebar.HeaderItem;
+import genericdwh.gui.general.sidebar.TreeCellRightClickHandler;
+import genericdwh.gui.subwindows.editor.EditorController;
+import genericdwh.main.Main;
+
+public class EditorSidebarController implements Initializable {
 	
 	@FXML private TreeView<DataObject> sidebar;
 	
 	public void createSidebar() {
-		SidebarHeader tiRoot = new SidebarHeader("", false);
+		HeaderItem tiRoot = new HeaderItem("", -1, true, false);
 		sidebar.setRoot(tiRoot);
 		sidebar.setShowRoot(false);
 		
 		
-		SidebarHeader tiDims = new SidebarHeader("Dimensions", true);
+		HeaderItem tiDims = new HeaderItem("Dimensions", 0, true, true);
+		tiDims.setExpanded(true);
 		tiRoot.addChild(tiDims);
 		
-		SidebarHeader tiDimsByCat = new SidebarHeader("By Category", true);
+		HeaderItem tiDimsByCat = new HeaderItem("By Category", 1, true, true);
 		tiDims.addChild(tiDimsByCat);
 		
 		
-		SidebarHeader tiRefObjs = new SidebarHeader("Reference Objects", true);
+		HeaderItem tiRefObjs = new HeaderItem("Reference Objects", 2, true, true);
+		tiRefObjs.setExpanded(true);		
 		tiRoot.addChild(tiRefObjs);
 		
-		SidebarHeader tiRefObjsByDim = new SidebarHeader("By Dimension", true);
+		HeaderItem tiRefObjsByDim = new HeaderItem("By Dimension", 3, true, true);
 		tiRefObjs.addChild(tiRefObjsByDim);
 		
-		SidebarHeader tiRefObjsByCat = new SidebarHeader("By Category", true);
+		HeaderItem tiRefObjsByCat = new HeaderItem("By Category", 4, true, true);
 		tiRefObjs.addChild(tiRefObjsByCat);
 		
 		
-		SidebarHeader tiRatios = new SidebarHeader("Ratios", true);
+		HeaderItem tiRatios = new HeaderItem("Ratios", 5, true, true);
+		tiRatios.setExpanded(true);		
 		tiRoot.addChild(tiRatios);
 		
-		SidebarHeader tiRatiosByCat = new SidebarHeader("By Category", true);
+		HeaderItem tiRatiosByCat = new HeaderItem("By Category", 6, true, true);
 		tiRatios.addChild(tiRatiosByCat);
 		
 		
-		SidebarHeader tiDimCats = new SidebarHeader("Dimension Categories", true);
+		HeaderItem tiFacts = new HeaderItem("Facts", 7, true, true);
+		tiFacts.setExpanded(true);		
+		tiRoot.addChild(tiFacts);
+		
+		HeaderItem tiFactsByRatio = new HeaderItem("By Ratio", 8, true, true);
+		tiFacts.addChild(tiFactsByRatio);
+		
+		HeaderItem tiFactsByReferenceObject = new HeaderItem("By Reference Object", 9, true, true);
+		tiFacts.addChild(tiFactsByReferenceObject);
+		
+		
+		HeaderItem tiDimCats = new HeaderItem("Dimension Categories", 10, true, true);
 		tiRoot.addChild(tiDimCats);
 		
-		SidebarHeader tiRefObjCats = new SidebarHeader("Reference Object Categories", true);
+		HeaderItem tiRefObjCats = new HeaderItem("Ratio Categories", 11, true, true);
 		tiRoot.addChild(tiRefObjCats);
 		
-		SidebarHeader tiUnits = new SidebarHeader ("Units", true);
+		HeaderItem tiUnits = new HeaderItem ("Units", 12, true, true);
 		tiRoot.addChild(tiUnits);
-	}	
+	}
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		sidebar.setCellFactory(new Callback<TreeView<DataObject>, TreeCell<DataObject>>() {
+            public TreeCell<DataObject> call(TreeView<DataObject> param) {
+            	DataObjectTreeCell treeCell = new DataObjectTreeCell();
+            	
+            	treeCell.setOnMouseClicked(new TreeCellRightClickHandler(sidebar));
+            	treeCell.setContextMenu(createDimensionContextMenu(treeCell));
+            	
+                return treeCell;
+            }
+        });
+	}
+	
+	private ContextMenu createDimensionContextMenu(DataObjectTreeCell treeCell) {				
+		ContextMenu contextMenu = new ContextMenu();
+				
+		MenuItem load = new MenuItem("Load");
+		load.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+            public void handle(ActionEvent event) {
+				Main.getContext().getBean(EditorController.class).createEditorTreeTable((int)treeCell.getItem().getId());
+            }
+        });
+		
+		contextMenu.getItems().add(load);
+		return contextMenu;
+	}
 }
