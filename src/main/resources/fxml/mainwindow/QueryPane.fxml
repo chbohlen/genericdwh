@@ -35,7 +35,7 @@
       </ScrollPane>
       <HBox layoutY="607.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.bottomAnchor="15.0">
          <children>
-            <Button fx:id="btnExecQuery" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#buttonExecQueryOnClickHandler" prefHeight="27.0" prefWidth="90.0" text="Execute Query">
+            <Button fx:id="btnExecQuery" alignment="CENTER" mnemonicParsing="false" onAction="#buttonExecQueryOnClickHandler" prefHeight="27.0" prefWidth="90.0" text="Execute Query">
                <font>
                   <Font size="11.0" />
                </font>
@@ -43,7 +43,7 @@
                   <Insets left="5.0" right="5.0" />
                </HBox.margin>
             </Button>
-            <Button fx:id="btnClear" mnemonicParsing="false" onMouseClicked="#buttonClearOnClickHandler" prefHeight="27.0" prefWidth="90.0" text="Clear">
+            <Button fx:id="btnClear" mnemonicParsing="false" onAction="#buttonClearOnClickHandler" prefHeight="27.0" prefWidth="90.0" text="Clear">
                <font>
                   <Font size="11.0" />
                </font>

@@ -33,6 +33,8 @@ public class ConnectDialogController {
 	private String lastPort = new String();
 	private String lastDbName = new String();
 	private String lastUserName = new String();
+	
+	private Stage stage;
 
 	public ConnectDialogController() {
 	}
@@ -42,7 +44,7 @@ public class ConnectDialogController {
 			SpringFXMLLoader loader = new SpringFXMLLoader(getClass().getResource("/fxml/subwindows/connectdialog/ConnectDialog.fxml"), Main.getContext().getBean(ConnectDialogController.class));
 			Parent root = loader.load();
 			Scene scene = new Scene(root, 305, 240);
-			Stage stage = new Stage();
+			stage = new Stage();
 			stage.setScene(scene);
 			stage.setTitle("Connect to database");
 			stage.setResizable(false);
@@ -119,7 +121,7 @@ public class ConnectDialogController {
 	}
 
 	private void closeWindow() {
-		((Stage)btnCancel.getScene().getWindow()).close();
+		stage.close();
 	}
 	
 	@FXML public void buttonConnectOnClickHandler() {		

@@ -1,5 +1,7 @@
 package genericdwh.gui.subwindows.editor.editingview;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import genericdwh.dataobjects.DataObject;
@@ -11,28 +13,46 @@ import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.gui.general.sidebar.DataObjectTreeItem;
 import genericdwh.gui.general.sidebar.HeaderItem;
 import genericdwh.main.Main;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableColumn.CellDataFeatures;
 import javafx.scene.control.TreeTableColumn.CellEditEvent;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 import javafx.util.converter.DefaultStringConverter;
+import lombok.Getter;
 
-public class EditingViewController {
+public class EditingViewController implements Initializable {
 
 	@FXML private TreeTableView<DataObject> editingView;
+	@FXML private HBox search;
+	@FXML private TextField tfSearchText;
+	@FXML private Button btnSearch;
+	@FXML private Button btnNext;
+	@FXML private Button btnClear;
 	
-	private boolean hasUnsavedChanges = false;
+	@Getter private BooleanProperty hasUnsavedChanges = new SimpleBooleanProperty(false);
+	
+	private int prevIndex = 0;
+	private int prevIndexChildren = 0;
+	private String currSearchText = "";
 	
 	public enum EditingViewType {
 		DIMENSIONS,
@@ -53,23 +73,41 @@ public class EditingViewController {
 	public EditingViewController() {
 	}
 	
-	public void show() {
-		editingView.setVisible(true);
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		tfSearchText.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				resetSearchBox(false);
+			}
+		});
+		tfSearchText.focusedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if (newValue) {
+					btnSearch.setDefaultButton(true);
+				}
+			}
+		});
 	}
 	
-	public void hide() {
+	public void showEditingView() {
+		editingView.setVisible(true);
+		search.setVisible(true);
+		
+		editingView.requestFocus();
+	}
+	
+	public void hideEditingView() {
 		editingView.setVisible(false);
+		search.setVisible(false);
 	}
 
-	public void createEditorTreeTable(int id) {
+	public void createEditorTreeTable(int id) {	
+		resetEditingView();
+		
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
-		
-		editingView.setPlaceholder(new Text(""));
-		editingView.getColumns().clear();
-		editingView.setRoot(null);
-		editingView.setShowRoot(false);
-		editingView.setEditable(true);
 		
 		EditingViewType editingViewType = EditingViewType.values()[id];
 		switch (editingViewType) {
@@ -233,11 +271,8 @@ public class EditingViewController {
 				break;
 			}
 		}
-		
-		show();
 	}
 	
-
 	private void setupDimensionsTable() {
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 		
@@ -324,7 +359,7 @@ public class EditingViewController {
 	
 	private TreeTableColumn<DataObject, String> createNameCol() {
 		TreeTableColumn<DataObject, String> colName = new TreeTableColumn<>("Name");
-		colName.setPrefWidth(175);
+		colName.setPrefWidth(200);
 		
 		colName.setCellFactory(new Callback<TreeTableColumn<DataObject, String>,TreeTableCell<DataObject, String>>() {
 			@Override
@@ -342,6 +377,7 @@ public class EditingViewController {
                 	
                 	obj.setName(newName);
                 	obj.setHasChanged(true);
+                	editingView.requestFocus();
                 }
             }
         });
@@ -355,7 +391,7 @@ public class EditingViewController {
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 
 		TreeTableColumn<DataObject, DimensionCategory> colCategory = new TreeTableColumn<>("Category");
-		colCategory.setPrefWidth(175);
+		colCategory.setPrefWidth(200);
 		
 		colCategory.setCellFactory(new Callback<TreeTableColumn<DataObject, DimensionCategory>,TreeTableCell<DataObject, DimensionCategory>>() {
 			@Override
@@ -380,6 +416,7 @@ public class EditingViewController {
                 	Dimension dim = dimManager.getDimension(obj.getId());
                 	dim.setCategoryId(newCategory.getId());
                 	dim.setHasChanged(true);
+                	editingView.requestFocus();
                 }
             }
         });
@@ -394,7 +431,7 @@ public class EditingViewController {
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
 		
 		TreeTableColumn<DataObject, Dimension> colDim = new TreeTableColumn<>("Dimension");
-		colDim.setPrefWidth(175);
+		colDim.setPrefWidth(200);
 		
 		colDim.setCellFactory(new Callback<TreeTableColumn<DataObject, Dimension>,TreeTableCell<DataObject, Dimension>>() {
 			@Override
@@ -432,7 +469,7 @@ public class EditingViewController {
 	
 	private TreeTableColumn<DataObject, String> createRatioCol() {
 		TreeTableColumn<DataObject, String> colRatio = new TreeTableColumn<>("Ratio");
-		colRatio.setPrefWidth(175);
+		colRatio.setPrefWidth(200);
 		editingView.getColumns().add(colRatio);
 		
 		return colRatio;
@@ -440,7 +477,7 @@ public class EditingViewController {
 	
 	private TreeTableColumn<DataObject, String> createReferenceObjectCol() {
 		TreeTableColumn<DataObject, String> colRefObj = new TreeTableColumn<>("Reference Object");
-		colRefObj.setPrefWidth(175);
+		colRefObj.setPrefWidth(200);
 		editingView.getColumns().add(colRefObj);
 		
 		return colRefObj;
@@ -448,7 +485,7 @@ public class EditingViewController {
 	
 	private TreeTableColumn<DataObject, Double> createValueCol() {
 		TreeTableColumn<DataObject, Double> colValue = new TreeTableColumn<>("Value");
-		colValue.setPrefWidth(175);
+		colValue.setPrefWidth(200);
 		editingView.getColumns().add(colValue);
 		
 		return colValue;
@@ -456,9 +493,99 @@ public class EditingViewController {
 	
 	private TreeTableColumn<DataObject, String> createUnitSymbolCol() {
 		TreeTableColumn<DataObject, String> colUnitSymbol = new TreeTableColumn<>("Unit Symbol");
-		colUnitSymbol.setPrefWidth(175);
+		colUnitSymbol.setPrefWidth(200);
 		editingView.getColumns().add(colUnitSymbol);
 		
 		return colUnitSymbol;
 	}
+
+	
+	private void resetEditingView() {
+		editingView.setPlaceholder(new Text(""));
+		editingView.getColumns().clear();
+		editingView.setRoot(null);
+		editingView.setShowRoot(false);
+		editingView.setEditable(true);
+		
+		resetSearchBox(true);
+	}
+	
+	
+	@FXML public void buttonSearchOnClickHandler() {
+		if (!tfSearchText.getText().isEmpty()) {
+			currSearchText = tfSearchText.getText();
+			search(currSearchText, 0, 0);
+		}
+	}
+
+	@FXML public void buttonNextOnClickHandler() {
+		search(currSearchText, prevIndex, prevIndexChildren);
+	}
+
+	@FXML public void buttonClearOnClickHandler() {
+		resetSearchBox(true);
+	}
+	
+	
+	private void search(String searchText, int index, int indexChildren) {
+		TreeItem<DataObject> searchedObj = null;
+		for (; index < editingView.getRoot().getChildren().size(); index++) {
+			TreeItem<DataObject> tiObj = editingView.getRoot().getChildren().get(index);
+			if (!tiObj.getChildren().isEmpty()) {
+				for (; indexChildren < tiObj.getChildren().size(); indexChildren++) {
+					TreeItem<DataObject> tiObjChild = tiObj.getChildren().get(indexChildren);
+					if (tiObjChild.getValue().getName().toLowerCase().contains(searchText.toLowerCase())) {
+						searchedObj = tiObjChild;
+						break;
+					}
+				}
+			} else {
+				if (tiObj.getValue().getName().toLowerCase().contains(searchText.toLowerCase())) {
+					searchedObj = tiObj;
+					break;
+				}
+			}
+		}
+		
+		if (searchedObj == null) {
+			if (prevIndex != 0 && prevIndexChildren != 0) {
+				prevIndex = 0;
+				prevIndexChildren = 0;
+				search(currSearchText, 0, 0);
+			}
+			return;
+		}
+		
+		int row = editingView.getRow(searchedObj);
+		editingView.getSelectionModel().select(row);
+		editingView.getFocusModel().focus(row);
+		editingView.scrollTo(row);
+		
+		btnNext.setDisable(false);
+		btnClear.setDisable(false);
+		
+		btnSearch.setDefaultButton(false);
+		btnNext.setDefaultButton(true);
+		
+		prevIndex = ++index;
+		prevIndexChildren = ++indexChildren;
+	}
+	
+	private void resetSearchBox(boolean fullReset) {
+		btnNext.setDisable(true);
+		btnClear.setDisable(true);
+		
+		if (fullReset) {
+			btnSearch.setDefaultButton(false);
+		}
+		btnNext.setDefaultButton(false);
+		
+		prevIndex = 0;
+		prevIndexChildren = 0;
+		
+		currSearchText = "";
+		if (fullReset) {
+			tfSearchText.setText("");
+		}
+	}	
 }
