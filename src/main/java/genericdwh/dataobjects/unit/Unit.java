@@ -12,4 +12,10 @@ public class Unit extends DataObject {
 		
 		this.symbol = symbol;
 	}
+
+	@Override
+	public Unit clone() {
+		Unit newUnit = new Unit(this.id, this.name, this.symbol);
+		return newUnit;
+	}
 }

@@ -20,6 +20,13 @@ public class ReferenceObject extends DataObject {
 		this.dimensionId = dimensionId;
 	}
 
+	@Override
+	public ReferenceObject clone() {
+		ReferenceObject newRefObj = new ReferenceObject(this.id, this.dimensionId, this.name);
+		newRefObj.childrenIds = this.childrenIds;
+		return newRefObj;
+	}
+
 //	public void addComponent(ReferenceObject newComponent) {
 //		components.put(newComponent.getId(), newComponent);
 //	}

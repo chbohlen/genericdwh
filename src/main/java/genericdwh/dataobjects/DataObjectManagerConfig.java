@@ -37,4 +37,9 @@ public class DataObjectManagerConfig {
 	public UnitManager unitManager() {
 		return new UnitManager(dbControllerConfig.databaseController());
 	}
+	
+	@Bean
+	public ChangeManager changeManager() {
+		return new ChangeManager(dimensionManager(), referenceObjectManager(), ratioManager(), unitManager());
+	}
 }

@@ -29,4 +29,6 @@ public abstract class DataObject {
 	public String toString() {
 		return name;
 	}
+	
+	abstract public DataObject clone();
 }

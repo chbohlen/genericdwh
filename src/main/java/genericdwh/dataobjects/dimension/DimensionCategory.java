@@ -12,4 +12,10 @@ public class DimensionCategory extends DataObject {
 		
 		this.id = id;
 	}
+
+	@Override
+	public DimensionCategory clone() {
+		DimensionCategory newCat = new DimensionCategory(this.id, this.name);
+		return newCat;
+	}
 }

@@ -3,10 +3,14 @@ package genericdwh.gui.subwindows.editor;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import genericdwh.dataobjects.ChangeManager;
+import genericdwh.dataobjects.DataObject;
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.subwindows.editor.editingview.EditingViewController;
 import genericdwh.gui.subwindows.editor.sidebar.EditorSidebarController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DiscardChangesDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveChangesDialogController;
 import genericdwh.main.Main;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -18,17 +22,27 @@ import javafx.stage.Stage;
 
 public class EditorController implements Initializable{
 	
+	private ChangeManager changeManager;
+	
 	private EditorSidebarController sidebarController;
 	private EditingViewController resultViewController;
-	
-	@FXML MenuItem miSave;
-	@FXML MenuItem miDiscard;
+	private SaveChangesDialogController saveChangesDialogController;
+	private DiscardChangesDialogController discardChangesDialogController;
 	
 	private Stage stage;
 	
-	public EditorController(EditorSidebarController sidebarController, EditingViewController resultViewController) {
+	@FXML MenuItem miSave;
+	@FXML MenuItem miDiscard;
+		
+	public EditorController(ChangeManager changeManager, EditorSidebarController sidebarController, EditingViewController resultViewController,
+			SaveChangesDialogController saveChangesDialogController, DiscardChangesDialogController discardChangesDialogController) {
+		
+		this.changeManager = changeManager;
+		
 		this.sidebarController = sidebarController;
 		this.resultViewController = resultViewController;
+		this.saveChangesDialogController = saveChangesDialogController;
+		this.discardChangesDialogController = discardChangesDialogController;
 	}
 	
 	public void createWindow() {
@@ -71,12 +85,30 @@ public class EditorController implements Initializable{
 	}
 	
 	@FXML public void menuBarSaveOnClickHandler() {
+		showSaveChangesDialog();
 	}
 	
 	@FXML public void menuBarDiscardOnClickHandler() {
+		discardChangesDialogController.createWindow();
 	}
 	
 	@FXML public void menuBarExitOnClickHandler() {
 		stage.close();
+	}
+
+	public DataObject changeName(DataObject obj, String newName) {
+		return changeManager.changeName(obj, newName);
+	}
+
+	public DataObject changeCategory(DataObject obj, long newCategoryId) {
+		return changeManager.changeCategory(obj, newCategoryId);
+	}
+
+	public DataObject changeDimension(DataObject obj, long newDimensionId) {
+		return changeManager.changeDimension(obj, newDimensionId);
+	}
+
+	public void showSaveChangesDialog() {
+		saveChangesDialogController.createWindow();
 	}
 }

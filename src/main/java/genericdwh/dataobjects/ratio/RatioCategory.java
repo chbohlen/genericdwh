@@ -12,4 +12,10 @@ public class RatioCategory extends DataObject {
 		
 		this.id = id;
 	}
+
+	@Override
+	public RatioCategory clone() {
+		RatioCategory newCat = new RatioCategory(this.id, this.name);
+		return newCat;
+	}
 }

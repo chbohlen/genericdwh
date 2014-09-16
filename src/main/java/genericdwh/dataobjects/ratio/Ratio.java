@@ -3,10 +3,11 @@ package genericdwh.dataobjects.ratio;
 import java.util.ArrayList;
 
 import lombok.Getter;
+import lombok.Setter;
 import genericdwh.dataobjects.DataObject;
 public class Ratio extends DataObject {
 	
-	@Getter private long categoryId;
+	@Getter @Setter private long categoryId;
 	
 	@Getter private ArrayList<Ratio> dependencies = new ArrayList<Ratio>();
 	
@@ -26,5 +27,12 @@ public class Ratio extends DataObject {
 	
 	public int getDependencyCount() {
 		return dependencies.size();
+	}
+
+	@Override
+	public Ratio clone() {
+		Ratio newRatio = new Ratio(this.id, this.name, this.categoryId);
+		newRatio.dependencies = this.dependencies;
+		return newRatio;
 	}
 }

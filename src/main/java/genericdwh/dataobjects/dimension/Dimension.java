@@ -47,4 +47,12 @@ public class Dimension extends DataObject {
 	public boolean isCombination() {
 		return isCombination.get();
 	}
+	
+	@Override
+	public Dimension clone() {
+		Dimension newDim = new Dimension(this.id, this.name, this.categoryId);
+		newDim.isCombination = this.isCombination;
+		newDim.children = this.children;
+		return newDim;
+	}
 }

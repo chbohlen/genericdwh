@@ -1,5 +1,6 @@
 package genericdwh.gui;
 
+import genericdwh.dataobjects.DataObjectManagerConfig;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController;
 import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGridController;
@@ -7,12 +8,20 @@ import genericdwh.gui.mainwindow.sidebar.MainWindowSidebarController;
 import genericdwh.gui.subwindows.connectdialog.ConnectDialogController;
 import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.gui.subwindows.editor.editingview.EditingViewController;
+import genericdwh.gui.subwindows.editor.editingview.SearchBoxController;
 import genericdwh.gui.subwindows.editor.sidebar.EditorSidebarController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DiscardChangesDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveChangesDialogController;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 
 @Configuration
+@Import(DataObjectManagerConfig.class)
 public class GUIConfig {
+	
+	@Autowired
+	private DataObjectManagerConfig objManagerConfig;
 
 	@Bean
 	public MainWindowController mainWindowController() {
@@ -41,7 +50,8 @@ public class GUIConfig {
 	
 	@Bean
 	public EditorController editorWindowController() {
-		return new EditorController(editorSidebarController(), resultViewController());
+		return new EditorController(objManagerConfig.changeManager(), editorSidebarController(), editingViewController(),
+				saveChangesDialogController(), discardChangesDialogController());
 	}
 	
 	@Bean
@@ -50,7 +60,22 @@ public class GUIConfig {
 	}
 	
 	@Bean
-	public EditingViewController resultViewController() {
-		return new EditingViewController();
+	public EditingViewController editingViewController() {
+		return new EditingViewController(searchBoxController());
+	}
+	
+	@Bean
+	public SearchBoxController searchBoxController() {
+		return new SearchBoxController();
+	}
+	
+	@Bean
+	public SaveChangesDialogController saveChangesDialogController() {
+		return new SaveChangesDialogController();
+	}
+	
+	@Bean
+	public DiscardChangesDialogController discardChangesDialogController() {
+		return new DiscardChangesDialogController();
 	}
 }

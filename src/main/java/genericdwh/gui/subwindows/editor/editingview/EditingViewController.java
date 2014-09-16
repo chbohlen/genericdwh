@@ -1,7 +1,5 @@
 package genericdwh.gui.subwindows.editor.editingview;
 
-import java.net.URL;
-import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import genericdwh.dataobjects.DataObject;
@@ -12,48 +10,35 @@ import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.gui.general.sidebar.DataObjectTreeItem;
 import genericdwh.gui.general.sidebar.HeaderItem;
+import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.main.Main;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableColumn.CellDataFeatures;
 import javafx.scene.control.TreeTableColumn.CellEditEvent;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
-import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 import javafx.util.converter.DefaultStringConverter;
 import lombok.Getter;
 
-public class EditingViewController implements Initializable {
+public class EditingViewController {
+	
+	private SearchBoxController searchBoxController;
 
-	@FXML private TreeTableView<DataObject> editingView;
-	@FXML private HBox search;
-	@FXML private TextField tfSearchText;
-	@FXML private Button btnSearch;
-	@FXML private Button btnNext;
-	@FXML private Button btnClear;
+	@Getter @FXML private TreeTableView<DataObject> editingView;
 	
-	@Getter private BooleanProperty hasUnsavedChanges = new SimpleBooleanProperty(false);
-	
-	private int prevIndex = 0;
-	private int prevIndexChildren = 0;
-	private String currSearchText = "";
-	
+	@Getter private BooleanProperty hasUnsavedChanges = new SimpleBooleanProperty(false);		
 	public enum EditingViewType {
 		DIMENSIONS,
 		DIMENSIONS_BY_CATEGORY,
@@ -70,45 +55,35 @@ public class EditingViewController implements Initializable {
 		UNITS;
 	}
 	
-	public EditingViewController() {
-	}
 	
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		tfSearchText.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				resetSearchBox(false);
-			}
-		});
-		tfSearchText.focusedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				if (newValue) {
-					btnSearch.setDefaultButton(true);
-				}
-			}
-		});
+	public EditingViewController(SearchBoxController searchBoxController) {
+		this.searchBoxController = searchBoxController;
 	}
 	
 	public void showEditingView() {
 		editingView.setVisible(true);
-		search.setVisible(true);
+		searchBoxController.showSearchBox();
 		
 		editingView.requestFocus();
 	}
 	
 	public void hideEditingView() {
 		editingView.setVisible(false);
-		search.setVisible(false);
+		searchBoxController.hideSearchBox();
+
 	}
 
-	public void createEditorTreeTable(int id) {	
-		resetEditingView();
+	
+	public void createEditorTreeTable(int id) {
+		if (hasUnsavedChanges.get()) {
+			Main.getContext().getBean(EditorController.class).showSaveChangesDialog();
+		}
 		
+		resetEditingView();
+				
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
-		
+				
 		EditingViewType editingViewType = EditingViewType.values()[id];
 		switch (editingViewType) {
 			case DIMENSIONS: {
@@ -118,8 +93,8 @@ public class EditingViewController implements Initializable {
 				editingView.setRoot(tiRoot);
 				
 				for (Dimension dim : dimManager.getDimensions().values()) {
-					DataObjectTreeItem tiDim = new DataObjectTreeItem(dim);
 					if (!dim.isCombination()) {
+						DataObjectTreeItem tiDim = new DataObjectTreeItem(dim);
 						tiRoot.addChild(tiDim);
 					}
 				}
@@ -135,13 +110,13 @@ public class EditingViewController implements Initializable {
 				TreeMap<Long, DataObjectTreeItem> tiCatMap = new TreeMap<>();
 				for (DimensionCategory cat : dimManager.getCategories().values()) {
 					HeaderItem tiCat = new HeaderItem(cat.getName(), -1, true, true);
-					tiCatMap.put(cat.getId(), tiCat);
+					tiCatMap.put(tiCat.getValue().getId(), tiCat);
 				}
 				HeaderItem tiNoCat = new HeaderItem("Uncategorized", -1, true, true);
 
 				for (Dimension dim : dimManager.getDimensions().values()) {
-					DataObjectTreeItem tiDim = new DataObjectTreeItem(dim);
 					if (!dim.isCombination()) {
+						DataObjectTreeItem tiDim = new DataObjectTreeItem(dim);
 						if (dim.getCategoryId() == 0) {
 							tiNoCat.addChild(tiDim);
 						} else {
@@ -169,7 +144,8 @@ public class EditingViewController implements Initializable {
 				
 				for (ReferenceObject refObj : refObjManager.loadRefObjsRange(0, 999).values()) {
 					if (!dimManager.getDimension(refObj.getDimensionId()).isCombination()) {
-						tiRoot.addChild(new DataObjectTreeItem(refObj));
+						DataObjectTreeItem tiRefObj = new DataObjectTreeItem(refObj);
+						tiRoot.addChild(tiRefObj);
 					}
 				}
 				
@@ -185,14 +161,15 @@ public class EditingViewController implements Initializable {
 				for (Dimension dim : dimManager.getDimensions().values()) {
 					if (!dim.isCombination()) {
 						HeaderItem tiDim = new HeaderItem(dim.getName(), -1, true, true);
-						tiDimMap.put(dim.getId(), tiDim);
+						tiDimMap.put(tiDim.getValue().getId(), tiDim);
 					}
 				}
 				
 				for (ReferenceObject refObj : refObjManager.loadRefObjsRange(0, 999).values()) {
 					DataObjectTreeItem tiDim = tiDimMap.get(refObj.getDimensionId());
 					if (tiDim != null) {
-						tiDim.addChild(new DataObjectTreeItem(refObj));
+						DataObjectTreeItem tiRefObj = new DataObjectTreeItem(refObj);
+						tiDim.addChild(tiRefObj);
 					}
 				}
 				
@@ -213,14 +190,13 @@ public class EditingViewController implements Initializable {
 				TreeMap<Long, DataObjectTreeItem> tiCatMap = new TreeMap<>();
 				for (DimensionCategory cat : dimManager.getCategories().values()) {
 					HeaderItem tiCat = new HeaderItem(cat.getName(), -1, true, true);
-					tiCatMap.put(cat.getId(), tiCat);
+					tiCatMap.put(tiCat.getValue().getId(), tiCat);
 				}
 				HeaderItem tiNoCat = new HeaderItem("Uncategorized", -1, true, true);
 
 				for (ReferenceObject refObj : refObjManager.loadRefObjsRange(0, 999).values()) {
-					DataObjectTreeItem tiRefObj = new DataObjectTreeItem(refObj);
-					
 					Dimension dim = dimManager.getDimension(refObj.getDimensionId());
+					DataObjectTreeItem tiRefObj = new DataObjectTreeItem(refObj);
 					if (!dim.isCombination()) {
 						if (dim.getCategoryId() == 0) {
 							tiNoCat.addChild(tiRefObj);
@@ -272,14 +248,21 @@ public class EditingViewController implements Initializable {
 			}
 		}
 	}
+
 	
 	private void setupDimensionsTable() {
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
-		
+				
 		TreeTableColumn<DataObject, String> colName = createNameCol();
 		colName.setCellValueFactory(new Callback<CellDataFeatures<DataObject, String>, ObservableValue<String>>() {
 			public ObservableValue<String> call(CellDataFeatures<DataObject, String> param) {
-				return new SimpleStringProperty(param.getValue().getValue().getName());
+				try {
+					return new SimpleStringProperty(param.getValue().getValue().getName());
+				} catch (Exception e) {
+					
+					return null;
+				}
+
 		    }
 		});
 		
@@ -305,7 +288,7 @@ public class EditingViewController implements Initializable {
 	private void setupReferenceObjectsTable() {
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
-
+		
 		TreeTableColumn<DataObject, String> colName = createNameCol();
 		colName.setCellValueFactory(new Callback<CellDataFeatures<DataObject, String>, ObservableValue<String>>() {
 			public ObservableValue<String> call(CellDataFeatures<DataObject, String> param) {
@@ -320,7 +303,8 @@ public class EditingViewController implements Initializable {
 					return new SimpleObjectProperty<Dimension>(null);
 				}
 				ReferenceObject refObj = refObjManager.getReferenceObject(param.getValue().getValue().getId());
-				return new SimpleObjectProperty<Dimension>(dimManager.getDimension(refObj.getDimensionId()));
+				Dimension dim = dimManager.getDimension(refObj.getDimensionId());
+				return new SimpleObjectProperty<Dimension>(dim);
 		    }
 		});
 		
@@ -375,9 +359,12 @@ public class EditingViewController implements Initializable {
                 	DataObject obj = event.getRowValue().getValue();
                 	String newName = event.getNewValue();
                 	
-                	obj.setName(newName);
-                	obj.setHasChanged(true);
-                	editingView.requestFocus();
+                	if (newName != obj.getName()) {
+                    	DataObject changedObj = Main.getContext().getBean(EditorController.class).changeName(obj, newName);
+                    	event.getRowValue().setValue(changedObj);
+                    	hasUnsavedChanges.set(true);
+                    	editingView.requestFocus();
+                	}
                 }
             }
         });
@@ -412,11 +399,14 @@ public class EditingViewController implements Initializable {
                 if (event.getEventType() == TreeTableColumn.editCommitEvent()) {
                 	DataObject obj = event.getRowValue().getValue();
                 	DimensionCategory newCategory = event.getNewValue();
-                	
                 	Dimension dim = dimManager.getDimension(obj.getId());
-                	dim.setCategoryId(newCategory.getId());
-                	dim.setHasChanged(true);
-                	editingView.requestFocus();
+                	
+                	if (newCategory.getId() != dim.getCategoryId()) {
+                    	DataObject changedObj = Main.getContext().getBean(EditorController.class).changeCategory(dim, newCategory.getId());
+                    	event.getRowValue().setValue(changedObj);
+                    	hasUnsavedChanges.set(true);
+                    	editingView.requestFocus();
+                	}
                 }
             }
         });
@@ -454,10 +444,14 @@ public class EditingViewController implements Initializable {
                 if (event.getEventType() == TreeTableColumn.editCommitEvent()) {
                 	DataObject obj = event.getRowValue().getValue();
                 	Dimension newDimension = event.getNewValue();
-                	
                 	ReferenceObject refObj = refObjManager.getReferenceObject(obj.getId());
-                	refObj.setDimensionId(newDimension.getId());
-                	refObj.setHasChanged(true);
+                	
+                	if (newDimension.getId() != refObj.getDimensionId()) {
+                    	DataObject changedObj = Main.getContext().getBean(EditorController.class).changeDimension(refObj, newDimension.getId());
+                    	event.getRowValue().setValue(changedObj);
+                    	hasUnsavedChanges.set(true);
+                    	editingView.requestFocus();
+                	}
                 }
             }
         });
@@ -501,91 +495,16 @@ public class EditingViewController implements Initializable {
 
 	
 	private void resetEditingView() {
+		hasUnsavedChanges.set(false);
+		
 		editingView.setPlaceholder(new Text(""));
 		editingView.getColumns().clear();
 		editingView.setRoot(null);
 		editingView.setShowRoot(false);
 		editingView.setEditable(true);
 		
-		resetSearchBox(true);
-	}
-	
-	
-	@FXML public void buttonSearchOnClickHandler() {
-		if (!tfSearchText.getText().isEmpty()) {
-			currSearchText = tfSearchText.getText();
-			search(currSearchText, 0, 0);
-		}
-	}
-
-	@FXML public void buttonNextOnClickHandler() {
-		search(currSearchText, prevIndex, prevIndexChildren);
-	}
-
-	@FXML public void buttonClearOnClickHandler() {
-		resetSearchBox(true);
-	}
-	
-	
-	private void search(String searchText, int index, int indexChildren) {
-		TreeItem<DataObject> searchedObj = null;
-		for (; index < editingView.getRoot().getChildren().size(); index++) {
-			TreeItem<DataObject> tiObj = editingView.getRoot().getChildren().get(index);
-			if (!tiObj.getChildren().isEmpty()) {
-				for (; indexChildren < tiObj.getChildren().size(); indexChildren++) {
-					TreeItem<DataObject> tiObjChild = tiObj.getChildren().get(indexChildren);
-					if (tiObjChild.getValue().getName().toLowerCase().contains(searchText.toLowerCase())) {
-						searchedObj = tiObjChild;
-						break;
-					}
-				}
-			} else {
-				if (tiObj.getValue().getName().toLowerCase().contains(searchText.toLowerCase())) {
-					searchedObj = tiObj;
-					break;
-				}
-			}
-		}
-		
-		if (searchedObj == null) {
-			if (prevIndex != 0 && prevIndexChildren != 0) {
-				prevIndex = 0;
-				prevIndexChildren = 0;
-				search(currSearchText, 0, 0);
-			}
-			return;
-		}
-		
-		int row = editingView.getRow(searchedObj);
-		editingView.getSelectionModel().select(row);
-		editingView.getFocusModel().focus(row);
-		editingView.scrollTo(row);
-		
-		btnNext.setDisable(false);
-		btnClear.setDisable(false);
-		
-		btnSearch.setDefaultButton(false);
-		btnNext.setDefaultButton(true);
-		
-		prevIndex = ++index;
-		prevIndexChildren = ++indexChildren;
-	}
-	
-	private void resetSearchBox(boolean fullReset) {
-		btnNext.setDisable(true);
-		btnClear.setDisable(true);
-		
-		if (fullReset) {
-			btnSearch.setDefaultButton(false);
-		}
-		btnNext.setDefaultButton(false);
-		
-		prevIndex = 0;
-		prevIndexChildren = 0;
-		
-		currSearchText = "";
-		if (fullReset) {
-			tfSearchText.setText("");
-		}
+		searchBoxController.resetSearchBox(true);
 	}	
+	
+
 }

@@ -1,35 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
 <AnchorPane prefHeight="690.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.subwindows.editor.editingview.EditingViewController">
 	<children>
+		<fx:include source="SearchBox.fxml" AnchorPane.topAnchor="0.0" />
 		<TreeTableView fx:id="editingView" layoutX="215.0" prefHeight="690.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="50.0" />
-      <HBox fx:id="search" alignment="CENTER" prefHeight="50.0">
-         <children>
-            <TextField fx:id="tfSearchText" prefWidth="160.0">
-               <HBox.margin>
-                  <Insets left="10.0" />
-               </HBox.margin></TextField>
-            <Button fx:id="btnSearch" mnemonicParsing="false" onAction="#buttonSearchOnClickHandler" text="Search">
-               <HBox.margin>
-                  <Insets left="10.0" />
-               </HBox.margin>
-            </Button>
-            <Button fx:id="btnNext" disable="true" mnemonicParsing="false" onAction="#buttonNextOnClickHandler" text="Next">
-               <HBox.margin>
-                  <Insets left="5.0" />
-               </HBox.margin>
-            </Button>
-            <Button fx:id="btnClear" disable="true" mnemonicParsing="false" onAction="#buttonClearOnClickHandler" text="Clear">
-               <HBox.margin>
-                  <Insets left="5.0" />
-               </HBox.margin>
-            </Button>
-         </children>
-      </HBox>
 	</children>
 </AnchorPane>

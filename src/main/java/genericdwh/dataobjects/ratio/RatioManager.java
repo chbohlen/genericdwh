@@ -29,4 +29,8 @@ public class RatioManager extends DataObjectManager {
 	public void loadCategories() {
 		categories = dbReader.loadRatioCategories();
 	}
+	
+	public Ratio getRatio(long id) {
+		return ratios.get(id);
+	}
 }
