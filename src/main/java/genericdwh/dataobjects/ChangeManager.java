@@ -67,46 +67,56 @@ public class ChangeManager {
 		return clone;
 	}
 
-	public DataObject changeDimension(DataObject obj, long newDimensionId) {
-		DataObject clone = getObjectIfStaged(obj);
+	public DataObject changeDimension(ReferenceObject refObj, long newDimensionId) {
+		DataObject clone = getObjectIfStaged(refObj);
 		if (clone == null) {
-			clone = getClone(obj);
+			clone = getClone(refObj);
 		}
 		((ReferenceObject)clone).setDimensionId(newDimensionId);
 		stageObject(clone);
 		return clone;
 	}
 	
-	public DataObject changeRatio(DataObject obj, long newRatioId) {
-		DataObject clone = getObjectIfStaged(obj);
+	public DataObject changeSymbol(Unit unit, String newSymbol) {
+		DataObject clone = getObjectIfStaged(unit);
 		if (clone == null) {
-			clone = getClone(obj);
+			clone = getClone(unit);
+		}
+		((Unit)clone).setSymbol(newSymbol);
+		stageObject(clone);
+		return clone;
+	}
+	
+	public DataObject changeRatio(Fact fact, long newRatioId) {
+		DataObject clone = getObjectIfStaged(fact);
+		if (clone == null) {
+			clone = getClone(fact);
 		}
 		((Fact)clone).setRatioId(newRatioId);
 		stageObject(clone);
 		return clone;
 	}
 	
-	public DataObject changeReferenceObject(DataObject obj, long newRefObjId) {
-		DataObject clone = getObjectIfStaged(obj);
+	public DataObject changeReferenceObject(Fact fact, long newRefObjId) {
+		DataObject clone = getObjectIfStaged(fact);
 		if (clone == null) {
-			clone = getClone(obj);
+			clone = getClone(fact);
 		}
 		((Fact)clone).setReferenceObjectId(newRefObjId);
 		stageObject(clone);
 		return clone;
 	}
 	
-	public DataObject changeValue(DataObject obj, Double newValue) {
-		DataObject clone = getObjectIfStaged(obj);
+	public DataObject changeValue(Fact fact, Double newValue) {
+		DataObject clone = getObjectIfStaged(fact);
 		if (clone == null) {
-			clone = getClone(obj);
+			clone = getClone(fact);
 		}
 		((Fact)clone).setValue(newValue);
 		stageObject(clone);
 		return clone;
 	}
-
+	
 	private DataObject getClone(DataObject obj) {
 		DataObject clone = null;
 		if (obj instanceof Dimension) {
@@ -115,11 +125,15 @@ public class ChangeManager {
 			clone = refObjManager.getReferenceObject(obj.getId()).clone();
 		} else if (obj instanceof Ratio) {
 			clone = ratioManager.getRatio(obj.getId()).clone();
+		} else if (obj instanceof Unit) {
+			clone = unitManager.getUnit(obj.getId()).clone();
+		} else if (obj instanceof Fact) {
+			clone = factManager.getFact(((Fact)obj).getRatioId(), ((Fact)obj).getReferenceObjectId()).clone();
 		}
 		
 		return clone;
 	}
-
+	
 	private void stageObject(DataObject obj) {
 		if (obj instanceof Dimension) {
 			stagedDimensions.put(obj.getId(), (Dimension)obj);

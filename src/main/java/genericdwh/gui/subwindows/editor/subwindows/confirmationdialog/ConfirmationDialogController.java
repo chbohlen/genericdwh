@@ -13,7 +13,7 @@ public abstract class ConfirmationDialogController {
 	
 	public void createWindow(String title, Class<?> controllerClass) {
 		try {
-			SpringFXMLLoader loader = new SpringFXMLLoader(getClass().getResource("/fxml/subwindows/editor/ConfirmationDialog.fxml"), Main.getContext().getBean(controllerClass));
+			SpringFXMLLoader loader = new SpringFXMLLoader(getClass().getResource("/fxml/subwindows/editor/subwindows/ConfirmationDialog.fxml"), Main.getContext().getBean(controllerClass));
 			Parent root = loader.load();
 			Scene scene = new Scene(root, 255, 85);
 			stage = new Stage();
@@ -26,12 +26,9 @@ public abstract class ConfirmationDialogController {
 		}
 	}
 
-	@FXML public void buttonYesOnClickHandler() {
-	}
+	@FXML public void buttonYesOnClickHandler() {}
 
-	@FXML public void buttonNoOnClickHandler() {
-	}
+	@FXML public void buttonNoOnClickHandler() {}
 	
-	@FXML public void buttonCancelOnClickHandler() {
-	}
+	@FXML public void buttonCancelOnClickHandler() {}
 }

@@ -5,6 +5,9 @@ import java.util.ResourceBundle;
 
 import genericdwh.dataobjects.ChangeManager;
 import genericdwh.dataobjects.DataObject;
+import genericdwh.dataobjects.fact.Fact;
+import genericdwh.dataobjects.referenceobject.ReferenceObject;
+import genericdwh.dataobjects.unit.Unit;
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.subwindows.editor.editingview.EditingViewController;
@@ -95,6 +98,10 @@ public class EditorController implements Initializable{
 	@FXML public void menuBarExitOnClickHandler() {
 		stage.close();
 	}
+	
+	public void showSaveChangesDialog() {
+		saveChangesDialogController.createWindow();
+	}
 
 	public DataObject changeName(DataObject obj, String newName) {
 		return changeManager.changeName(obj, newName);
@@ -104,23 +111,23 @@ public class EditorController implements Initializable{
 		return changeManager.changeCategory(obj, newCatId);
 	}
 
-	public DataObject changeDimension(DataObject obj, long newDimId) {
-		return changeManager.changeDimension(obj, newDimId);
+	public DataObject changeDimension(ReferenceObject refObj, long newDimId) {
+		return changeManager.changeDimension(refObj, newDimId);
 	}
 	
-	public DataObject changeRatio(DataObject obj, long newRatioId) {
-		return changeManager.changeRatio(obj, newRatioId);
+	public DataObject changeSymbol(Unit unit, String newSymbol) {
+		return changeManager.changeSymbol(unit, newSymbol);
 	}
 	
-	public DataObject changeReferenceObject(DataObject obj, long newRefObjId) {
-		return changeManager.changeReferenceObject(obj, newRefObjId);
+	public DataObject changeRatio(Fact fact, long newRatioId) {
+		return changeManager.changeRatio(fact, newRatioId);
 	}
 	
-	public DataObject changeValue(DataObject obj, Double newValue) {
-		return changeManager.changeValue(obj, newValue);
+	public DataObject changeReferenceObject(Fact fact, long newRefObjId) {
+		return changeManager.changeReferenceObject(fact, newRefObjId);
 	}
-
-	public void showSaveChangesDialog() {
-		saveChangesDialogController.createWindow();
+	
+	public DataObject changeValue(Fact fact, Double newValue) {
+		return changeManager.changeValue(fact, newValue);
 	}
 }
