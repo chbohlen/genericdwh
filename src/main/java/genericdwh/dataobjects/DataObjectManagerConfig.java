@@ -1,6 +1,7 @@
 package genericdwh.dataobjects;
 
 import genericdwh.dataobjects.dimension.DimensionManager;
+import genericdwh.dataobjects.fact.FactManager;
 import genericdwh.dataobjects.ratio.RatioManager;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.dataobjects.unit.UnitManager;
@@ -39,7 +40,12 @@ public class DataObjectManagerConfig {
 	}
 	
 	@Bean
+	public FactManager factManager() {
+		return new FactManager(dbControllerConfig.databaseController());
+	}
+	
+	@Bean
 	public ChangeManager changeManager() {
-		return new ChangeManager(dimensionManager(), referenceObjectManager(), ratioManager(), unitManager());
+		return new ChangeManager(dimensionManager(), referenceObjectManager(), ratioManager(), unitManager(), factManager());
 	}
 }

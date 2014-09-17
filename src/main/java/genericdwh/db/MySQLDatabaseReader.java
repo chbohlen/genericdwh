@@ -14,6 +14,7 @@ import static genericdwh.db.model.tables.ReferenceObjectHierarchies.REFERENCE_OB
 import static genericdwh.db.model.tables.ReferenceObjects.REFERENCE_OBJECTS;
 import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionCategory;
+import genericdwh.dataobjects.fact.Fact;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
@@ -65,7 +66,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	}
 
 	@Override
-	public ArrayList<Entry<Long, Long>> loadDimensionHierachies() {
+	public List<Entry<Long, Long>> loadDimensionHierachies() {
 		List<Entry<Long, Long>> result = dslContext
 											.select(DIMENSION_HIERARCHIES.PARENT_ID, DIMENSION_HIERARCHIES.CHILD_ID)
 											.from(DIMENSION_HIERARCHIES)
@@ -74,7 +75,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	}
 
 	@Override
-	public ArrayList<Entry<Long, Long>> loadDimensionCombinations() {
+	public List<Entry<Long, Long>> loadDimensionCombinations() {
 		List<Entry<Long, Long>> result = dslContext
 											.select(DIMENSION_COMBINATIONS.AGGREGATE_ID, DIMENSION_COMBINATIONS.COMPONENT_ID)
 											.from(DIMENSION_COMBINATIONS)
@@ -83,11 +84,10 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	}
 	
 	@Override
-	public TreeMap<Long, ReferenceObject> loadRefObjs(int from, int to) {
+	public TreeMap<Long, ReferenceObject> loadRefObjs() {
 		Map<Long, ReferenceObject> result = dslContext
 												.select(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, REFERENCE_OBJECTS.DIMENSION_ID, REFERENCE_OBJECTS.NAME)
 												.from(REFERENCE_OBJECTS)
-												.limit(from, to - from)
 												.fetch()
 												.intoMap(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID, ReferenceObject.class);
 		return new TreeMap<>(result);
@@ -165,7 +165,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	}
 
 	@Override
-	public ArrayList<Entry<Long, Long>> loadRatioRelations() {
+	public List<Entry<Long, Long>> loadRatioRelations() {
 		List<Entry<Long, Long>> result = dslContext
 											.select(RATIO_RELATIONS.DEPENDENT_ID, RATIO_RELATIONS.DEPENDENCY_ID)
 											.from(RATIO_RELATIONS)
@@ -502,5 +502,16 @@ public class MySQLDatabaseReader implements DatabaseReader {
 			resultList.add(resultObject);
 		}
 		return resultList;
+	}
+	
+	
+	@Override
+	public List<Fact> loadFacts() {
+		List<Fact> result = dslContext
+								.select()
+								.from(FACTS)
+								.fetch()
+								.into(Fact.class);
+		return result;
 	}
 }

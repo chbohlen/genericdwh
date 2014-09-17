@@ -3,6 +3,8 @@ package genericdwh.dataobjects;
 import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionCategory;
 import genericdwh.dataobjects.dimension.DimensionManager;
+import genericdwh.dataobjects.fact.Fact;
+import genericdwh.dataobjects.fact.FactManager;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.ratio.RatioManager;
@@ -13,12 +15,16 @@ import genericdwh.dataobjects.unit.UnitManager;
 
 import java.util.TreeMap;
 
+import com.google.common.collect.Table;
+import com.google.common.collect.TreeBasedTable;
+
 public class ChangeManager {
 
 	private DimensionManager dimManager;
 	private ReferenceObjectManager refObjManager;
 	private RatioManager ratioManager;
 	private UnitManager unitManager;
+	private FactManager factManager;
 	
 	private TreeMap<Long, Dimension> stagedDimensions = new TreeMap<>();
 	private TreeMap<Long, ReferenceObject> stagedReferenceObjects = new TreeMap<>();
@@ -26,12 +32,14 @@ public class ChangeManager {
 	private TreeMap<Long, Unit> stagedUnits = new TreeMap<>();
 	private TreeMap<Long, DimensionCategory> stagedDimCategories = new TreeMap<>();
 	private TreeMap<Long, RatioCategory> stagedRatioCategories = new TreeMap<>();
+	private Table<Long, Long, Fact> stagedFacts = TreeBasedTable.create();
 	
-	public ChangeManager(DimensionManager dimManager, ReferenceObjectManager refObjManager, RatioManager ratioManager, UnitManager unitManager) {
+	public ChangeManager(DimensionManager dimManager, ReferenceObjectManager refObjManager, RatioManager ratioManager, UnitManager unitManager, FactManager factManager) {
 		this.dimManager = dimManager;
 		this.refObjManager = refObjManager;
 		this.ratioManager = ratioManager;
 		this.unitManager = unitManager;
+		this.factManager = factManager;
 	}
 	
 	
@@ -64,14 +72,41 @@ public class ChangeManager {
 		if (clone == null) {
 			clone = getClone(obj);
 		}
-		if (clone instanceof ReferenceObject) {
-			((ReferenceObject)clone).setDimensionId(newDimensionId);
+		((ReferenceObject)clone).setDimensionId(newDimensionId);
+		stageObject(clone);
+		return clone;
+	}
+	
+	public DataObject changeRatio(DataObject obj, long newRatioId) {
+		DataObject clone = getObjectIfStaged(obj);
+		if (clone == null) {
+			clone = getClone(obj);
 		}
+		((Fact)clone).setRatioId(newRatioId);
+		stageObject(clone);
+		return clone;
+	}
+	
+	public DataObject changeReferenceObject(DataObject obj, long newRefObjId) {
+		DataObject clone = getObjectIfStaged(obj);
+		if (clone == null) {
+			clone = getClone(obj);
+		}
+		((Fact)clone).setReferenceObjectId(newRefObjId);
+		stageObject(clone);
+		return clone;
+	}
+	
+	public DataObject changeValue(DataObject obj, Double newValue) {
+		DataObject clone = getObjectIfStaged(obj);
+		if (clone == null) {
+			clone = getClone(obj);
+		}
+		((Fact)clone).setValue(newValue);
 		stageObject(clone);
 		return clone;
 	}
 
-	
 	private DataObject getClone(DataObject obj) {
 		DataObject clone = null;
 		if (obj instanceof Dimension) {
@@ -98,6 +133,8 @@ public class ChangeManager {
 			stagedDimCategories.put(obj.getId(), (DimensionCategory)obj);
 		} else if (obj instanceof RatioCategory) {
 			stagedRatioCategories.put(obj.getId(), (RatioCategory)obj);
+		} else if (obj instanceof Fact) {
+			stagedFacts.put(((Fact)obj).getRatioId(), ((Fact)obj).getReferenceObjectId(), (Fact)obj);
 		}
 	}
 	
@@ -114,6 +151,8 @@ public class ChangeManager {
 			return stagedDimCategories.get(obj.getId());
 		} else if (obj instanceof RatioCategory) {
 			return stagedRatioCategories.get(obj.getId());
+		}  else if (obj instanceof Fact) {
+			return stagedFacts.get(((Fact)obj).getRatioId(), ((Fact)obj).getReferenceObjectId());
 		}
 		
 		return null;

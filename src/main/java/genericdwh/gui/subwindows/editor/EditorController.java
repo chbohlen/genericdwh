@@ -100,12 +100,24 @@ public class EditorController implements Initializable{
 		return changeManager.changeName(obj, newName);
 	}
 
-	public DataObject changeCategory(DataObject obj, long newCategoryId) {
-		return changeManager.changeCategory(obj, newCategoryId);
+	public DataObject changeCategory(DataObject obj, long newCatId) {
+		return changeManager.changeCategory(obj, newCatId);
 	}
 
-	public DataObject changeDimension(DataObject obj, long newDimensionId) {
-		return changeManager.changeDimension(obj, newDimensionId);
+	public DataObject changeDimension(DataObject obj, long newDimId) {
+		return changeManager.changeDimension(obj, newDimId);
+	}
+	
+	public DataObject changeRatio(DataObject obj, long newRatioId) {
+		return changeManager.changeRatio(obj, newRatioId);
+	}
+	
+	public DataObject changeReferenceObject(DataObject obj, long newRefObjId) {
+		return changeManager.changeReferenceObject(obj, newRefObjId);
+	}
+	
+	public DataObject changeValue(DataObject obj, Double newValue) {
+		return changeManager.changeValue(obj, newValue);
 	}
 
 	public void showSaveChangesDialog() {

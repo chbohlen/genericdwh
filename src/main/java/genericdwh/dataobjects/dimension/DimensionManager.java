@@ -7,6 +7,7 @@ import genericdwh.db.DatabaseController;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
@@ -25,12 +26,7 @@ public class DimensionManager extends DataObjectManager {
 	public void loadDimensions() {
 		dimensions = dbReader.loadDimensions();
 		
-//		ArrayList<Entry<Long, Long>> dimCombinations = dbReader.loadDimensionCombinations();
-//		for (Entry<Long, Long> combination : dimCombinations) {
-//			dimensions.get(combination.getKey()).addComponent(dimensions.get(combination.getValue()));
-//		}
-		
-		ArrayList<Entry<Long, Long>> dimHierarchies = dbReader.loadDimensionHierachies();
+		List<Entry<Long, Long>> dimHierarchies = dbReader.loadDimensionHierachies();
 		for (Entry<Long, Long> hierarchy : dimHierarchies) {
 			dimensions.get(hierarchy.getKey()).addChildren(dimensions.get(hierarchy.getValue()));
 		}
@@ -99,19 +95,6 @@ public class DimensionManager extends DataObjectManager {
 		return combination.toArray(new Long[0]);
 	}
 	
-//	public Dimension findCombination(ArrayList<Dimension> combination) {
-//	for (Entry<Long, Dimension> currEntry : dimensions.entrySet()) {
-//		Dimension currDim = currEntry.getValue();
-//		if (currDim.isCombination() 
-//				&& currDim.getComponents().size() == combination.size() 
-//				&& currDim.getComponents().containsAll(combination)) {
-//			
-//			return currDim;
-//		}
-//	}
-//	
-//	return null;
-//}
 	public Dimension getDimension(long dimId) {
 		return dimensions.get(dimId);
 	}	

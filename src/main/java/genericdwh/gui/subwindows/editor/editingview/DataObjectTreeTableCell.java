@@ -7,7 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.cell.ComboBoxTreeTableCell;
 import lombok.Getter;
 
-public class DataObjectTreeTableCell<T> extends ComboBoxTreeTableCell<DataObject, T> {
+public class DataObjectTreeTableCell<T extends DataObject> extends ComboBoxTreeTableCell<DataObject, T> {
 	@Getter private StringProperty title = new SimpleStringProperty("");
 	
 	public DataObjectTreeTableCell(ObservableList<T> items) {
@@ -21,6 +21,10 @@ public class DataObjectTreeTableCell<T> extends ComboBoxTreeTableCell<DataObject
         if (obj != null) {
         	setText(obj.toString());
             title.set(obj.toString());
+            
+        	if (obj.getId() == -1) {
+        		setEditable(false);
+        	}
         } else {
         	setText(null);
         }

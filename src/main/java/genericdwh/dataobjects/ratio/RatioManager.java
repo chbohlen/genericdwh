@@ -1,6 +1,6 @@
 package genericdwh.dataobjects.ratio;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
@@ -20,7 +20,7 @@ public class RatioManager extends DataObjectManager {
 	public void loadRatios() {
 		ratios = dbReader.loadRatios();
 		
-		ArrayList<Entry<Long, Long>> ratioHierarchies = dbReader.loadRatioRelations();
+		List<Entry<Long, Long>> ratioHierarchies = dbReader.loadRatioRelations();
 		for (Entry<Long, Long> hierarchy : ratioHierarchies) {
 			ratios.get(hierarchy.getKey()).addDependency(ratios.get(hierarchy.getValue()));
 		}

@@ -10,16 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
+import lombok.Getter;
+
 public class ReferenceObjectManager extends DataObjectManager {
 
-	private TreeMap<Long, ReferenceObject> referenceObjects = new TreeMap<>();
+	@Getter private TreeMap<Long, ReferenceObject> referenceObjects = new TreeMap<>();
 	
 	public ReferenceObjectManager(DatabaseController dbController) {
 		super(dbController);
 	}
 	
-	public TreeMap<Long, ReferenceObject> loadRefObjsRange(int from, int to) {
-		TreeMap<Long, ReferenceObject> refObjs = dbReader.loadRefObjs(from, to);
+	public TreeMap<Long, ReferenceObject> loadRefObjs() {
+		TreeMap<Long, ReferenceObject> refObjs = dbReader.loadRefObjs();
 		referenceObjects.putAll(refObjs);
 		return refObjs;
 	}
