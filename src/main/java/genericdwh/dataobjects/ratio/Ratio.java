@@ -2,12 +2,16 @@ package genericdwh.dataobjects.ratio;
 
 import java.util.ArrayList;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import lombok.Getter;
 import lombok.Setter;
 import genericdwh.dataobjects.DataObject;
+import genericdwh.main.Main;
+
 public class Ratio extends DataObject {
 	
-	@Getter @Setter private long categoryId;
+	@Getter @Setter private Long categoryId;
 	
 	@Getter private ArrayList<Ratio> dependencies = new ArrayList<Ratio>();
 	
@@ -28,11 +32,13 @@ public class Ratio extends DataObject {
 	public int getDependencyCount() {
 		return dependencies.size();
 	}
-
+	
 	@Override
-	public Ratio clone() {
-		Ratio newRatio = new Ratio(this.id, this.name, this.categoryId);
-		newRatio.dependencies = this.dependencies;
-		return newRatio;
+	public void initProperties() {
+		super.initProperties();
+		setCategoryProperty(Main.getContext().getBean(RatioManager.class).getCategories().get(categoryId));
 	}
+	
+	@Getter private ObjectProperty<RatioCategory> categoryProperty = new SimpleObjectProperty<>();
+	public void setCategoryProperty(RatioCategory cat) { categoryProperty.set(cat); };
 }

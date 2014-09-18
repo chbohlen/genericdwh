@@ -7,4 +7,7 @@ public interface DatabaseWriter {
 	
 	public void updateDimension(Dimension dim);
 	public void updateReferenceObject(ReferenceObject refObj);
+	
+	public void deleteDimension(Dimension dim);
+	public void deleteReferenceObject(ReferenceObject refObj);
 }

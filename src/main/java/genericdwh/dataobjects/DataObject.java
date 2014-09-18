@@ -1,5 +1,7 @@
 package genericdwh.dataobjects;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +10,9 @@ public abstract class DataObject {
 	@Getter protected long id;
 	@Getter @Setter protected String name;
 	
-	@Getter @Setter private boolean hasChanged = false;
+	@Getter @Setter private boolean markedForCreation = false;
+	@Getter @Setter private boolean markedForUpdate = false;
+	@Getter @Setter private boolean markedForDeletion = false;
 	
 	public DataObject(long id, String name) {
 		this.id = id;
@@ -30,5 +34,10 @@ public abstract class DataObject {
 		return name;
 	}
 	
-	abstract public DataObject clone();
+	public void initProperties() {
+		setNameProperty(name);
+	}
+	
+	@Getter private StringProperty nameProperty = new SimpleStringProperty(null);
+	public void setNameProperty(String name) { nameProperty.set(name); }
 }

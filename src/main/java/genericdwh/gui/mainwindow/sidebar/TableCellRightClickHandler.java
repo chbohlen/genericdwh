@@ -1,6 +1,7 @@
-package genericdwh.gui.mainwindow.querypane;
+package genericdwh.gui.mainwindow.sidebar;
 
 import genericdwh.dataobjects.DataObject;
+import genericdwh.gui.mainwindow.querypane.DataObjectTableCell;
 import javafx.event.EventHandler;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
@@ -16,7 +17,7 @@ public class TableCellRightClickHandler implements EventHandler<MouseEvent> {
 	
 	@Override
 	public void handle(MouseEvent event) {
-		if (event.getButton() == MouseButton.SECONDARY && event.getSource() instanceof DataObjectTableCell) {
+		if (event.getButton() == MouseButton.SECONDARY) {
 			DataObjectTableCell tableCell = (DataObjectTableCell)event.getSource();
 			tableView.getSelectionModel().select(tableCell.getDataObj());
 		}

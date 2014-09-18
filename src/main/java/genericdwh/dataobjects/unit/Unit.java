@@ -1,5 +1,7 @@
 package genericdwh.dataobjects.unit;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import lombok.Getter;
 import lombok.Setter;
 import genericdwh.dataobjects.DataObject;
@@ -13,10 +15,13 @@ public class Unit extends DataObject {
 		
 		this.symbol = symbol;
 	}
-
+	
 	@Override
-	public Unit clone() {
-		Unit newUnit = new Unit(this.id, this.name, this.symbol);
-		return newUnit;
+	public void initProperties() {
+		super.initProperties();
+		setSymbolProperty(symbol);
 	}
+	
+	@Getter private StringProperty symbolProperty = new SimpleStringProperty();
+	public void setSymbolProperty(String symbol) { symbolProperty.set(symbol); };
 }

@@ -27,4 +27,18 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 			.set(REFERENCE_OBJECTS.DIMENSION_ID, refObj.getDimensionId())
 			.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(refObj.getId()));			
 	}
+
+	@Override
+	public void deleteDimension(Dimension dim) {
+		dslContext
+			.delete(DIMENSIONS)
+			.where(DIMENSIONS.DIMENSION_ID.equal(dim.getId()));
+	}
+
+	@Override
+	public void deleteReferenceObject(ReferenceObject refObj) {
+		dslContext
+		.delete(REFERENCE_OBJECTS)
+		.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(refObj.getId()));
+	}
 }

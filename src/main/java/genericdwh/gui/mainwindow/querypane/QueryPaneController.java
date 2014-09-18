@@ -20,6 +20,7 @@ import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.mainwindow.StatusMessage;
 import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGrid;
 import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGridController;
+import genericdwh.gui.mainwindow.sidebar.TableCellRightClickHandler;
 import genericdwh.main.Main;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
@@ -96,9 +97,9 @@ public class QueryPaneController implements Initializable {
             	
             	tableCell.setOnMouseClicked(new TableCellRightClickHandler(tvColDims));
             	tableCell.contextMenuProperty().bind(Bindings
-            				.when(tableCell.emptyProperty())
-            				.then((ContextMenu)null)
-            				.otherwise(createTableCellContextMenu(tvColDims, tableCell))); 
+					            				.when(tableCell.emptyProperty())
+					            				.then((ContextMenu)null)
+					            				.otherwise(createTableCellContextMenu(tvColDims, tableCell))); 
             	return tableCell;            
             }
         });
@@ -109,9 +110,9 @@ public class QueryPaneController implements Initializable {
             	
             	tableCell.setOnMouseClicked(new TableCellRightClickHandler(tvRowDims));
             	tableCell.contextMenuProperty().bind(Bindings
-        				.when(tableCell.emptyProperty())
-        				.then((ContextMenu)null)
-        				.otherwise(createTableCellContextMenu(tvRowDims, tableCell))); 
+						        				.when(tableCell.emptyProperty())
+						        				.then((ContextMenu)null)
+						        				.otherwise(createTableCellContextMenu(tvRowDims, tableCell))); 
             	return tableCell;
             }
         });

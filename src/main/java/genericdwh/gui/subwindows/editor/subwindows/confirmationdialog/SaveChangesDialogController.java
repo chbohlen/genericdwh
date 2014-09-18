@@ -1,5 +1,7 @@
 package genericdwh.gui.subwindows.editor.subwindows.confirmationdialog;
 
+import genericdwh.gui.subwindows.editor.EditorController;
+import genericdwh.main.Main;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
@@ -14,12 +16,13 @@ public class SaveChangesDialogController extends ConfirmationDialogController {
 
 	@Override
 	@FXML public void buttonYesOnClickHandler() {
-		
+		Main.getContext().getBean(EditorController.class).saveChanges();
+		stage.close();
 	}
 
 	@Override
 	@FXML public void buttonNoOnClickHandler() {
-		
+		stage.close();
 	}
 
 	@Override

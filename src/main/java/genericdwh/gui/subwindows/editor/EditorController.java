@@ -1,17 +1,22 @@
 package genericdwh.gui.subwindows.editor;
 
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import genericdwh.dataobjects.ChangeManager;
 import genericdwh.dataobjects.DataObject;
+import genericdwh.dataobjects.dimension.Dimension;
+import genericdwh.dataobjects.dimension.DimensionCategory;
 import genericdwh.dataobjects.fact.Fact;
+import genericdwh.dataobjects.ratio.Ratio;
+import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
-import genericdwh.dataobjects.unit.Unit;
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.subwindows.editor.editingview.EditingViewController;
 import genericdwh.gui.subwindows.editor.sidebar.EditorSidebarController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DeleteObjectDialogController;
 import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DiscardChangesDialogController;
 import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveChangesDialogController;
 import genericdwh.main.Main;
@@ -21,6 +26,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
 
 public class EditorController implements Initializable{
@@ -28,9 +34,12 @@ public class EditorController implements Initializable{
 	private ChangeManager changeManager;
 	
 	private EditorSidebarController sidebarController;
-	private EditingViewController resultViewController;
+	private EditingViewController editingViewController;
+	
 	private SaveChangesDialogController saveChangesDialogController;
 	private DiscardChangesDialogController discardChangesDialogController;
+	
+	private DeleteObjectDialogController deleteObjectDialogController;
 	
 	private Stage stage;
 	
@@ -38,14 +47,18 @@ public class EditorController implements Initializable{
 	@FXML MenuItem miDiscard;
 		
 	public EditorController(ChangeManager changeManager, EditorSidebarController sidebarController, EditingViewController resultViewController,
-			SaveChangesDialogController saveChangesDialogController, DiscardChangesDialogController discardChangesDialogController) {
+			SaveChangesDialogController saveChangesDialogController, DiscardChangesDialogController discardChangesDialogController,
+			DeleteObjectDialogController deleteObjectDialogController) {
 		
 		this.changeManager = changeManager;
 		
 		this.sidebarController = sidebarController;
-		this.resultViewController = resultViewController;
+		this.editingViewController = resultViewController;
+		
 		this.saveChangesDialogController = saveChangesDialogController;
 		this.discardChangesDialogController = discardChangesDialogController;
+		
+		this.deleteObjectDialogController = deleteObjectDialogController;
 	}
 	
 	public void createWindow() {
@@ -68,23 +81,25 @@ public class EditorController implements Initializable{
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		resultViewController.hideEditingView();		
 		sidebarController.createSidebar();
+		editingViewController.hideEditingView();		
+		
+		editingViewController.setHasUnsavedChanges(false);
 		
 		miSave.disableProperty().bind(Bindings
-				.when(resultViewController.getHasUnsavedChanges())
+				.when(editingViewController.getHasUnsavedChanges())
 				.then(false)
 				.otherwise(true));
 		
 		miDiscard.disableProperty().bind(Bindings
-				.when(resultViewController.getHasUnsavedChanges())
+				.when(editingViewController.getHasUnsavedChanges())
 				.then(false)
 				.otherwise(true));
 	}
 	
 	public void createEditorTreeTable(int id) {
-		resultViewController.createEditorTreeTable(id);
-		resultViewController.showEditingView();
+		editingViewController.createEditorTreeTable(id);
+		editingViewController.showEditingView();
 	}
 	
 	@FXML public void menuBarSaveOnClickHandler() {
@@ -92,7 +107,7 @@ public class EditorController implements Initializable{
 	}
 	
 	@FXML public void menuBarDiscardOnClickHandler() {
-		discardChangesDialogController.createWindow();
+		showDiscardChangesDialog();
 	}
 	
 	@FXML public void menuBarExitOnClickHandler() {
@@ -102,32 +117,67 @@ public class EditorController implements Initializable{
 	public void showSaveChangesDialog() {
 		saveChangesDialogController.createWindow();
 	}
+	
+	public void showDiscardChangesDialog() {
+		discardChangesDialogController.createWindow();
+	}
+	
+	public void saveChanges() {
+		editingViewController.saveChanges();
+		changeManager.saveChanges();
+	}
+	
+	public void discardChanges() {
+		editingViewController.discardChanges();
+		changeManager.discardChanges();
+	}
+	
+	public void stageUpdate(DataObject obj) {
+		changeManager.stageUpdate(obj);
+	}
+	
+	public void stageDeletion(TreeItem<DataObject> tiObj) {
+		editingViewController.deleteObject(tiObj);
+		changeManager.stageDeletion(tiObj.getValue());
+	}
+	
+	public void confirmDeletion(TreeItem<DataObject> tiObjToDelete) {
+		deleteObjectDialogController.createWindow(tiObjToDelete);
+	}
 
-	public DataObject changeName(DataObject obj, String newName) {
-		return changeManager.changeName(obj, newName);
+	public void duplicateObject(DataObject obj) {
+		
 	}
 
-	public DataObject changeCategory(DataObject obj, long newCatId) {
-		return changeManager.changeCategory(obj, newCatId);
-	}
-
-	public DataObject changeDimension(ReferenceObject refObj, long newDimId) {
-		return changeManager.changeDimension(refObj, newDimId);
-	}
-	
-	public DataObject changeSymbol(Unit unit, String newSymbol) {
-		return changeManager.changeSymbol(unit, newSymbol);
-	}
-	
-	public DataObject changeRatio(Fact fact, long newRatioId) {
-		return changeManager.changeRatio(fact, newRatioId);
-	}
-	
-	public DataObject changeReferenceObject(Fact fact, long newRefObjId) {
-		return changeManager.changeReferenceObject(fact, newRefObjId);
-	}
-	
-	public DataObject changeValue(Fact fact, Double newValue) {
-		return changeManager.changeValue(fact, newValue);
+	public DataObject addObject(Class<? extends DataObject> clazz) {
+		Constructor<?>[] constructors = clazz.getConstructors();
+		
+		Object[] params = null;
+		if (clazz == Dimension.class) {
+			params = new Object[] { -1, "New Dimension", -1 };
+		} else if (clazz == DimensionCategory.class) {
+			params = new Object[] { -1, "New Category" };
+		} else if (clazz == Fact.class) {
+			params = new Object[] { -1, -1, 0, -1 };
+		} else if (clazz == Ratio.class) {
+			params = new Object[] { -1, "New Ratio", -1 };
+		}  else if (clazz == RatioCategory.class) {
+			params = new Object[] { -1, "New Category" };
+		} else if (clazz == ReferenceObject.class) {
+			params = new Object[] { -1, -1, "New Reference Object" };
+		} else if (clazz == Dimension.class) {
+			params = new Object[] { -1, "New Unit", "" };
+		}
+		
+		DataObject newObj = null;
+		try {
+			newObj = (DataObject)constructors[0].newInstance(params);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		changeManager.stageCreation(newObj);
+		
+		return newObj;
 	}
 }

@@ -1,11 +1,14 @@
 package genericdwh.dataobjects.dimension;
 
 import genericdwh.dataobjects.DataObject;
+import genericdwh.main.Main;
 
 import java.util.ArrayList;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,8 +19,7 @@ public class Dimension extends DataObject {
 	public void setIsCombination(boolean value) { isCombination.set(value); };
 
 	@Getter private ArrayList<Dimension> children = new ArrayList<Dimension>();
-//	@Getter private ArrayList<Dimension> components = new ArrayList<Dimension>();
-
+	
 	public Dimension(long id, String name, long categoryId) {
 		super(id, name);
 
@@ -28,17 +30,9 @@ public class Dimension extends DataObject {
 		children.add(newChildren);
 	}
 
-//	public void addComponent(Dimension newComponent) {
-//		components.add(newComponent);
-//	}
-
 	public boolean isHierarchy() {
 		return !children.isEmpty();
 	}
-
-//	public boolean isCombination() {
-//		return !components.isEmpty();
-//	}
 
 	public int getChildCount() {
 		return children.size();
@@ -49,10 +43,11 @@ public class Dimension extends DataObject {
 	}
 	
 	@Override
-	public Dimension clone() {
-		Dimension newDim = new Dimension(this.id, this.name, this.categoryId);
-		newDim.isCombination = this.isCombination;
-		newDim.children = this.children;
-		return newDim;
-	}
+	public void initProperties() {
+		super.initProperties();
+		setCategoryProperty(Main.getContext().getBean(DimensionManager.class).getCategories().get(categoryId));
+	};
+		
+	@Getter private ObjectProperty<DimensionCategory> categoryProperty = new SimpleObjectProperty<>();
+	public void setCategoryProperty(DimensionCategory cat) { categoryProperty.set(cat); }
 }

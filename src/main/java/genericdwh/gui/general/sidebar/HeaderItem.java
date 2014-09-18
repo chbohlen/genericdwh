@@ -6,6 +6,7 @@ public class HeaderItem extends DataObjectTreeItem {
 
 	public HeaderItem(String name, long id, boolean defaultExpanded, boolean canCollapse) {
 		super(new DataObject(id, name) {@Override public DataObject clone() { return null; }});
+		getValue().initProperties();
 		
 		setExpanded(defaultExpanded);
 		

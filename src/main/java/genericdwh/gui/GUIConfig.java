@@ -10,6 +10,7 @@ import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.gui.subwindows.editor.editingview.EditingViewController;
 import genericdwh.gui.subwindows.editor.editingview.SearchBoxController;
 import genericdwh.gui.subwindows.editor.sidebar.EditorSidebarController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DeleteObjectDialogController;
 import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DiscardChangesDialogController;
 import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveChangesDialogController;
 
@@ -51,7 +52,8 @@ public class GUIConfig {
 	@Bean
 	public EditorController editorWindowController() {
 		return new EditorController(objManagerConfig.changeManager(), editorSidebarController(), editingViewController(),
-				saveChangesDialogController(), discardChangesDialogController());
+				saveChangesDialogController(), discardChangesDialogController(),
+				deleteObjectDialogController());
 	}
 	
 	@Bean
@@ -77,5 +79,10 @@ public class GUIConfig {
 	@Bean
 	public DiscardChangesDialogController discardChangesDialogController() {
 		return new DiscardChangesDialogController();
+	}
+	
+	@Bean
+	public DeleteObjectDialogController deleteObjectDialogController() {
+		return new DeleteObjectDialogController();
 	}
 }
