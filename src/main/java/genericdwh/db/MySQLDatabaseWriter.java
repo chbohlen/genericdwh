@@ -469,6 +469,12 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (DimensionCombination combination : updates) {
+			dslContext
+				.update(DIMENSIONS)
+				.set(DIMENSIONS.NAME, combination.getNameProperty().get())
+				.where(DIMENSIONS.DIMENSION_ID.equal(combination.getCombination().getId()))
+				.execute();
+			
 			List<Dimension> components = combination.getComponents();
 			List<Dimension> changedComponents = combination.getComponentsProperty().get();
 			if (components.size() <= changedComponents.size()) {
@@ -551,8 +557,8 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		
 		for (ReferenceObjectCombination combination : creations) {
 			dslContext
-				.insertInto(REFERENCE_OBJECTS, REFERENCE_OBJECTS.NAME)
-				.values(combination.getNameProperty().get())
+				.insertInto(REFERENCE_OBJECTS, REFERENCE_OBJECTS.DIMENSION_ID, REFERENCE_OBJECTS.NAME)
+				.values(combination.getCombination().getDimensionProperty().get().getId(), combination.getNameProperty().get())
 				.execute();
 			
 			try {
@@ -596,6 +602,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (ReferenceObjectCombination combination : updates) {
+			dslContext
+				.update(REFERENCE_OBJECTS)
+				.set(REFERENCE_OBJECTS.DIMENSION_ID, combination.getCombination().getDimensionProperty().get().getId())
+				.set(REFERENCE_OBJECTS.NAME, combination.getNameProperty().get())
+				.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(combination.getCombination().getId()))
+				.execute();
+			
 			List<ReferenceObject> components = combination.getComponents();
 			List<ReferenceObject> changedComponents = combination.getComponentsProperty().get();
 			if (components.size() <= changedComponents.size()) {
@@ -741,6 +754,7 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 	}
 
 	
+
 	@Override
 	public void createFacts(List<Fact> creations) {
 		Connection con = null;

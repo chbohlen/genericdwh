@@ -76,6 +76,7 @@ public class EditingViewController implements Initializable {
 		REFERENCE_OBJECT_HIERARCHIES(ReferenceObjectHierarchy.class),
 		REFERENCE_OBJECT_HIERARCHIES_BY_CATEGORY(ReferenceObjectHierarchy.class),
 		REFERENCE_OBJECT_COMBINATIONS(ReferenceObjectCombination.class),
+		REFERENCE_OBJECT_COMBINATIONS_BY_DIMENSION(ReferenceObjectCombination.class),
 		RATIOS(Ratio.class),
 		RATIOS_BY_CATEGORY(Ratio.class),
 		FACTS(Fact.class),
@@ -277,11 +278,8 @@ public class EditingViewController implements Initializable {
 				tiHeaderMap.put((long)0, tiNoDim);
 				
 				for (ReferenceObject refObj : refObjManager.getReferenceObjects().values()) {
-					DataObjectTreeItem tiDim = tiHeaderMap.get(refObj.getDimensionId());
-					if (tiDim != null) {
-						DataObjectTreeItem tiRefObj = new DataObjectTreeItem(refObj);
-						tiDim.addChild(tiRefObj);
-					}
+					DataObjectTreeItem tiRefObj = new DataObjectTreeItem(refObj);
+					tiHeaderMap.get(refObj.getDimensionId()).addChild(tiRefObj);
 				}
 				
 				for (DataObjectTreeItem tiDim : tiHeaderMap.values()) {
@@ -373,7 +371,43 @@ public class EditingViewController implements Initializable {
 				}
 				
 				break;
+			}
+			case REFERENCE_OBJECT_COMBINATIONS_BY_DIMENSION: {
+				setupReferenceObjectCombinationsTable();
 				
+				dimManager.initDimensions();
+				refObjManager.loadReferenceObjects();
+				refObjManager.initReferenceObjects();
+				refObjManager.loadCombinations();
+				refObjManager.initCombinations();
+				
+				tiHeaderMap = new TreeMap<>();
+				for (Dimension dim : dimManager.getDimensions().values()) {
+					if (dim.isCombination()) {
+						HeaderItem tiDim = new HeaderItem(dim.getName(), dim.getId(), true, true);
+						tiHeaderMap.put(dim.getId(), tiDim);
+					}
+				}
+				HeaderItem tiNoDim = new HeaderItem("No Dimension", 0, true, true);
+				tiHeaderMap.put((long)0, tiNoDim);
+				
+				for (ReferenceObjectCombination refObjCombination : refObjManager.getCombinations()) {
+					DataObjectTreeItem tiRefObjCombination = new DataObjectTreeItem(refObjCombination);
+					tiHeaderMap.get(refObjCombination.getCombination().getDimensionId()).addChild(tiRefObjCombination);
+					
+					for (ReferenceObject component : refObjCombination.getComponents()) {
+						DataObjectTreeItem tiComponent = new DataObjectTreeItem(component);
+						tiRefObjCombination.addChild(tiComponent);
+					}
+				}
+				
+				for (DataObjectTreeItem tiDim : tiHeaderMap.values()) {
+					if (tiDim.hasChildren()) {
+						tiRoot.addChild(tiDim);
+					}
+				}
+				
+				break;
 			}
 			case RATIOS: {
 				setupRatiosTable();
@@ -667,7 +701,7 @@ public class EditingViewController implements Initializable {
 		TreeTableColumn<DataObject, String> colName = createNameCol();
 		colName.setCellValueFactory(new Callback<CellDataFeatures<DataObject, String>, ObservableValue<String>>() {
 			public ObservableValue<String> call(CellDataFeatures<DataObject, String> param) {
-				if (param.getValue().getValue() instanceof ReferenceObjectCombination) {
+				if (param.getValue() instanceof HeaderItem || param.getValue().getValue() instanceof ReferenceObjectCombination) {
 					return param.getValue().getValue().getNameProperty();
 				} else {
 					return new SimpleStringProperty("Combination Component");
@@ -678,12 +712,23 @@ public class EditingViewController implements Initializable {
 		TreeTableColumn<DataObject, ReferenceObject> colComponent = createRefObjComponentCol();
 		colComponent.setCellValueFactory(new Callback<CellDataFeatures<DataObject, ReferenceObject>, ObservableValue<ReferenceObject>>() {
 			public ObservableValue<ReferenceObject> call(CellDataFeatures<DataObject, ReferenceObject> param) {
-				if (param.getValue().getValue() instanceof ReferenceObjectCombination) {
+				if (param.getValue() instanceof HeaderItem || param.getValue().getValue() instanceof ReferenceObjectCombination) {
 					return new SimpleObjectProperty<ReferenceObject>(null);
 				} else {
 					return new SimpleObjectProperty<ReferenceObject>((ReferenceObject)param.getValue().getValue());
 				}
 			}
+		});
+		
+		TreeTableColumn<DataObject, Dimension> colDimension = createRefObjCombinationDimCol();
+		colDimension.setCellValueFactory(new Callback<CellDataFeatures<DataObject, Dimension>, ObservableValue<Dimension>>() {
+			public ObservableValue<Dimension> call(CellDataFeatures<DataObject, Dimension> param) {
+				if (param.getValue().getValue() instanceof ReferenceObjectCombination) {
+					return ((ReferenceObjectCombination)param.getValue().getValue()).getCombination().getDimensionProperty();
+				} else {
+					return new SimpleObjectProperty<Dimension>(null);
+				}
+		    }
 		});
 	}
 	
@@ -1143,6 +1188,56 @@ public class EditingViewController implements Initializable {
 		editingView.getColumns().add(colComponent);
 		
 		return colComponent;
+	}
+	
+	private TreeTableColumn<DataObject, Dimension> createRefObjCombinationDimCol() {
+		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
+		
+		TreeTableColumn<DataObject, Dimension> colDim = new TreeTableColumn<>("Combination Dimensions");
+		colDim.setPrefWidth(235);
+		
+		colDim.setCellFactory(new Callback<TreeTableColumn<DataObject, Dimension>,TreeTableCell<DataObject, Dimension>>() {
+			@Override
+			public TreeTableCell<DataObject, Dimension> call(TreeTableColumn<DataObject, Dimension> param) {
+				ObservableList<Dimension> dims = FXCollections.observableArrayList();
+				for (Dimension dim : dimManager.getDimensions().values()) {
+					if (dim.isCombination()) {
+						dims.add(dim);
+					}
+				}
+				Dimension noDim = Dimension.NO_DIMENSION;
+				dims.add(noDim);
+				return new DataObjectCBTreeTableCell<Dimension>(dims);
+			}
+		});
+		
+		colDim.setOnEditCommit(new EventHandler<CellEditEvent<DataObject, Dimension>>() {
+            @Override
+            public void handle(CellEditEvent<DataObject, Dimension> event) {
+                if (event.getEventType() == TreeTableColumn.editCommitEvent()) {
+                	TreeItem<DataObject> tiCombination = event.getRowValue();
+                	ReferenceObjectCombination combination = (ReferenceObjectCombination)tiCombination.getValue();
+                	Dimension newDimension = event.getNewValue();
+                	
+                	if (newDimension != combination.getCombination().getDimensionProperty().get()) {
+                		combination.getCombination().setDimensionProperty(newDimension);
+                    	Main.getContext().getBean(EditorController.class).stageUpdate(combination);
+                    	hasUnsavedChanges.set(true);
+                    	editingView.requestFocus();
+                	}
+                	
+                	if (currEditingViewType == EditingViewType.REFERENCE_OBJECT_COMBINATIONS_BY_DIMENSION) {
+                		changeParent(tiCombination, newDimension.getId());
+                	}
+                	
+                	focus(tiCombination);
+                }
+            }
+        });
+		
+		editingView.getColumns().add(colDim);
+		
+		return colDim;
 	}
 	
 	private TreeTableColumn<DataObject, RatioCategory> createRatioCategoryCol() {

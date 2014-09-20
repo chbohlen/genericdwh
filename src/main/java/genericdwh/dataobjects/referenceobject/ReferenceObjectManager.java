@@ -245,7 +245,6 @@ public class ReferenceObjectManager extends DataObjectManager {
 		loadHierarchies();
 	}
 
-
 	public void saveCombinations(List<DataObject> stagedObjects) {
 		List<ReferenceObjectCombination> deletions = new ArrayList<>();
 		List<ReferenceObjectCombination> creations = new ArrayList<>();

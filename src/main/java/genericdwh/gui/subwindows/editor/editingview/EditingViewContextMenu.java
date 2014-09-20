@@ -187,7 +187,8 @@ public class EditingViewContextMenu extends ContextMenu {
 						}
 					}
 				} else if (currEditingViewType == EditingViewType.DIMENSION_COMBINATIONS
-							|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_COMBINATIONS) {
+							|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_COMBINATIONS
+							|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_COMBINATIONS_BY_DIMENSION) {
 					
 					createObject.setVisible(false);
 					deleteObject.setVisible(false);
@@ -223,7 +224,8 @@ public class EditingViewContextMenu extends ContextMenu {
 						|| currEditingViewType == EditingViewType.DIMENSION_COMBINATIONS
 						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES
 						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES_BY_CATEGORY
-						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_COMBINATIONS) {
+						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_COMBINATIONS
+						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_COMBINATIONS_BY_DIMENSION) {
 					
 					if (!getItems().contains(separator1)) {
 						int index;
@@ -234,7 +236,8 @@ public class EditingViewContextMenu extends ContextMenu {
 							
 							index = getItems().indexOf(removeChild);
 						} else if (currEditingViewType == EditingViewType.DIMENSION_COMBINATIONS
-								|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_COMBINATIONS) {
+								|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_COMBINATIONS
+								|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_COMBINATIONS_BY_DIMENSION) {
 							
 							index = getItems().indexOf(removeComponent);
 						} else {
