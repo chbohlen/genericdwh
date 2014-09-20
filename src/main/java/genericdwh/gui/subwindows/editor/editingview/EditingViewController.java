@@ -104,7 +104,7 @@ public class EditingViewController implements Initializable {
 			public TreeTableRow<DataObject> call(TreeTableView<DataObject> param) {
 				TreeTableRow<DataObject> treeTableRow = new TreeTableRow<>();
 				treeTableRow.setOnMouseClicked(new TreeTableRowRightClickHandler(editingView));
-				treeTableRow.setContextMenu(new EditingViewContextMenu(treeTableRow));
+				treeTableRow.setContextMenu(new TreeTableCellContextMenu(treeTableRow));
 				return treeTableRow;
 			}
 		});

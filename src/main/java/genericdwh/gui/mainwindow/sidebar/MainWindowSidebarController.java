@@ -12,25 +12,18 @@ import genericdwh.dataobjects.dimension.DimensionCategory;
 import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
-import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.gui.general.sidebar.HeaderItem;
 import genericdwh.gui.general.sidebar.TreeCellRightClickHandler;
-import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.main.Main;
 import javafx.beans.binding.Bindings;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
 public class MainWindowSidebarController implements Initializable {
@@ -53,7 +46,7 @@ public class MainWindowSidebarController implements Initializable {
             	treeCell.contextMenuProperty().bind(Bindings
         				.when(treeCell.getTitle().isEqualTo("Dimensions"))
         				.then((ContextMenu)null)
-        				.otherwise(createContextMenu(treeCell))); 
+        				.otherwise(new DataObjectTreeCellContextMenu(treeCell))); 
             	
                 return treeCell;
             }
@@ -67,7 +60,7 @@ public class MainWindowSidebarController implements Initializable {
             	treeCell.contextMenuProperty().bind(Bindings
         				.when(treeCell.getTitle().isEqualTo("Ratios"))
         				.then((ContextMenu)null)
-        				.otherwise(createContextMenu(treeCell))); 
+        				.otherwise(new DataObjectTreeCellContextMenu(treeCell))); 
             	
                 return treeCell;
             }
@@ -180,136 +173,12 @@ public class MainWindowSidebarController implements Initializable {
 		ratioSidebar.setRoot(tiRoot);
 	}
 
-	
-	private ContextMenu createContextMenu(DraggableDataObjectTreeCell treeCell) {		
-		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
-		
-		ContextMenu contextMenu = new ContextMenu();
-				
-		MenuItem expand = new MenuItem("Expand");
-		expand.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				treeCell.getTreeItem().setExpanded(true);
-            }
-        });
-		
-		MenuItem expandAll = new MenuItem("Expand all");
-		expandAll.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				expandAll(treeCell.getTreeItem());
-            }
-        });
-		
-		MenuItem collapse = new MenuItem("Collapse");
-		collapse.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				treeCell.getTreeItem().setExpanded(false);
-            }
-        });
-		
-		MenuItem collapseAll = new MenuItem("Collapse all");
-		collapseAll.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				collapseAll(treeCell.getTreeItem());
-            }
-        });
-		
-		MenuItem addColDimension = new MenuItem("Add to Column Dimensions");
-		addColDimension.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				mainWindowController.addColDimension(treeCell.getItem());
-            }
-        });
-		
-		MenuItem addRowDimension = new MenuItem("Add to Row Dimensions");
-		addRowDimension.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				mainWindowController.addRowDimension(treeCell.getItem());
-            }
-        });
-		
-		MenuItem addFilter = new MenuItem("Add to Filters");
-		addFilter.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				mainWindowController.addFilter(treeCell.getItem());
-            }
-        });
-		
-		MenuItem addRatio = new MenuItem("Add to Ratios");
-		addRatio.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				mainWindowController.addRatio(treeCell.getItem());
-            }
-        });
-		
-		SeparatorMenuItem separator = new SeparatorMenuItem();
-		
-		contextMenu.getItems().addAll(addColDimension, addRowDimension, addFilter, addRatio, expand, collapse, expandAll, collapseAll);
-		
-		contextMenu.setOnShowing(new EventHandler<WindowEvent>() {
-			@Override
-			public void handle(WindowEvent event) {
-				if (treeCell.getItem().getName() != "Dimensions" && treeCell.getItem().getName() != "Ratios") {
-					addColDimension.setVisible(false);
-					addRowDimension.setVisible(false);
-					addFilter.setVisible(false);
-					addRatio.setVisible(false);
-					contextMenu.getItems().remove(separator);
-					expand.setVisible(false);
-					collapse.setVisible(false);
-					expandAll.setVisible(true);
-					collapseAll.setVisible(true);
-					
-					if (treeCell.getItem() instanceof Dimension
-							|| treeCell.getItem() instanceof DimensionHierarchy
-							|| treeCell.getItem() instanceof ReferenceObject) {
-						
-						addColDimension.setVisible(true);
-						addRowDimension.setVisible(true);
-						addFilter.setVisible(true);
-						if (!contextMenu.getItems().contains(separator)) {
-							int index = contextMenu.getItems().indexOf(addFilter);
-							if (index != -1) {
-								contextMenu.getItems().add(index + 1, separator);
-							}
-						}
-					} else if (treeCell.getItem() instanceof Ratio) {
-						addRatio.setVisible(true);
-						if (!contextMenu.getItems().contains(separator)) {
-							int index = contextMenu.getItems().indexOf(addRatio);
-							if (index != -1) {
-								contextMenu.getItems().add(index + 1, separator);
-							}
-						}
-					}
-
-					if (treeCell.getTreeItem().getChildren().size() == 0) {
-						if (treeCell.getTreeItem().isExpanded()) {
-							collapse.setVisible(true);
-						} else {
-							expand.setVisible(true);
-						}
-					}
-				}
-			}
-		});
-		
-		return contextMenu;
-	}
  	
-	private void expandAll(TreeItem<DataObject> root) {
+	public void expandAll(TreeItem<DataObject> root) {
 		expandCollapseAll(root, true);
 	}
 	
-	private void collapseAll(TreeItem<DataObject> root) {
+	public void collapseAll(TreeItem<DataObject> root) {
 		expandCollapseAll(root, false);
 	}
 	
