@@ -16,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class ConnectDialogController {
@@ -45,6 +46,8 @@ public class ConnectDialogController {
 			Parent root = loader.load();
 			Scene scene = new Scene(root, 305, 240);
 			stage = new Stage();
+			stage.initModality(Modality.WINDOW_MODAL);
+			stage.initOwner(Main.getContext().getBean(MainWindowController.class).getStage().getScene().getWindow());
 			stage.setScene(scene);
 			stage.setTitle("Connect to database");
 			stage.setResizable(false);
@@ -68,6 +71,7 @@ public class ConnectDialogController {
 			DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 			dimManager.loadCategories();
 			dimManager.loadDimensions();
+			dimManager.loadHierarchies();
 			
 			RatioManager ratioManager = Main.getContext().getBean(RatioManager.class);
 			ratioManager.loadCategories();

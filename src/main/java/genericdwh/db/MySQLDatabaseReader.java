@@ -93,6 +93,23 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		return new TreeMap<>(result);
 	}
 	
+	public List<Entry<Long, Long>> loadReferenceObjectHierachies() {
+		List<Entry<Long, Long>> result = dslContext
+											.select(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID, REFERENCE_OBJECT_HIERARCHIES.CHILD_ID)
+											.from(REFERENCE_OBJECT_HIERARCHIES)
+											.fetch(new EntryLongLongRecordMapper());
+		return new ArrayList<>(result);
+	}
+
+	@Override
+	public List<Entry<Long, Long>> loadReferenceObjectCombinations() {
+		List<Entry<Long, Long>> result = dslContext
+											.select(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID, REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID)
+											.from(REFERENCE_OBJECT_COMBINATIONS)
+											.fetch(new EntryLongLongRecordMapper());
+		return new ArrayList<>(result);
+	}
+	
 	@Override
 	public ReferenceObject loadRefObj(long refObjId) {
 		ReferenceObject result = dslContext
@@ -205,18 +222,6 @@ public class MySQLDatabaseReader implements DatabaseReader {
 								.on(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID))
 							.where(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
 								.and(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(refObjId))
-							.fetch()
-							.isEmpty();
-		return !isEmpty;
-	}
-
-	
-	@Override
-	public boolean dimensionIsCombination(long dimId) {
-		boolean isEmpty = dslContext
-							.select()
-							.from(DIMENSION_COMBINATIONS)
-							.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(dimId))
 							.fetch()
 							.isEmpty();
 		return !isEmpty;

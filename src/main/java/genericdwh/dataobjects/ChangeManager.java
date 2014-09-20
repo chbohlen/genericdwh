@@ -1,9 +1,18 @@
 package genericdwh.dataobjects;
 
+import genericdwh.dataobjects.dimension.Dimension;
+import genericdwh.dataobjects.dimension.DimensionCategory;
+import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.dimension.DimensionManager;
+import genericdwh.dataobjects.fact.Fact;
 import genericdwh.dataobjects.fact.FactManager;
+import genericdwh.dataobjects.ratio.Ratio;
+import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.ratio.RatioManager;
+import genericdwh.dataobjects.referenceobject.ReferenceObject;
+import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
+import genericdwh.dataobjects.unit.Unit;
 import genericdwh.dataobjects.unit.UnitManager;
 
 import java.util.ArrayList;
@@ -29,22 +38,48 @@ public class ChangeManager {
 	}
 	
 	public void stageCreation(DataObject obj) {
+		if (!stagedObjects.contains(obj)) {
+			stagedObjects.add(obj);
+		}
 		obj.setMarkedForCreation(true);
-		stagedObjects.add(obj);
 	}
 	
 	public void stageUpdate(DataObject obj) {
+		if (!stagedObjects.contains(obj)) {
+			stagedObjects.add(obj);
+		}
 		obj.setMarkedForUpdate(true);
-		stagedObjects.add(obj);
 	}
 	
 	public void stageDeletion(DataObject obj) {
+		if (!stagedObjects.contains(obj)) {
+			stagedObjects.add(obj);
+		}
 		obj.setMarkedForDeletion(true);
-		stagedObjects.add(obj);
 	}
 	
 	public void saveChanges() {
+		if (stagedObjects.get(0) instanceof Dimension) {
+			dimManager.saveDimensions(stagedObjects);
+		} else if (stagedObjects.get(0) instanceof DimensionHierarchy) {
+			dimManager.saveHierarchies(stagedObjects);
+		} else if (stagedObjects.get(0) instanceof ReferenceObject) {
+			refObjManager.saveReferenceObjects(stagedObjects);
+		} else if (stagedObjects.get(0) instanceof ReferenceObjectHierarchy) {
+			refObjManager.saveHierarchies(stagedObjects);
+		} else if (stagedObjects.get(0) instanceof Ratio) {
+			ratioManager.saveRatios(stagedObjects);
+		} else if (stagedObjects.get(0) instanceof Fact) {
+			factManager.saveFacts(stagedObjects);
+		} else if (stagedObjects.get(0) instanceof DimensionCategory) {
+			dimManager.saveCategories(stagedObjects);
+		} else if (stagedObjects.get(0) instanceof RatioCategory) {
+			ratioManager.saveCategories(stagedObjects);
+		} else if (stagedObjects.get(0) instanceof Unit) {
+			unitManager.saveUnits(stagedObjects);
+		}
 		
+		stagedObjects.clear();
 	}
 		
 	public void discardChanges() {
@@ -54,6 +89,7 @@ public class ChangeManager {
 			obj.setMarkedForUpdate(false);
 			obj.setMarkedForDeletion(false);
 		}
+		
 		stagedObjects.clear();
 	}
 }

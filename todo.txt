@@ -1,22 +1,12 @@
-create/edit/delete objects
-save/discard changes(refetch?)
-
-Sidebar
-a------
-context menu
-refresh sidebar on save
-b------
-duplicate object
-
 QueryPane
 a------
-tableview context menus: remove all
 reorder ratios/dimensions per dnd
 
 ResultGrid
 a------
 unnecessary load of higher hierarchy levels
 filter hierarchies
+context menu
 b------
 empty cells
 grid collapsible

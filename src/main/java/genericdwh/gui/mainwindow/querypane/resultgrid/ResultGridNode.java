@@ -43,8 +43,7 @@ public class ResultGridNode {
 		isLeaf = false;
 	}
 	
-	public void setChildren(TreeMap<Long, ResultGridNode> newChildren) {
-		children = newChildren;
-		isLeaf = false;
+	public ResultGridNode cloneWOCell() {
+		return new ResultGridNode(this.id, this.name, this.dimensionId, this.successorIds);
 	}
 }

@@ -19,6 +19,8 @@ public interface DatabaseReader {
 	public List<Entry<Long, Long>> loadDimensionCombinations();
 	
 	public TreeMap<Long, ReferenceObject> loadRefObjs();
+	public List<Entry<Long, Long>> loadReferenceObjectHierachies();
+	public List<Entry<Long, Long>> loadReferenceObjectCombinations();
 	public ReferenceObject loadRefObj(long refObjId);
 	public TreeMap<Long, ReferenceObject> loadRefObjsForDim(long dimId);
 	public TreeMap<Long, ReferenceObject> loadRefObjsForDimAndRefObjParent(long dimId, long refObjId);
@@ -32,8 +34,6 @@ public interface DatabaseReader {
 		
 	public boolean dimensionHasRecords(long dimId);
 	public boolean dimensionAndRefObjParentHaveRecords(long dimId, long refObjId);
-	
-	public boolean dimensionIsCombination(long dimId);
 	
 	public long findDimAggregateId(Long[] componentIds);
 	public long findRefObjAggregateId(Long[] componentIds);

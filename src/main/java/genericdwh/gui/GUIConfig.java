@@ -10,9 +10,10 @@ import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.gui.subwindows.editor.editingview.EditingViewController;
 import genericdwh.gui.subwindows.editor.editingview.SearchBoxController;
 import genericdwh.gui.subwindows.editor.sidebar.EditorSidebarController;
-import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DeleteObjectDialogController;
-import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DiscardChangesDialogController;
-import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveChangesDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DeleteDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DiscardDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveOrDiscardOnLoadDialogController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
@@ -53,6 +54,7 @@ public class GUIConfig {
 	public EditorController editorWindowController() {
 		return new EditorController(objManagerConfig.changeManager(), editorSidebarController(), editingViewController(),
 				saveChangesDialogController(), discardChangesDialogController(),
+				saveOrDiscardOnLoadDialogController(),
 				deleteObjectDialogController());
 	}
 	
@@ -72,17 +74,22 @@ public class GUIConfig {
 	}
 	
 	@Bean
-	public SaveChangesDialogController saveChangesDialogController() {
-		return new SaveChangesDialogController();
+	public SaveDialogController saveChangesDialogController() {
+		return new SaveDialogController();
 	}
 	
 	@Bean
-	public DiscardChangesDialogController discardChangesDialogController() {
-		return new DiscardChangesDialogController();
+	public DiscardDialogController discardChangesDialogController() {
+		return new DiscardDialogController();
 	}
 	
 	@Bean
-	public DeleteObjectDialogController deleteObjectDialogController() {
-		return new DeleteObjectDialogController();
+	public SaveOrDiscardOnLoadDialogController saveOrDiscardOnLoadDialogController() {
+		return new SaveOrDiscardOnLoadDialogController();
+	}
+	
+	@Bean
+	public DeleteDialogController deleteObjectDialogController() {
+		return new DeleteDialogController();
 	}
 }

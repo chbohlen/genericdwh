@@ -37,40 +37,56 @@ public class EditorSidebarController implements Initializable {
 		tiDims.addChild(tiDimsByCat);
 		
 		
-		HeaderItem tiRefObjs = new HeaderItem("Reference Objects", 2, true, true);
+		HeaderItem tiDimHierarchies = new HeaderItem("Dimension Hierarchies", 2, true, true);
+		tiDimHierarchies.setExpanded(true);
+		tiRoot.addChild(tiDimHierarchies);
+		
+		HeaderItem tiDimHierarchiesByCat = new HeaderItem("By Category", 3, true, true);
+		tiDimHierarchies.addChild(tiDimHierarchiesByCat);
+		
+		
+		HeaderItem tiRefObjs = new HeaderItem("Reference Objects", 4, true, true);
 		tiRefObjs.setExpanded(true);		
 		tiRoot.addChild(tiRefObjs);
 		
-		HeaderItem tiRefObjsByDim = new HeaderItem("By Dimension", 3, true, true);
+		HeaderItem tiRefObjsByDim = new HeaderItem("By Dimension", 5, true, true);
 		tiRefObjs.addChild(tiRefObjsByDim);
 		
 		
-		HeaderItem tiRatios = new HeaderItem("Ratios", 4, true, true);
+		HeaderItem tiRefObjHierarchies = new HeaderItem("Reference Object Hierarchies", 6, true, true);
+		tiRefObjHierarchies.setExpanded(true);		
+		tiRoot.addChild(tiRefObjHierarchies);
+		
+		HeaderItem tiRefObjHierarchiesByCat = new HeaderItem("By Category", 7, true, true);
+		tiRefObjHierarchies.addChild(tiRefObjHierarchiesByCat);
+		
+		
+		HeaderItem tiRatios = new HeaderItem("Ratios", 8, true, true);
 		tiRatios.setExpanded(true);		
 		tiRoot.addChild(tiRatios);
 		
-		HeaderItem tiRatiosByCat = new HeaderItem("By Category", 5, true, true);
+		HeaderItem tiRatiosByCat = new HeaderItem("By Category", 9, true, true);
 		tiRatios.addChild(tiRatiosByCat);
 		
 		
-		HeaderItem tiFacts = new HeaderItem("Facts", 6, true, true);
+		HeaderItem tiFacts = new HeaderItem("Facts", 10, true, true);
 		tiFacts.setExpanded(true);		
 		tiRoot.addChild(tiFacts);
 		
-		HeaderItem tiFactsByRatio = new HeaderItem("By Ratio", 7, true, true);
+		HeaderItem tiFactsByRatio = new HeaderItem("By Ratio", 11, true, true);
 		tiFacts.addChild(tiFactsByRatio);
 		
-		HeaderItem tiFactsByReferenceObject = new HeaderItem("By Reference Object", 8, true, true);
+		HeaderItem tiFactsByReferenceObject = new HeaderItem("By Reference Object", 12, true, true);
 		tiFacts.addChild(tiFactsByReferenceObject);
 		
 		
-		HeaderItem tiDimCats = new HeaderItem("Dimension Categories", 9, true, true);
+		HeaderItem tiDimCats = new HeaderItem("Dimension Categories", 13, true, true);
 		tiRoot.addChild(tiDimCats);
 		
-		HeaderItem tiRefObjCats = new HeaderItem("Ratio Categories", 10, true, true);
+		HeaderItem tiRefObjCats = new HeaderItem("Ratio Categories", 14, true, true);
 		tiRoot.addChild(tiRefObjCats);
 		
-		HeaderItem tiUnits = new HeaderItem ("Units", 11, true, true);
+		HeaderItem tiUnits = new HeaderItem ("Units", 15, true, true);
 		tiRoot.addChild(tiUnits);
 	}
 
@@ -95,7 +111,7 @@ public class EditorSidebarController implements Initializable {
 		load.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {
-				Main.getContext().getBean(EditorController.class).createEditorTreeTable((int)treeCell.getItem().getId());
+				Main.getContext().getBean(EditorController.class).loadEditingView((int)treeCell.getItem().getId());
             }
         });
 		

@@ -1,8 +1,11 @@
 package genericdwh.gui.subwindows.editor.editingview;
 
 import genericdwh.dataobjects.DataObject;
+import genericdwh.dataobjects.dimension.DimensionHierarchy;
+import genericdwh.gui.general.sidebar.HeaderItem;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.util.StringConverter;
 import lombok.Getter;
@@ -23,12 +26,12 @@ public class DataObjectTFTreeTableCell extends TextFieldTreeTableCell<DataObject
         	setText(obj.toString());
             title.set(obj.toString());
             
-            if (!getTreeTableView().getTreeItem(getTreeTableRow().getIndex()).getChildren().isEmpty()) {
+            TreeItem<DataObject> item = getTreeTableView().getTreeItem(getTreeTableRow().getIndex());
+            if (item instanceof HeaderItem || (item != null && item.getValue() instanceof DimensionHierarchy)) {
             	setEditable(false);
             }
         } else {
         	setText(null);
         }
-
     }
 }

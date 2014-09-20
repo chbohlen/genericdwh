@@ -7,12 +7,12 @@ import lombok.Setter;
 
 public abstract class DataObject {
 	
-	@Getter protected long id;
-	@Getter @Setter protected String name;
-	
 	@Getter @Setter private boolean markedForCreation = false;
 	@Getter @Setter private boolean markedForUpdate = false;
 	@Getter @Setter private boolean markedForDeletion = false;
+	
+	@Getter protected long id;
+	@Getter @Setter protected String name;
 	
 	public DataObject(long id, String name) {
 		this.id = id;

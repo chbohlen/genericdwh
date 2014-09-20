@@ -160,7 +160,6 @@ public class ResultGrid extends GridPane {
 			TreeMap<Long, ResultGridNode> prevNodes = new TreeMap<>();
 			prevNodes.put(rootNode.getId(), rootNode);
 			
-			TreeMap<Long, ResultGridNode> newNodes = new TreeMap<>();
 			for (int i = 1; i < refObjs.size(); i++) {
 				currHierarchy = null;
 				currHierarchyEntry = getHierarchy(refObjs.get(i).firstEntry().getValue().getDimensionId());
@@ -168,7 +167,7 @@ public class ResultGrid extends GridPane {
 					currHierarchy = currHierarchyEntry.getKey();
 				}
 				
-				
+				TreeMap<Long, ResultGridNode> newNodes = new TreeMap<>();
 				for (ReferenceObject refObj : refObjs.get(i).values()) {
 					ResultGridNode node = new ResultGridNode(refObj.getId(), refObj.getName(), refObj.getDimensionId(), refObj.getChildrenIds());					
 					newNodes.put(node.getId(), node);

@@ -15,7 +15,7 @@ import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.main.Main;
 
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
@@ -105,7 +105,7 @@ public class MainWindowController implements Initializable{
 		}
 	}
 	
-	public void createSidebars(TreeMap<Long, DimensionCategory> dimensionCategories, ArrayList<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions, 
+	public void createSidebars(TreeMap<Long, DimensionCategory> dimensionCategories, List<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions, 
 			TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
 		
 		sidebarController.createSidebars(dimensionCategories, hierarchies, dimensions, ratioCategories, ratios);

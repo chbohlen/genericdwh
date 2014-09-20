@@ -36,7 +36,11 @@ public class Ratio extends DataObject {
 	@Override
 	public void initProperties() {
 		super.initProperties();
-		setCategoryProperty(Main.getContext().getBean(RatioManager.class).getCategories().get(categoryId));
+		if (categoryId == 0) {
+			setCategoryProperty(RatioCategory.NO_RATIO_CATEGORY);
+		} else {
+			setCategoryProperty(Main.getContext().getBean(RatioManager.class).getCategories().get(categoryId));
+		}
 	}
 	
 	@Getter private ObjectProperty<RatioCategory> categoryProperty = new SimpleObjectProperty<>();

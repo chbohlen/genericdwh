@@ -1,13 +1,52 @@
 package genericdwh.db;
 
+import java.util.List;
+
 import genericdwh.dataobjects.dimension.Dimension;
+import genericdwh.dataobjects.dimension.DimensionCategory;
+import genericdwh.dataobjects.dimension.DimensionHierarchy;
+import genericdwh.dataobjects.fact.Fact;
+import genericdwh.dataobjects.ratio.Ratio;
+import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
+import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
+import genericdwh.dataobjects.unit.Unit;
 
 public interface DatabaseWriter {
 	
-	public void updateDimension(Dimension dim);
-	public void updateReferenceObject(ReferenceObject refObj);
+	public void createDimensions(List<Dimension> creations);
+	public void updateDimensions(List<Dimension> updates);
+	public void deleteDimensions(List<Dimension> deletions);
 	
-	public void deleteDimension(Dimension dim);
-	public void deleteReferenceObject(ReferenceObject refObj);
+	public void createDimensionHierarchies(List<DimensionHierarchy> creations);
+	public void updateDimensionHierarchies(List<DimensionHierarchy> updates);
+	public void deleteDimensionHierarchies(List<DimensionHierarchy> deletions);
+	
+	public void createReferenceObjects(List<ReferenceObject> creations);
+	public void updateReferenceObjects(List<ReferenceObject> updates);
+	public void deleteReferenceObjects(List<ReferenceObject> deletions);
+	
+	public void createReferenceObjectHierarchies(List<ReferenceObjectHierarchy> creations);
+	public void updateReferenceObjectHierarchies(List<ReferenceObjectHierarchy> updates);
+	public void deleteReferenceObjectHierarchies(List<ReferenceObjectHierarchy> deletions);
+	
+	public void createRatios(List<Ratio> creations);
+	public void updateRatios(List<Ratio> updates);
+	public void deleteRatios(List<Ratio> deletions);
+	
+	public void createFacts(List<Fact> creations);
+	public void updateFacts(List<Fact> updates);
+	public void deleteFacts(List<Fact> deletions);
+	
+	public void createDimensionCategories(List<DimensionCategory> creations);
+	public void updateDimensionCategories(List<DimensionCategory> updates);
+	public void deleteDimensionCategories(List<DimensionCategory> deletions);
+	
+	public void createRatioCategories(List<RatioCategory> creations);
+	public void updateRatioCategories(List<RatioCategory> updates);
+	public void deleteRatioCategories(List<RatioCategory> deletions);
+	
+	public void createUnits(List<Unit> creations);
+	public void updateUnits(List<Unit> updates);
+	public void deleteUnits(List<Unit> deletions);
 }

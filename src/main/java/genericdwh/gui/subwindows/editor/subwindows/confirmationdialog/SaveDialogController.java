@@ -3,11 +3,8 @@ package genericdwh.gui.subwindows.editor.subwindows.confirmationdialog;
 import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.main.Main;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 
-public class SaveChangesDialogController extends ConfirmationDialogController {
-	
-	@FXML private Label lMessage;
+public class SaveDialogController extends ConfirmationDialogController {
 	
 	public void createWindow() {
 		super.createWindow("Save Changes", this.getClass());

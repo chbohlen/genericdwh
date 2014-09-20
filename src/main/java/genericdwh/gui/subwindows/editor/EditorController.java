@@ -8,17 +8,21 @@ import genericdwh.dataobjects.ChangeManager;
 import genericdwh.dataobjects.DataObject;
 import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionCategory;
+import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.fact.Fact;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
+import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
+import genericdwh.dataobjects.unit.Unit;
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.subwindows.editor.editingview.EditingViewController;
 import genericdwh.gui.subwindows.editor.sidebar.EditorSidebarController;
-import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DeleteObjectDialogController;
-import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DiscardChangesDialogController;
-import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveChangesDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DeleteDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DiscardDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveOrDiscardOnLoadDialogController;
 import genericdwh.main.Main;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -27,7 +31,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import lombok.Getter;
 
 public class EditorController implements Initializable{
 	
@@ -36,19 +42,22 @@ public class EditorController implements Initializable{
 	private EditorSidebarController sidebarController;
 	private EditingViewController editingViewController;
 	
-	private SaveChangesDialogController saveChangesDialogController;
-	private DiscardChangesDialogController discardChangesDialogController;
+	private SaveDialogController saveChangesDialogController;
+	private DiscardDialogController discardChangesDialogController;
 	
-	private DeleteObjectDialogController deleteObjectDialogController;
+	private SaveOrDiscardOnLoadDialogController saveOrDiscardOnLoadDialogController;
 	
-	private Stage stage;
+	private DeleteDialogController deleteObjectDialogController;
+	
+	@Getter private Stage stage;
 	
 	@FXML MenuItem miSave;
 	@FXML MenuItem miDiscard;
 		
 	public EditorController(ChangeManager changeManager, EditorSidebarController sidebarController, EditingViewController resultViewController,
-			SaveChangesDialogController saveChangesDialogController, DiscardChangesDialogController discardChangesDialogController,
-			DeleteObjectDialogController deleteObjectDialogController) {
+			SaveDialogController saveChangesDialogController, DiscardDialogController discardChangesDialogController,
+			SaveOrDiscardOnLoadDialogController saveOrDiscardOnLoadDialogController,
+			DeleteDialogController deleteObjectDialogController) {
 		
 		this.changeManager = changeManager;
 		
@@ -57,6 +66,8 @@ public class EditorController implements Initializable{
 		
 		this.saveChangesDialogController = saveChangesDialogController;
 		this.discardChangesDialogController = discardChangesDialogController;
+		
+		this.saveOrDiscardOnLoadDialogController = saveOrDiscardOnLoadDialogController;
 		
 		this.deleteObjectDialogController = deleteObjectDialogController;
 	}
@@ -71,6 +82,8 @@ public class EditorController implements Initializable{
 
 			Scene scene = new Scene(root, width, height);
 			stage = new Stage();
+			stage.initModality(Modality.WINDOW_MODAL);
+			stage.initOwner(Main.getContext().getBean(MainWindowController.class).getStage().getScene().getWindow());
 			stage.setScene(scene);
 			stage.setTitle("Editor");
 			stage.show();
@@ -84,8 +97,6 @@ public class EditorController implements Initializable{
 		sidebarController.createSidebar();
 		editingViewController.hideEditingView();		
 		
-		editingViewController.setHasUnsavedChanges(false);
-		
 		miSave.disableProperty().bind(Bindings
 				.when(editingViewController.getHasUnsavedChanges())
 				.then(false)
@@ -97,87 +108,100 @@ public class EditorController implements Initializable{
 				.otherwise(true));
 	}
 	
+	public void loadEditingView(int id) {
+		if (editingViewController.getHasUnsavedChanges().get()) {
+			saveOrDiscardOnLoadDialogController.createWindow(id);
+		} else {
+			createEditorTreeTable(id);
+		}
+	}
+	
 	public void createEditorTreeTable(int id) {
 		editingViewController.createEditorTreeTable(id);
 		editingViewController.showEditingView();
 	}
 	
 	@FXML public void menuBarSaveOnClickHandler() {
-		showSaveChangesDialog();
+		saveChangesDialogController.createWindow();
 	}
 	
 	@FXML public void menuBarDiscardOnClickHandler() {
-		showDiscardChangesDialog();
+		discardChangesDialogController.createWindow();
 	}
 	
 	@FXML public void menuBarExitOnClickHandler() {
 		stage.close();
 	}
 	
-	public void showSaveChangesDialog() {
-		saveChangesDialogController.createWindow();
-	}
-	
-	public void showDiscardChangesDialog() {
-		discardChangesDialogController.createWindow();
-	}
-	
 	public void saveChanges() {
-		editingViewController.saveChanges();
+		saveChanges(editingViewController.getCurrEditingViewType().ordinal());
+	}
+	
+	public void saveChanges(int id) {
 		changeManager.saveChanges();
+		createEditorTreeTable(id);
 	}
 	
 	public void discardChanges() {
-		editingViewController.discardChanges();
+		discardChanges(editingViewController.getCurrEditingViewType().ordinal());
+	}
+	
+	public void discardChanges(int id) {
 		changeManager.discardChanges();
+		createEditorTreeTable(id);
+	}
+
+	public void stageCreation(DataObject obj) {
+		changeManager.stageCreation(obj);
 	}
 	
 	public void stageUpdate(DataObject obj) {
 		changeManager.stageUpdate(obj);
 	}
 	
-	public void stageDeletion(TreeItem<DataObject> tiObj) {
-		editingViewController.deleteObject(tiObj);
-		changeManager.stageDeletion(tiObj.getValue());
+	public void stageDeletion(DataObject obj) {
+		changeManager.stageDeletion(obj);
 	}
 	
 	public void confirmDeletion(TreeItem<DataObject> tiObjToDelete) {
 		deleteObjectDialogController.createWindow(tiObjToDelete);
 	}
 
-	public void duplicateObject(DataObject obj) {
-		
-	}
-
-	public DataObject addObject(Class<? extends DataObject> clazz) {
+	public DataObject createObject(Class<? extends DataObject> clazz) {
 		Constructor<?>[] constructors = clazz.getConstructors();
 		
 		Object[] params = null;
 		if (clazz == Dimension.class) {
-			params = new Object[] { -1, "New Dimension", -1 };
+			params = new Object[] { -1, "New Dimension", 0 };
 		} else if (clazz == DimensionCategory.class) {
 			params = new Object[] { -1, "New Category" };
 		} else if (clazz == Fact.class) {
 			params = new Object[] { -1, -1, 0, -1 };
 		} else if (clazz == Ratio.class) {
-			params = new Object[] { -1, "New Ratio", -1 };
+			params = new Object[] { -1, "New Ratio", 0 };
 		}  else if (clazz == RatioCategory.class) {
 			params = new Object[] { -1, "New Category" };
 		} else if (clazz == ReferenceObject.class) {
-			params = new Object[] { -1, -1, "New Reference Object" };
-		} else if (clazz == Dimension.class) {
+			params = new Object[] { -1, 0, "New Reference Object" };
+		} else if (clazz == Unit.class) {
 			params = new Object[] { -1, "New Unit", "" };
 		}
 		
 		DataObject newObj = null;
 		try {
-			newObj = (DataObject)constructors[0].newInstance(params);
+			if (clazz == DimensionHierarchy.class || clazz == ReferenceObjectHierarchy.class) {
+				newObj = (DataObject)clazz.newInstance();
+			} else {
+				newObj = (DataObject)constructors[0].newInstance(params);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		changeManager.stageCreation(newObj);
-		
 		return newObj;
+	}
+	
+	public void deleteObject(TreeItem<DataObject> tiObjToDelete) {
+		editingViewController.deleteObject(tiObjToDelete);
 	}
 }

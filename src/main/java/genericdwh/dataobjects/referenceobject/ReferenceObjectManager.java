@@ -7,24 +7,73 @@ import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.db.DatabaseController;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import lombok.Getter;
 
 public class ReferenceObjectManager extends DataObjectManager {
 
 	@Getter private TreeMap<Long, ReferenceObject> referenceObjects = new TreeMap<>();
+	@Getter private List<ReferenceObjectHierarchy> hierarchies;
 	
 	public ReferenceObjectManager(DatabaseController dbController) {
 		super(dbController);
 	}
 	
-	public TreeMap<Long, ReferenceObject> loadRefObjs() {
-		TreeMap<Long, ReferenceObject> refObjs = dbReader.loadRefObjs();
-		referenceObjects.putAll(refObjs);
-		return refObjs;
+	
+	public void loadReferenceObjects() {
+		referenceObjects = dbReader.loadRefObjs();
+		
+		List<Entry<Long, Long>> refObjCombinations = dbReader.loadReferenceObjectCombinations();
+		for (Entry<Long, Long> combination : refObjCombinations) {
+			referenceObjects.get(combination.getKey()).addComponent(referenceObjects.get(combination.getValue()));
+		}
 	}
+	
+	public void loadHierarchies() {
+		for (ReferenceObject refObj : referenceObjects.values()) {
+			refObj.clearChildren();
+		}
+		
+		List<Entry<Long, Long>> refObjHierarchies = dbReader.loadReferenceObjectHierachies();
+		for (Entry<Long, Long> hierarchy : refObjHierarchies) {
+			referenceObjects.get(hierarchy.getKey()).addChildren(referenceObjects.get(hierarchy.getValue()));
+		}
+		
+		hierarchies = generateHierarchies();
+	}
+	
+	private List<ReferenceObjectHierarchy> generateHierarchies() {
+		ArrayList<ReferenceObjectHierarchy> newHierarchies = new ArrayList<>();
+		
+		for (ReferenceObject currRefObj : referenceObjects.values()) {
+			if (currRefObj.isHierarchy()) {
+				LinkedList<ReferenceObjectHierarchy> tmpNewHierarchies = new LinkedList<>();
+				tmpNewHierarchies.add(new ReferenceObjectHierarchy(currRefObj));
+				
+				do {
+					ReferenceObjectHierarchy currNewHierarchy = tmpNewHierarchies.pop();
+					
+					ReferenceObject lastLevel = currNewHierarchy.getLevels().getLast();
+					if (lastLevel.isHierarchy()) {
+						for (ReferenceObject child : lastLevel.getChildren()) {
+							ReferenceObjectHierarchy currNewHierarchyClone = (ReferenceObjectHierarchy)currNewHierarchy.clone();
+							currNewHierarchyClone.addLevel(child);
+							tmpNewHierarchies.add(currNewHierarchyClone);
+						}
+					} else {
+						newHierarchies.add(currNewHierarchy);
+					}
+				} while (!tmpNewHierarchies.isEmpty());
+			}
+		}
+		
+		return newHierarchies;
+	}
+
 	
 	public ReferenceObject loadRefObj(long refObjId) {
 		ReferenceObject newRefObj = dbReader.loadRefObj(refObjId);
@@ -82,6 +131,7 @@ public class ReferenceObjectManager extends DataObjectManager {
 		
 		return result;	
 	}
+
 		
 	public long findRefObjAggregateId(ArrayList<DataObject> combinedDims) {
 		if (combinedDims.size() < 2) {
@@ -103,7 +153,81 @@ public class ReferenceObjectManager extends DataObjectManager {
 		return refObjIds.toArray(new Long[0]);
 	}
 	
+	
 	public ReferenceObject getReferenceObject(long refObjId) {
 		return referenceObjects.get(refObjId);
+	}
+	
+	
+	public void initAll() {
+		initReferenceObjects();
+		initHierarchies();
+	}
+	
+	public void initHierarchies() {
+		for (ReferenceObjectHierarchy refObjHierarchy : hierarchies) {
+			refObjHierarchy.initProperties();
+		}
+	}
+	
+	public void initReferenceObjects() {
+		for (ReferenceObject refObj : referenceObjects.values()) {
+			refObj.initProperties();
+		}
+	}
+	
+	
+	public void saveReferenceObjects(List<DataObject> stagedObjects) {
+		List<ReferenceObject> deletions = new ArrayList<>();
+		List<ReferenceObject> creations = new ArrayList<>();
+		List<ReferenceObject> updates = new ArrayList<>();
+		
+		for (DataObject obj : stagedObjects) {
+			ReferenceObject refObj = (ReferenceObject)obj;
+			if (refObj.isMarkedForDeletion()) {
+				if (!refObj.isMarkedForCreation()) {
+					deletions.add(refObj);
+				}
+			} else {
+				if (refObj.isMarkedForCreation()) {
+					creations.add(refObj);
+				} else {
+					updates.add(refObj);
+				}
+			}
+		}
+		
+		dbWriter.deleteReferenceObjects(deletions);
+		dbWriter.createReferenceObjects(creations);
+		dbWriter.updateReferenceObjects(updates);
+		
+		loadReferenceObjects();
+	}
+
+	public void saveHierarchies(List<DataObject> stagedObjects) {
+		List<ReferenceObjectHierarchy> deletions = new ArrayList<>();
+		List<ReferenceObjectHierarchy> creations = new ArrayList<>();
+		List<ReferenceObjectHierarchy> updates = new ArrayList<>();
+		
+		for (DataObject obj : stagedObjects) {
+			ReferenceObjectHierarchy hierarchy = (ReferenceObjectHierarchy)obj;
+			if (hierarchy.isMarkedForDeletion()) {
+				if (!hierarchy.isMarkedForCreation()) {
+					deletions.add(hierarchy);
+				}
+			} else {
+				if (hierarchy.isMarkedForCreation()) {
+					creations.add(hierarchy);
+				} else {
+					updates.add(hierarchy);
+				}
+			}
+		}
+		
+		dbWriter.deleteReferenceObjectHierarchies(deletions);
+		dbWriter.createReferenceObjectHierarchies(creations);
+		dbWriter.updateReferenceObjectHierarchies(updates);
+		
+		loadHierarchies();
 	}
 }

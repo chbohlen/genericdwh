@@ -4,17 +4,10 @@ import genericdwh.dataobjects.DataObject;
 import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.main.Main;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
-import javafx.scene.layout.HBox;
 
-public class DeleteObjectDialogController extends ConfirmationDialogController {
-	
-	@FXML private HBox buttonContainer;
-	@FXML private Label lMessage;
-	@FXML private Button btnCancel;
-	
+public class DeleteDialogController extends ConfirmationDialogController {
+		
 	private TreeItem<DataObject> tiObjToDelete;
 	
 	public void createWindow(TreeItem<DataObject> tiObjToDelete) {
@@ -27,7 +20,7 @@ public class DeleteObjectDialogController extends ConfirmationDialogController {
 
 	@Override
 	@FXML public void buttonYesOnClickHandler() {
-		Main.getContext().getBean(EditorController.class).stageDeletion(tiObjToDelete);
+		Main.getContext().getBean(EditorController.class).deleteObject(tiObjToDelete);
 		stage.close();
 	}
 
