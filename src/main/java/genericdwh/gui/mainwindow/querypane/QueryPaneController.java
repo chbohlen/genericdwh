@@ -16,8 +16,8 @@ import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.db.DatabaseReader;
 import genericdwh.db.ResultObject;
+import genericdwh.gui.general.StatusMessage;
 import genericdwh.gui.mainwindow.MainWindowController;
-import genericdwh.gui.mainwindow.StatusMessage;
 import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGrid;
 import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGridController;
 import genericdwh.gui.mainwindow.sidebar.TableCellRightClickHandler;
@@ -284,8 +284,11 @@ public class QueryPaneController implements Initializable {
 			}
 		}
 		
-		if (!hasResults) {
-			Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessage.NO_DATA_FOR_INPUT);
+		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
+		if (hasResults) {
+			mainWindowController.postStatus(StatusMessage.QUERY_OK);
+		} else {
+			mainWindowController.postStatus(StatusMessage.QUERY_NO_DATA);
 		}
 	}	
 	

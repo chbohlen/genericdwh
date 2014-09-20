@@ -8,6 +8,7 @@ import genericdwh.dataobjects.ratio.RatioManager;
 import genericdwh.dataobjects.unit.UnitManager;
 import genericdwh.db.DatabaseController;
 import genericdwh.gui.SpringFXMLLoader;
+import genericdwh.gui.general.StatusMessage;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.main.Main;
 import javafx.fxml.FXML;
@@ -62,6 +63,9 @@ public class ConnectDialogController {
 	}
 	
 	private void connectToDatabase() {
+		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
+
+		mainWindowController.postStatus(StatusMessage.CONNECTING);
 		boolean connected  = Main.getContext().getBean(DatabaseController.class).connect("localhost", "3306", "genericdwh" , "root", "root");
 //		boolean connected  = Main.getContext().getBean(DatabaseController.class).connect(tfIp.getText(), tfPort.getText(), tfDbName.getText() , tfUserName.getText(), tfPassword.getText());
 		
@@ -78,14 +82,16 @@ public class ConnectDialogController {
 			ratioManager.loadRatios();
 			
 			Main.getContext().getBean(UnitManager.class).loadUnits();
-			
-			MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
-			
+						
 			mainWindowController.createSidebars(dimManager.getCategories(), dimManager.getHierarchies(), dimManager.getDimensions(),
 												ratioManager.getCategories(), ratioManager.getRatios());
 			mainWindowController.showSidebars();
 			mainWindowController.showQueryPane();
-		}		
+			
+			mainWindowController.postStatus(StatusMessage.CONNECTION_OK);
+		} else {
+			mainWindowController.postStatus(StatusMessage.CONNECTION_FAILED);
+		}
 		
 		closeWindow();
 	}

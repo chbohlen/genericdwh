@@ -1,6 +1,7 @@
 package genericdwh.gui;
 
 import genericdwh.dataobjects.DataObjectManagerConfig;
+import genericdwh.gui.general.StatusBarController;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController;
 import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGridController;
@@ -27,7 +28,14 @@ public class GUIConfig {
 
 	@Bean
 	public MainWindowController mainWindowController() {
-		return new MainWindowController(mainWindowSidebarController(), queryPaneController(), connectWindowController(), editorWindowController());
+		return new MainWindowController(statusBarController(),
+				mainWindowSidebarController(), queryPaneController(),
+				connectWindowController(), editorWindowController());
+	}
+	
+	@Bean
+	public StatusBarController statusBarController() {
+		return new StatusBarController();
 	}
 	
 	@Bean
@@ -52,7 +60,9 @@ public class GUIConfig {
 	
 	@Bean
 	public EditorController editorWindowController() {
-		return new EditorController(objManagerConfig.changeManager(), editorSidebarController(), editingViewController(),
+		return new EditorController(objManagerConfig.changeManager(),
+				statusBarController(),
+				editorSidebarController(), editingViewController(),
 				saveChangesDialogController(), discardChangesDialogController(),
 				saveOrDiscardOnLoadDialogController(),
 				deleteObjectDialogController());

@@ -8,6 +8,7 @@ import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.db.DatabaseController;
 import genericdwh.gui.SpringFXMLLoader;
+import genericdwh.gui.general.StatusBarController;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController;
 import genericdwh.gui.mainwindow.sidebar.MainWindowSidebarController;
 import genericdwh.gui.subwindows.connectdialog.ConnectDialogController;
@@ -26,7 +27,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -34,11 +34,12 @@ import lombok.Setter;
 
 public class MainWindowController implements Initializable{
 		
-	@FXML private Label statusBar;
 	@FXML private MenuItem menuBarDisconnect;
 	@FXML private MenuItem menuBarOpenEditor;
 	
 	@Getter private Stage stage;
+	
+	private StatusBarController statusBarController;
 	
 	private MainWindowSidebarController sidebarController;
 	private QueryPaneController queryPaneController;
@@ -48,8 +49,11 @@ public class MainWindowController implements Initializable{
 	
 	@ Getter @Setter private DataObject draggedDataObject;
 	
-	public MainWindowController(MainWindowSidebarController sidebarController, QueryPaneController queryPaneController,
+	public MainWindowController(StatusBarController statusBarController,
+			MainWindowSidebarController sidebarController, QueryPaneController queryPaneController,
 			ConnectDialogController connectDialogController, EditorController editorController) {
+		
+		this.statusBarController = statusBarController;
 		
 		this.sidebarController = sidebarController;
 		this.queryPaneController = queryPaneController;
@@ -60,9 +64,7 @@ public class MainWindowController implements Initializable{
 	
 
 	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		statusBar.getStyleClass().add("statusbar");
-		
+	public void initialize(URL location, ResourceBundle resources) {		
 		DatabaseController dbController = Main.getContext().getBean(DatabaseController.class);
 		
 		menuBarDisconnect.disableProperty().bind(Bindings
@@ -131,11 +133,11 @@ public class MainWindowController implements Initializable{
 
 	
 	public void postStatus(String status) {
-		statusBar.setText(status);
+		statusBarController.postStatus(status);
 	}
 	
 	public void clearStatus() {
-		statusBar.setText("");
+		statusBarController.clearStatus();
 	}
 
 

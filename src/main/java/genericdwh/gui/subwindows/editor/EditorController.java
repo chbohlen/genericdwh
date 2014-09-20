@@ -16,6 +16,8 @@ import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
 import genericdwh.dataobjects.unit.Unit;
 import genericdwh.gui.SpringFXMLLoader;
+import genericdwh.gui.general.StatusBarController;
+import genericdwh.gui.general.StatusMessage;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.subwindows.editor.editingview.EditingViewController;
 import genericdwh.gui.subwindows.editor.sidebar.EditorSidebarController;
@@ -39,6 +41,8 @@ public class EditorController implements Initializable{
 	
 	private ChangeManager changeManager;
 	
+	private StatusBarController statusBarController;
+	
 	private EditorSidebarController sidebarController;
 	private EditingViewController editingViewController;
 	
@@ -54,12 +58,16 @@ public class EditorController implements Initializable{
 	@FXML MenuItem miSave;
 	@FXML MenuItem miDiscard;
 		
-	public EditorController(ChangeManager changeManager, EditorSidebarController sidebarController, EditingViewController resultViewController,
+	public EditorController(ChangeManager changeManager,
+			StatusBarController statusBarController,
+			EditorSidebarController sidebarController, EditingViewController resultViewController,
 			SaveDialogController saveChangesDialogController, DiscardDialogController discardChangesDialogController,
 			SaveOrDiscardOnLoadDialogController saveOrDiscardOnLoadDialogController,
 			DeleteDialogController deleteObjectDialogController) {
 		
 		this.changeManager = changeManager;
+		
+		this.statusBarController = statusBarController;
 		
 		this.sidebarController = sidebarController;
 		this.editingViewController = resultViewController;
@@ -81,6 +89,7 @@ public class EditorController implements Initializable{
 			double height = Main.getContext().getBean(MainWindowController.class).getStage().getScene().getHeight() - 35;
 
 			Scene scene = new Scene(root, width, height);
+			scene.getStylesheets().add("/css/StatusBarStyle.css");
 			stage = new Stage();
 			stage.initModality(Modality.WINDOW_MODAL);
 			stage.initOwner(Main.getContext().getBean(MainWindowController.class).getStage().getScene().getWindow());
@@ -114,6 +123,7 @@ public class EditorController implements Initializable{
 		} else {
 			createEditorTreeTable(id);
 		}
+		clearStatus();
 	}
 	
 	public void createEditorTreeTable(int id) {
@@ -139,6 +149,7 @@ public class EditorController implements Initializable{
 	
 	public void saveChanges(int id) {
 		changeManager.saveChanges();
+		postStatus(StatusMessage.CHANGES_SAVED);
 		createEditorTreeTable(id);
 	}
 	
@@ -148,6 +159,7 @@ public class EditorController implements Initializable{
 	
 	public void discardChanges(int id) {
 		changeManager.discardChanges();
+		postStatus(StatusMessage.CHANGES_DISCARDED);
 		createEditorTreeTable(id);
 	}
 
@@ -203,5 +215,13 @@ public class EditorController implements Initializable{
 	
 	public void deleteObject(TreeItem<DataObject> tiObjToDelete) {
 		editingViewController.deleteObject(tiObjToDelete);
+	}
+	
+	private void postStatus(String status) {
+		statusBarController.postStatus(status);
+	}
+	
+	private void clearStatus() {
+		statusBarController.clearStatus();
 	}
 }

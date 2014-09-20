@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.general.StatusBarController">
+	<children>
+		<Separator AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+		<Label fx:id="lStatus" layoutY="1.0" prefHeight="25.0" alignment="CENTER_RIGHT" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" >
+			<padding>
+				<Insets right="10.0" />
+			</padding>
+		</Label>
+	</children>
+</AnchorPane>
+

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.web.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
@@ -31,11 +30,6 @@
 	   			<fx:include layoutX="230" source="QueryPane.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="230.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
    			</children>
 		</AnchorPane>
-     	<Separator layoutY="724.0" prefWidth="1000.0" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      	<Label fx:id="statusBar" alignment="CENTER_RIGHT" layoutY="725.0" maxHeight="25" minHeight="25.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-			<padding>
-			   <Insets right="10.0" />
-			</padding>
-      	</Label>
+		<fx:include layoutY="724.0" source="../general/StatusBar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
 	</children>
 </AnchorPane>
