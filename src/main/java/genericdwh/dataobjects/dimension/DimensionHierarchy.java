@@ -18,6 +18,17 @@ public class DimensionHierarchy extends DataObjectHierarchy<Dimension> {
 		super(levels);
 	}
 	
+	@Override
+	public void addLevel(Dimension level) {		
+		if (levels.isEmpty()) {
+			categoryId = level.getCategoryId();
+		}
+		levels.add(level);
+		
+		name = generateName(levels);
+	}
+	
+	@Override
 	public DimensionHierarchy clone() {
 		return new DimensionHierarchy(levels);
 	}

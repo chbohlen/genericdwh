@@ -6,9 +6,11 @@ import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import genericdwh.dataobjects.DataObject;
+import genericdwh.dataobjects.DataObjectCombination;
 import genericdwh.dataobjects.DataObjectHierarchy;
 import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionCategory;
+import genericdwh.dataobjects.dimension.DimensionCombination;
 import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.dimension.DimensionManager;
 import genericdwh.dataobjects.fact.Fact;
@@ -17,6 +19,7 @@ import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.ratio.RatioManager;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
+import genericdwh.dataobjects.referenceobject.ReferenceObjectCombination;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.dataobjects.unit.Unit;
@@ -32,13 +35,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
@@ -48,7 +47,6 @@ import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.text.Text;
-import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import javafx.util.converter.DefaultStringConverter;
 import javafx.util.converter.DoubleStringConverter;
@@ -72,10 +70,12 @@ public class EditingViewController implements Initializable {
 		DIMENSIONS_BY_CATEGORY(Dimension.class),
 		DIMENSION_HIERARCHIES(DimensionHierarchy.class),
 		DIMENSION_HIERARCHIES_BY_CATEGORY(DimensionHierarchy.class),
+		DIMENSION_COMBINATIONS(DimensionCombination.class),
 		REFERENCE_OBJECTS(ReferenceObject.class),
 		REFERENCE_OBJECTS_BY_DIMENSION(ReferenceObject.class),
 		REFERENCE_OBJECT_HIERARCHIES(ReferenceObjectHierarchy.class),
 		REFERENCE_OBJECT_HIERARCHIES_BY_CATEGORY(ReferenceObjectHierarchy.class),
+		REFERENCE_OBJECT_COMBINATIONS(ReferenceObjectCombination.class),
 		RATIOS(Ratio.class),
 		RATIOS_BY_CATEGORY(Ratio.class),
 		FACTS(Fact.class),
@@ -103,191 +103,11 @@ public class EditingViewController implements Initializable {
 			public TreeTableRow<DataObject> call(TreeTableView<DataObject> param) {
 				TreeTableRow<DataObject> treeTableRow = new TreeTableRow<>();
 				treeTableRow.setOnMouseClicked(new TreeTableRowRightClickHandler(editingView));
-				treeTableRow.setContextMenu(createContextMenu(treeTableRow));
+				treeTableRow.setContextMenu(new EditingViewContextMenu(treeTableRow));
 				return treeTableRow;
 			}
 		});
-	}
-	
-	
-	private ContextMenu createContextMenu(TreeTableRow<DataObject> treeTableRow) {
-		ContextMenu contextMenu = new ContextMenu();
-		
-		MenuItem expand = new MenuItem("Expand");
-		expand.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				editingView.getTreeItem(treeTableRow.getIndex()).setExpanded(true);
-            }
-        });
-		
-		MenuItem expandAll = new MenuItem("Expand All");
-		expandAll.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				expandAll(editingView.getRoot());
-            }
-        });
-		
-		MenuItem collapse = new MenuItem("Collapse");
-		collapse.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				editingView.getTreeItem(treeTableRow.getIndex()).setExpanded(false);
-            }
-        });
-		
-		MenuItem collapseAll = new MenuItem("Collapse All");
-		collapseAll.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				collapseAll(editingView.getRoot());
-            }
-        });
-				
-		MenuItem createObject = new MenuItem("Create Object");
-		createObject.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				createObject();
-            }
-        });
-		
-		MenuItem delete = new MenuItem("Delete Object");
-		delete.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				Main.getContext().getBean(EditorController.class).confirmDeletion(treeTableRow.getTreeItem());
-            }
-        });
-		
-		MenuItem createHierarchy = new MenuItem("Create Hierarchy");
-		createHierarchy.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				createObject();
-            }
-        });
-		
-		MenuItem deleteHierarchy = new MenuItem("Delete Hierarchy");
-		deleteHierarchy.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				Main.getContext().getBean(EditorController.class).confirmDeletion(treeTableRow.getTreeItem());
-            }
-        });
-		
-		MenuItem addChild = new MenuItem("Add Child");
-		addChild.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				addChild(editingView.getTreeItem(treeTableRow.getIndex()));
-            }
-        });
-		
-		MenuItem removeChild = new MenuItem("Remove Child");
-		removeChild.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-            public void handle(ActionEvent event) {
-				removeChild(editingView.getTreeItem(treeTableRow.getIndex()));
-            }
-        });
-		
-		SeparatorMenuItem separator = new SeparatorMenuItem();
-		
-		contextMenu.getItems().addAll(createObject, delete, createHierarchy, deleteHierarchy, addChild, removeChild, expand, collapse, expandAll, collapseAll);
-		
-		contextMenu.setOnShowing(new EventHandler<WindowEvent>() {
-			@Override
-			public void handle(WindowEvent event) {
-				createObject.setVisible(true);
-				delete.setVisible(false);
-				createHierarchy.setVisible(false);
-				deleteHierarchy.setVisible(false);
-				addChild.setVisible(false);
-				removeChild.setVisible(false);
-				contextMenu.getItems().remove(separator);
-				expand.setVisible(false);
-				collapse.setVisible(false);
-				expandAll.setVisible(false);
-				collapseAll.setVisible(false);
-				
-				if (!treeTableRow.isEmpty() && !(editingView.getTreeItem(treeTableRow.getIndex()) instanceof HeaderItem)) {
-					delete.setVisible(true);
-				}
-				
-				if (currEditingViewType == EditingViewType.DIMENSION_HIERARCHIES
-						|| currEditingViewType == EditingViewType.DIMENSION_HIERARCHIES_BY_CATEGORY
-						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES
-						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES_BY_CATEGORY) {
-					
-					createObject.setVisible(false);
-					delete.setVisible(false);
-					createHierarchy.setVisible(true);
-					deleteHierarchy.setVisible(true);
-					if (!treeTableRow.isEmpty()) {
-						addChild.setVisible(true);
-						removeChild.setVisible(true);
-					}
-				}
-				
-				if (editingView.getTreeItem(treeTableRow.getIndex()) instanceof HeaderItem
-						|| (!treeTableRow.isEmpty() && editingView.getTreeItem(treeTableRow.getIndex()).getValue() instanceof DataObjectHierarchy)) {
-					
-					if (editingView.getTreeItem(treeTableRow.getIndex()).isExpanded()) {
-						collapse.setVisible(true);
-					} else {
-						expand.setVisible(true);
-					}
-				}
-				
-				if (currEditingViewType == EditingViewType.DIMENSIONS_BY_CATEGORY
-						|| currEditingViewType == EditingViewType.REFERENCE_OBJECTS_BY_DIMENSION
-						|| currEditingViewType == EditingViewType.RATIOS_BY_CATEGORY
-						|| currEditingViewType == EditingViewType.FACTS_BY_RATIO
-						|| currEditingViewType == EditingViewType.FACTS_BY_REFERENCE_OBJECT
-						|| currEditingViewType == EditingViewType.DIMENSION_HIERARCHIES
-						|| currEditingViewType == EditingViewType.DIMENSION_HIERARCHIES_BY_CATEGORY
-						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES
-						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES_BY_CATEGORY) {
-					
-					if (!contextMenu.getItems().contains(separator)) {
-						int index;
-						if (currEditingViewType == EditingViewType.DIMENSION_HIERARCHIES
-								|| currEditingViewType == EditingViewType.DIMENSION_HIERARCHIES_BY_CATEGORY
-								|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES
-								|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES_BY_CATEGORY) {
-							
-							index = contextMenu.getItems().indexOf(removeChild);
-						} else {
-							index = contextMenu.getItems().indexOf(delete);
-						}
-						if (index != -1) {
-							contextMenu.getItems().add(index + 1, separator);
-						}
-					}
-					expandAll.setVisible(true);
-					collapseAll.setVisible(true);
-				}
-			}
-		});
-				
-		return contextMenu;
-	}
-	
-	
-	public void showEditingView() {
-		editingView.setVisible(true);
-		searchBoxController.showSearchBox();
-		
-		editingView.requestFocus();
-	}
-
-	public void hideEditingView() {
-		editingView.setVisible(false);
-		searchBoxController.hideSearchBox();
-	}
-	
+	}	
 
 	public void createEditorTreeTable(int id) {	
 		resetEditingView();
@@ -350,7 +170,9 @@ public class EditingViewController implements Initializable {
 			case DIMENSION_HIERARCHIES: {
 				setupDimensionHierarchiesTable();
 				
-				dimManager.initAll();
+				dimManager.initCategories();
+				dimManager.initDimensions();
+				dimManager.initHierarchies();
 				
 				for (DimensionHierarchy dimHierarchy : dimManager.getHierarchies()) {
 					DataObjectTreeItem tiDimHierarchy = new DataObjectTreeItem(dimHierarchy);
@@ -369,7 +191,9 @@ public class EditingViewController implements Initializable {
 			case DIMENSION_HIERARCHIES_BY_CATEGORY: {
 				setupDimensionHierarchiesTable();
 				
-				dimManager.initAll();
+				dimManager.initCategories();
+				dimManager.initDimensions();
+				dimManager.initHierarchies();
 				
 				tiHeaderMap = new TreeMap<>();
 				for (DimensionCategory cat : dimManager.getCategories().values()) {
@@ -399,6 +223,26 @@ public class EditingViewController implements Initializable {
 					
 				break;
 			}
+			case DIMENSION_COMBINATIONS: {
+				setupDimensionCombinationsTable();
+				
+				dimManager.loadCombinations();
+				dimManager.initDimensions();
+				dimManager.initCombinations();
+				
+				for (DimensionCombination dimCombination : dimManager.getCombinations()) {
+					DataObjectTreeItem tiDimCombination = new DataObjectTreeItem(dimCombination);
+					tiRoot.addChild(tiDimCombination);
+					
+					for (Dimension component : dimCombination.getComponents()) {
+						DataObjectTreeItem tiComponent = new DataObjectTreeItem(component);
+						tiDimCombination.addChild(tiComponent);
+					}
+				}
+				
+				break;
+				
+			}
 			case REFERENCE_OBJECTS: {
 				setupReferenceObjectsTable();
 				
@@ -407,7 +251,7 @@ public class EditingViewController implements Initializable {
 				refObjManager.initReferenceObjects();
 
 				for (ReferenceObject refObj : refObjManager.getReferenceObjects().values()) {
-					if (refObj.getDimensionId() == 0 || !dimManager.getDimension(refObj.getDimensionId()).isCombination()) {
+					if (refObj.getDimensionId() == 0 || !refObj.isCombination()) {
 						DataObjectTreeItem tiRefObj = new DataObjectTreeItem(refObj);
 						tiRoot.addChild(tiRefObj);
 					}
@@ -510,10 +354,32 @@ public class EditingViewController implements Initializable {
 					
 				break;
 			}
+			case REFERENCE_OBJECT_COMBINATIONS: {
+				setupReferenceObjectCombinationsTable();
+				
+				refObjManager.loadReferenceObjects();
+				refObjManager.initReferenceObjects();
+				refObjManager.loadCombinations();
+				refObjManager.initCombinations();
+				
+				for (ReferenceObjectCombination refObjCombination : refObjManager.getCombinations()) {
+					DataObjectTreeItem tiRefObjCombination = new DataObjectTreeItem(refObjCombination);
+					tiRoot.addChild(tiRefObjCombination);
+					
+					for (ReferenceObject component : refObjCombination.getComponents()) {
+						DataObjectTreeItem tiComponent = new DataObjectTreeItem(component);
+						tiRefObjCombination.addChild(tiComponent);
+					}
+				}
+				
+				break;
+				
+			}
 			case RATIOS: {
 				setupRatiosTable();
 				
-				ratioManager.initAll();
+				ratioManager.initCategories();
+				ratioManager.initRatios();
 				
 				for (Ratio ratio : ratioManager.getRatios().values()) {
 					DataObjectTreeItem tiRatio = new DataObjectTreeItem(ratio);
@@ -525,7 +391,8 @@ public class EditingViewController implements Initializable {
 			case RATIOS_BY_CATEGORY: {
 				setupRatiosTable();
 				
-				ratioManager.initAll();
+				ratioManager.initCategories();
+				ratioManager.initRatios();
 				
 				tiHeaderMap = new TreeMap<>();
 				for (RatioCategory cat : ratioManager.getCategories().values()) {
@@ -664,8 +531,6 @@ public class EditingViewController implements Initializable {
 	}
 	
 	
-
-	
 	private void setupDimensionsTable() {
 		TreeTableColumn<DataObject, String> colName = createNameCol();
 		colName.setCellValueFactory(new Callback<CellDataFeatures<DataObject, String>, ObservableValue<String>>() {
@@ -685,7 +550,6 @@ public class EditingViewController implements Initializable {
 		});
 	}
 	
-		
 	private void setupDimensionHierarchiesTable() {
 		TreeTableColumn<DataObject, String> colName = createNameCol();
 		colName.setCellValueFactory(new Callback<CellDataFeatures<DataObject, String>, ObservableValue<String>>() {
@@ -720,7 +584,30 @@ public class EditingViewController implements Initializable {
 		    }
 		});
 	}
-	
+
+	private void setupDimensionCombinationsTable() {
+		TreeTableColumn<DataObject, String> colName = createNameCol();
+		colName.setCellValueFactory(new Callback<CellDataFeatures<DataObject, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<DataObject, String> param) {
+				if (param.getValue().getValue() instanceof DimensionCombination) {
+					return param.getValue().getValue().getNameProperty();
+				} else {
+					return new SimpleStringProperty("Combination Component");
+				}
+			}
+		});
+		
+		TreeTableColumn<DataObject, Dimension> colComponent = createDimComponentCol();
+		colComponent.setCellValueFactory(new Callback<CellDataFeatures<DataObject, Dimension>, ObservableValue<Dimension>>() {
+			public ObservableValue<Dimension> call(CellDataFeatures<DataObject, Dimension> param) {
+				if (param.getValue().getValue() instanceof DimensionCombination) {
+					return new SimpleObjectProperty<Dimension>(null);
+				} else {
+					return new SimpleObjectProperty<Dimension>((Dimension)param.getValue().getValue());
+				}
+			}
+		});
+	}
 	
 	private void setupReferenceObjectsTable() {
 		TreeTableColumn<DataObject, String> colName = createNameCol();
@@ -740,7 +627,6 @@ public class EditingViewController implements Initializable {
 		    }
 		});
 	}
-	
 	
 	private void setupReferenceObjectHierarchiesTable() {
 		TreeTableColumn<DataObject, String> colName = createNameCol();
@@ -777,7 +663,30 @@ public class EditingViewController implements Initializable {
 		});
 	}
 	
+	private void setupReferenceObjectCombinationsTable() {
+		TreeTableColumn<DataObject, String> colName = createNameCol();
+		colName.setCellValueFactory(new Callback<CellDataFeatures<DataObject, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<DataObject, String> param) {
+				if (param.getValue().getValue() instanceof ReferenceObjectCombination) {
+					return param.getValue().getValue().getNameProperty();
+				} else {
+					return new SimpleStringProperty("Combination Component");
+				}
+			}
+		});
 		
+		TreeTableColumn<DataObject, ReferenceObject> colComponent = createRefObjComponentCol();
+		colComponent.setCellValueFactory(new Callback<CellDataFeatures<DataObject, ReferenceObject>, ObservableValue<ReferenceObject>>() {
+			public ObservableValue<ReferenceObject> call(CellDataFeatures<DataObject, ReferenceObject> param) {
+				if (param.getValue().getValue() instanceof ReferenceObjectCombination) {
+					return new SimpleObjectProperty<ReferenceObject>(null);
+				} else {
+					return new SimpleObjectProperty<ReferenceObject>((ReferenceObject)param.getValue().getValue());
+				}
+			}
+		});
+	}
+	
 	private void setupRatiosTable() {
 		TreeTableColumn<DataObject, String> colName = createNameCol();
 		colName.setCellValueFactory(new Callback<CellDataFeatures<DataObject, String>, ObservableValue<String>>() {
@@ -797,7 +706,6 @@ public class EditingViewController implements Initializable {
 		});		
 	}
 	
-		
 	private void setupFactsTable() {
 		TreeTableColumn<DataObject, Ratio> colRatio = createRatioCol();
 		colRatio.setCellValueFactory(new Callback<CellDataFeatures<DataObject, Ratio>, ObservableValue<Ratio>>() {
@@ -841,7 +749,6 @@ public class EditingViewController implements Initializable {
 		});	
 	}
 	
-	
 	private void setupDimCategoriesTable() {
 		TreeTableColumn<DataObject, String> colName = createNameCol();
 		colName.setCellValueFactory(new Callback<CellDataFeatures<DataObject, String>, ObservableValue<String>>() {
@@ -851,7 +758,6 @@ public class EditingViewController implements Initializable {
 		});
 	}
 	
-	
 	private void setupRatioCategoriesTable() {
 		TreeTableColumn<DataObject, String> colName = createNameCol();
 		colName.setCellValueFactory(new Callback<CellDataFeatures<DataObject, String>, ObservableValue<String>>() {
@@ -860,7 +766,6 @@ public class EditingViewController implements Initializable {
 		    }
 		});
 	}
-	
 	
 	private void setupUnitsTable() {
 		TreeTableColumn<DataObject, String> colName = createNameCol();
@@ -881,8 +786,6 @@ public class EditingViewController implements Initializable {
 		});		
 	}
 	
-	
-
 
 	private TreeTableColumn<DataObject, String> createNameCol() {
 		TreeTableColumn<DataObject, String> colName = new TreeTableColumn<>("Name");
@@ -919,7 +822,6 @@ public class EditingViewController implements Initializable {
 		return colName;
 	}
 	
-		
 	private TreeTableColumn<DataObject, DimensionCategory> createDimCategoryCol() {
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 
@@ -967,7 +869,6 @@ public class EditingViewController implements Initializable {
 		return colCategory;
 	}
 	
-	
 	private TreeTableColumn<DataObject, Dimension> createDimLevelCol() {
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 
@@ -996,7 +897,7 @@ public class EditingViewController implements Initializable {
                 	Dimension newLevel = event.getNewValue();
                 	Dimension oldLevel = event.getOldValue();
                 	
-                	if (newLevel != oldLevel) {
+                	if (!dimHierarchy.getLevelsProperty().get().contains(newLevel)) {
                     	if (dimHierarchy.getLevelsProperty().get().contains(oldLevel)) {
                     		int oldIndex = dimHierarchy.getLevelsProperty().get().indexOf(oldLevel);
                     		dimHierarchy.getLevelsProperty().get().add(oldIndex, newLevel);
@@ -1032,7 +933,56 @@ public class EditingViewController implements Initializable {
 		return colLevel;
 	}
 	
+	private TreeTableColumn<DataObject, Dimension> createDimComponentCol() {
+		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
+
+		TreeTableColumn<DataObject, Dimension> colComponent = new TreeTableColumn<>("Component Dimension");
+		colComponent.setPrefWidth(235);
 		
+		colComponent.setCellFactory(new Callback<TreeTableColumn<DataObject, Dimension>,TreeTableCell<DataObject, Dimension>>() {
+			@Override
+			public TreeTableCell<DataObject, Dimension> call(TreeTableColumn<DataObject, Dimension> param) {
+				ObservableList<Dimension> dims = FXCollections.observableArrayList();
+				for (Dimension dim : dimManager.getDimensions().values()) {
+					if (!dim.isCombination()) {
+						dims.add(dim);
+					}
+				}
+				return new DataObjectCBTreeTableCell<Dimension>(dims);
+			}
+		});
+		
+		colComponent.setOnEditCommit(new EventHandler<CellEditEvent<DataObject, Dimension>>() {
+            @Override
+            public void handle(CellEditEvent<DataObject, Dimension> event) {
+                if (event.getEventType() == TreeTableColumn.editCommitEvent()) {
+                	TreeItem<DataObject> tiComponent = event.getRowValue();
+                	TreeItem<DataObject> tiCombination = tiComponent.getParent();
+                	DimensionCombination combination = (DimensionCombination)tiCombination.getValue();
+                	Dimension newComponent = event.getNewValue();
+                	Dimension oldComponent = event.getOldValue();
+                	
+                	if (!combination.getComponentsProperty().get().contains(newComponent)) {
+                    	int oldIndex = combination.getComponentsProperty().get().indexOf(oldComponent);
+                    	combination.getComponentsProperty().get().add(oldIndex, newComponent);
+                    	combination.getComponentsProperty().get().remove(oldComponent);
+                    	combination.setNameProperty(combination.generateName(combination.getComponentsProperty().get()));
+                    	
+                    	Main.getContext().getBean(EditorController.class).stageUpdate(combination);
+                    	hasUnsavedChanges.set(true);
+                    	editingView.requestFocus();
+                	}
+                	
+                	focus(tiComponent);
+                }
+            }
+        });
+
+		editingView.getColumns().add(colComponent);
+		
+		return colComponent;
+	}
+	
 	private TreeTableColumn<DataObject, Dimension> createDimensionCol() {
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 		
@@ -1109,7 +1059,7 @@ public class EditingViewController implements Initializable {
                 	ReferenceObject newLevel = event.getNewValue();
                 	ReferenceObject oldLevel = event.getOldValue();
                 	
-                	if (newLevel != oldLevel) {
+                	if (!refObjHierarchy.getLevelsProperty().get().contains(newLevel)) {
                     	if (refObjHierarchy.getLevelsProperty().get().contains(oldLevel)) {
                     		int oldIndex = refObjHierarchy.getLevelsProperty().get().indexOf(oldLevel);
                     		refObjHierarchy.getLevelsProperty().get().add(oldIndex, newLevel);
@@ -1145,6 +1095,55 @@ public class EditingViewController implements Initializable {
 		return colLevel;
 	}
 	
+	private TreeTableColumn<DataObject, ReferenceObject> createRefObjComponentCol() {
+		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
+
+		TreeTableColumn<DataObject, ReferenceObject> colComponent = new TreeTableColumn<>("Component Reference Object");
+		colComponent.setPrefWidth(235);
+		
+		colComponent.setCellFactory(new Callback<TreeTableColumn<DataObject, ReferenceObject>,TreeTableCell<DataObject, ReferenceObject>>() {
+			@Override
+			public TreeTableCell<DataObject, ReferenceObject> call(TreeTableColumn<DataObject, ReferenceObject> param) {
+				ObservableList<ReferenceObject> refObjs = FXCollections.observableArrayList();
+				for (ReferenceObject refObj : refObjManager.getReferenceObjects().values()) {
+					if (!refObj.isCombination()) {
+						refObjs.add(refObj);
+					}
+				}
+				return new DataObjectCBTreeTableCell<ReferenceObject>(refObjs);
+			}
+		});
+		
+		colComponent.setOnEditCommit(new EventHandler<CellEditEvent<DataObject, ReferenceObject>>() {
+            @Override
+            public void handle(CellEditEvent<DataObject, ReferenceObject> event) {
+                if (event.getEventType() == TreeTableColumn.editCommitEvent()) {
+                	TreeItem<DataObject> tiComponent = event.getRowValue();
+                	TreeItem<DataObject> tiCombination = tiComponent.getParent();
+                	ReferenceObjectCombination combination = (ReferenceObjectCombination)tiCombination.getValue();
+                	ReferenceObject newComponent = event.getNewValue();
+                	ReferenceObject oldComponent = event.getOldValue();
+                	
+                	if (!combination.getComponentsProperty().get().contains(newComponent)) {
+                    	int oldIndex = combination.getComponentsProperty().get().indexOf(oldComponent);
+                    	combination.getComponentsProperty().get().add(oldIndex, newComponent);
+                    	combination.getComponentsProperty().get().remove(oldComponent);
+                    	combination.setNameProperty(combination.generateName(combination.getComponentsProperty().get()));
+                    	
+                    	Main.getContext().getBean(EditorController.class).stageUpdate(combination);
+                    	hasUnsavedChanges.set(true);
+                    	editingView.requestFocus();
+                	}
+                	
+                	focus(tiComponent);
+                }
+            }
+        });
+
+		editingView.getColumns().add(colComponent);
+		
+		return colComponent;
+	}
 	
 	private TreeTableColumn<DataObject, RatioCategory> createRatioCategoryCol() {
 		RatioManager ratioManager = Main.getContext().getBean(RatioManager.class);
@@ -1191,7 +1190,6 @@ public class EditingViewController implements Initializable {
 		
 		return colCategory;
 	}
-	
 	
 	private TreeTableColumn<DataObject, Ratio> createRatioCol() {
 		RatioManager ratioManager = Main.getContext().getBean(RatioManager.class);
@@ -1279,7 +1277,6 @@ public class EditingViewController implements Initializable {
 		return colRefObj;
 	}
 	
-	
 	private TreeTableColumn<DataObject, Double> createValueCol() {
 		TreeTableColumn<DataObject, Double> colValue = new TreeTableColumn<>("Value");
 		colValue.setPrefWidth(235);
@@ -1314,7 +1311,6 @@ public class EditingViewController implements Initializable {
 		
 		return colValue;
 	}
-	
 	
 	private TreeTableColumn<DataObject, Unit> createUnitCol() {
 		UnitManager unitManager = Main.getContext().getBean(UnitManager.class);
@@ -1354,7 +1350,6 @@ public class EditingViewController implements Initializable {
 		return colUnit;
 	}
 	
-	
 	private TreeTableColumn<DataObject, String> createSymbolCol() {
 		TreeTableColumn<DataObject, String> colSymbol = new TreeTableColumn<>("Symbol");
 		colSymbol.setPrefWidth(235);
@@ -1389,55 +1384,9 @@ public class EditingViewController implements Initializable {
 		
 		return colSymbol;
 	}
-	
-	
-	
-	
-	private void resetEditingView() {
-		currEditingViewType = null;
 		
-		editingView.setPlaceholder(new Text(""));
-		editingView.getColumns().clear();
-		editingView.setRoot(null);
-		editingView.setShowRoot(false);
-		editingView.setEditable(true);
 		
-		hasUnsavedChanges.set(false);
-		
-		searchBoxController.resetSearchBox(true);
-	}
-	
-	
-	
-	
-	private void changeParent(TreeItem<DataObject> ti, long id) {
-		removeFromParent(ti);
-		addToParent(ti, tiHeaderMap.get(id));
-	}
-	
-	
-	
-	
-	private void removeFromParent(TreeItem<DataObject> ti) {
-		TreeItem<DataObject> parent = ti.getParent();
-		ti.getParent().getChildren().remove(ti);
-		if (parent.getChildren().isEmpty()) {
-			parent.getParent().getChildren().remove(parent);
-		}
-	}
-	
-	
-	private void addToParent(TreeItem<DataObject> ti, DataObjectTreeItem newParent) {
-		if (!editingView.getRoot().getChildren().contains(newParent)) {
-			editingView.getRoot().getChildren().add(newParent);
-		}
-    	newParent.getChildren().add(ti);
-	}
-	
-	
-	
-	
-	private void createObject() {
+	public void createObject() {
 		DataObject newObj = Main.getContext().getBean(EditorController.class).createObject(currEditingViewType.objectClass);
 		newObj.initProperties();
 		DataObjectTreeItem tiNewObj = new DataObjectTreeItem(newObj);
@@ -1460,7 +1409,6 @@ public class EditingViewController implements Initializable {
     	
     	focus(tiNewObj);
 	}
-	
  
 	public void deleteObject(TreeItem<DataObject> tiObj) {
 		removeFromParent(tiObj);
@@ -1471,16 +1419,19 @@ public class EditingViewController implements Initializable {
 	}
 	
 	
-	
-	private void addChild(TreeItem<DataObject> tiCurrChild) {
+	public void addChild(TreeItem<DataObject> tiCurrChild) {
 		DataObject newChild = null;
-		if (currEditingViewType.objectClass == DimensionHierarchy.class) {
+		if (currEditingViewType == EditingViewType.DIMENSION_HIERARCHIES
+				|| currEditingViewType == EditingViewType.DIMENSION_HIERARCHIES_BY_CATEGORY) {
+			
 			newChild = Main.getContext().getBean(EditorController.class).createObject(Dimension.class);
-		} else if (currEditingViewType.objectClass == ReferenceObjectHierarchy.class) {
+		} else if (currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES
+				|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES_BY_CATEGORY) {
+			
 			newChild = Main.getContext().getBean(EditorController.class).createObject(ReferenceObject.class);
 		}
-		 
 		newChild.initProperties();
+		
 		DataObjectTreeItem tiNewLevel = new DataObjectTreeItem(newChild);
 		@SuppressWarnings("unchecked")
 		DataObjectHierarchy<DataObject> hierarchy = (DataObjectHierarchy<DataObject>)getHierarchyTreeItem(tiCurrChild).getValue();
@@ -1541,17 +1492,62 @@ public class EditingViewController implements Initializable {
 	}
 	
 	
+	public void addComponent(TreeItem<DataObject> tiCurrComponent) {
+		DataObject newComponent = null;
+		if (currEditingViewType == EditingViewType.DIMENSION_COMBINATIONS) {
+			newComponent = Main.getContext().getBean(EditorController.class).createObject(Dimension.class);
+		} else if (currEditingViewType == EditingViewType.REFERENCE_OBJECT_COMBINATIONS) {
+			newComponent = Main.getContext().getBean(EditorController.class).createObject(ReferenceObject.class);
+		}
+		newComponent.initProperties();
+		
+		TreeItem<DataObject> tiCombination = null;
+		if (tiCurrComponent.getValue() instanceof DataObjectCombination) {
+			tiCombination = tiCurrComponent;
+		} else {
+			tiCombination = tiCurrComponent.getParent();
+		}
+		 
+		@SuppressWarnings("unchecked")
+		DataObjectCombination<DataObject> combination = (DataObjectCombination<DataObject>)tiCombination.getValue();
+		
+		DataObjectTreeItem tiNewComponent = new DataObjectTreeItem(newComponent);
+		tiCombination.getChildren().add(tiNewComponent);
+		tiCombination.setExpanded(true);
+		
+		combination.getComponentsProperty().get().add(newComponent);
+		combination.setNameProperty(combination.generateName(combination.getComponentsProperty().get()));
+		
+    	Main.getContext().getBean(EditorController.class).stageUpdate(combination);		
+    	hasUnsavedChanges.set(true);
+    	
+    	focus(tiNewComponent);
+	}
 
+	public void removeComponent(TreeItem<DataObject> tiCurrComponent) {
+		TreeItem<DataObject> tiCombination = tiCurrComponent.getParent();
+		@SuppressWarnings("unchecked")
+		DataObjectCombination<DataObject> combination = (DataObjectCombination<DataObject>)tiCombination.getValue();
 	
-	private void expandAll(TreeItem<DataObject> root) {
+		tiCombination.getChildren().remove(tiCurrComponent);
+		
+		DataObject currComponent = tiCurrComponent.getValue();
+		combination.getComponentsProperty().get().remove(currComponent);
+		combination.setNameProperty(combination.generateName(combination.getComponentsProperty().get()));
+		
+    	Main.getContext().getBean(EditorController.class).stageUpdate(combination);		
+    	hasUnsavedChanges.set(true);
+    	editingView.requestFocus();
+	}
+	
+	
+	public void expandAll(TreeItem<DataObject> root) {
 		expandCollapseAll(root, true);
 	}
 	
-	
-	private void collapseAll(TreeItem<DataObject> root) {
+	public void collapseAll(TreeItem<DataObject> root) {
 		expandCollapseAll(root, false);
 	}
-	
 	
 	private void expandCollapseAll(TreeItem<DataObject> root, boolean expand) {
 		LinkedList<TreeItem<DataObject>> queue = new LinkedList<>();
@@ -1562,8 +1558,6 @@ public class EditingViewController implements Initializable {
 			queue.addAll(currNode.getChildren());
 		}
 	}
-	
-	
 	
 	
 	private TreeItem<DataObject> getHierarchyTreeItem(TreeItem<DataObject> tiCurrLevel) {
@@ -1580,7 +1574,53 @@ public class EditingViewController implements Initializable {
     	return currParent;
 	}
 	
+	private void changeParent(TreeItem<DataObject> ti, long id) {
+		removeFromParent(ti);
+		addToParent(ti, tiHeaderMap.get(id));
+	}
 	
+	private void removeFromParent(TreeItem<DataObject> ti) {
+		TreeItem<DataObject> parent = ti.getParent();
+		ti.getParent().getChildren().remove(ti);
+		if (parent.getChildren().isEmpty()) {
+			parent.getParent().getChildren().remove(parent);
+		}
+	}
+	
+	private void addToParent(TreeItem<DataObject> ti, DataObjectTreeItem newParent) {
+		if (!editingView.getRoot().getChildren().contains(newParent)) {
+			editingView.getRoot().getChildren().add(newParent);
+		}
+    	newParent.getChildren().add(ti);
+	}
+	
+	
+	public void showEditingView() {
+		editingView.setVisible(true);
+		searchBoxController.showSearchBox();
+		
+		editingView.requestFocus();
+	}
+
+	public void hideEditingView() {
+		editingView.setVisible(false);
+		searchBoxController.hideSearchBox();
+	}
+	
+	
+	private void resetEditingView() {
+		currEditingViewType = null;
+		
+		editingView.setPlaceholder(new Text(""));
+		editingView.getColumns().clear();
+		editingView.setRoot(null);
+		editingView.setShowRoot(false);
+		editingView.setEditable(true);
+		
+		hasUnsavedChanges.set(false);
+		
+		searchBoxController.resetSearchBox(true);
+	}
 	
 	private void focus(TreeItem<DataObject> ti) {
 		int row = editingView.getRow(ti);
@@ -1588,5 +1628,4 @@ public class EditingViewController implements Initializable {
 		editingView.getFocusModel().focus(row);
 		editingView.scrollTo(row);
 	}
-
 }

@@ -18,7 +18,7 @@ import lombok.Setter;
 public class ReferenceObject extends DataObject {
 	
 	@Getter @Setter private long dimensionId;
-	@Getter private BooleanProperty isCombination = new SimpleBooleanProperty(false);
+	private BooleanProperty isCombination = new SimpleBooleanProperty(false);
 	public void setIsCombination(boolean value) { isCombination.set(value); };
 	
 	@Getter @Setter private List<Long> childrenIds;
@@ -49,6 +49,14 @@ public class ReferenceObject extends DataObject {
 			setIsCombination(true);
 		}
 		components.add(newComponent);
+	}
+	
+	public void clearComponents() {
+		components.clear();
+	}
+	
+	public boolean isCombination() {
+		return isCombination.get();
 	}
 	
 	@Override

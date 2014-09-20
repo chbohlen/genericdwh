@@ -30,7 +30,7 @@
       </TableView>
       <ScrollPane layoutX="200.0" pannable="true" prefHeight="700.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
-            <VBox fx:id="resultGridContainer" minHeight="695.0" minWidth="595.0" />
+            <VBox fx:id="resultGridContainer" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" minHeight="695.0" minWidth="595.0" />
          </content>
       </ScrollPane>
       <HBox layoutY="607.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.bottomAnchor="15.0">

@@ -4,11 +4,13 @@ import java.util.List;
 
 import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionCategory;
+import genericdwh.dataobjects.dimension.DimensionCombination;
 import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.fact.Fact;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
+import genericdwh.dataobjects.referenceobject.ReferenceObjectCombination;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
 import genericdwh.dataobjects.unit.Unit;
 
@@ -22,6 +24,10 @@ public interface DatabaseWriter {
 	public void updateDimensionHierarchies(List<DimensionHierarchy> updates);
 	public void deleteDimensionHierarchies(List<DimensionHierarchy> deletions);
 	
+	public void createDimensionCombinations(List<DimensionCombination> creations);
+	public void updateDimensionCombinations(List<DimensionCombination> updates);
+	public void deleteDimensionCombinations(List<DimensionCombination> deletions);
+	
 	public void createReferenceObjects(List<ReferenceObject> creations);
 	public void updateReferenceObjects(List<ReferenceObject> updates);
 	public void deleteReferenceObjects(List<ReferenceObject> deletions);
@@ -29,6 +35,10 @@ public interface DatabaseWriter {
 	public void createReferenceObjectHierarchies(List<ReferenceObjectHierarchy> creations);
 	public void updateReferenceObjectHierarchies(List<ReferenceObjectHierarchy> updates);
 	public void deleteReferenceObjectHierarchies(List<ReferenceObjectHierarchy> deletions);
+	
+	public void createReferenceObjectCombinations(List<ReferenceObjectCombination> creations);
+	public void updateReferenceObjectCombinations(List<ReferenceObjectCombination> updates);
+	public void deleteReferenceObjectCombinations(List<ReferenceObjectCombination> deletions);
 	
 	public void createRatios(List<Ratio> creations);
 	public void updateRatios(List<Ratio> updates);

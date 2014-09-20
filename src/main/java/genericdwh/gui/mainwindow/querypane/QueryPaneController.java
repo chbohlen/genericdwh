@@ -266,16 +266,19 @@ public class QueryPaneController implements Initializable {
 		
 		DataObject draggedDataObject = Main.getContext().getBean(MainWindowController.class).getDraggedDataObject();
 		if (draggedDataObject != null) {
-			Object source = event.getGestureSource();			
-			if (source instanceof TableView) {
+			Object gestureSource = event.getGestureSource();			
+			if (gestureSource instanceof TableView) {
 				@SuppressWarnings("unchecked")
-				TableView<DataObject> tvSource = (TableView<DataObject>)source;
+				TableView<DataObject> tvSource = (TableView<DataObject>)gestureSource;
 				tvSource.getItems().remove(draggedDataObject);
 			}
 			
-			@SuppressWarnings("unchecked")
-			TableView<DataObject> tvTarget= (TableView<DataObject>)event.getGestureTarget();
-			tvTarget.getItems().add(draggedDataObject);
+			Object gestureTarget = event.getGestureTarget();
+			if (gestureTarget instanceof TableView) {
+				@SuppressWarnings("unchecked")
+				TableView<DataObject> tvTarget = (TableView<DataObject>)gestureTarget;
+				tvTarget.getItems().add(draggedDataObject);
+			}
 
 			completed = true;
 		}
@@ -289,26 +292,26 @@ public class QueryPaneController implements Initializable {
 	@FXML public void onDragOverHandler(DragEvent event) {
 		DataObject draggedDataObject = Main.getContext().getBean(MainWindowController.class).getDraggedDataObject();
 		if (draggedDataObject != null) {
-			@SuppressWarnings("unchecked")
-			TableView<DataObject> tvSource = (TableView<DataObject>)event.getSource();
-
-			if ((tvSource != tvRatios && draggedDataObject instanceof Ratio)
-				|| (tvSource == tvRatios && !(draggedDataObject instanceof Ratio))
-				|| (tvSource == tvFilters && !(draggedDataObject instanceof ReferenceObject))) {
+			Object source = event.getSource();
+			Object gestureSource = event.getGestureSource();
+			if ((source != tvRatios && draggedDataObject instanceof Ratio)
+				|| (source == tvRatios && !(draggedDataObject instanceof Ratio))
+				|| (source == tvFilters && !(draggedDataObject instanceof ReferenceObject))) {
 				event.consume();
 				return;
 			}
 			
-			if (!(event.getGestureSource() instanceof TableView)
+			if (!(gestureSource instanceof TableView)
 					&& (tvRatios.getItems().contains(draggedDataObject)
 						|| tvRowDims.getItems().contains(draggedDataObject)
 						|| tvColDims.getItems().contains(draggedDataObject)
 						|| tvFilters.getItems().contains(draggedDataObject))) {
+				
 				event.consume();
 				return;
 			}
 			
-			if (event.getGestureSource() == event.getSource()) {
+			if (source == gestureSource) {
 				event.consume();
 				return;
 			}

@@ -45,48 +45,58 @@ public class EditorSidebarController implements Initializable {
 		tiDimHierarchies.addChild(tiDimHierarchiesByCat);
 		
 		
-		HeaderItem tiRefObjs = new HeaderItem("Reference Objects", 4, true, true);
+		HeaderItem tiDimCombinations = new HeaderItem("Dimension Combinations", 4, true, true);
+		tiDimCombinations.setExpanded(true);
+		tiRoot.addChild(tiDimCombinations);
+		
+		
+		HeaderItem tiRefObjs = new HeaderItem("Reference Objects", 5, true, true);
 		tiRefObjs.setExpanded(true);		
 		tiRoot.addChild(tiRefObjs);
 		
-		HeaderItem tiRefObjsByDim = new HeaderItem("By Dimension", 5, true, true);
+		HeaderItem tiRefObjsByDim = new HeaderItem("By Dimension", 6, true, true);
 		tiRefObjs.addChild(tiRefObjsByDim);
 		
 		
-		HeaderItem tiRefObjHierarchies = new HeaderItem("Reference Object Hierarchies", 6, true, true);
+		HeaderItem tiRefObjHierarchies = new HeaderItem("Reference Object Hierarchies", 7, true, true);
 		tiRefObjHierarchies.setExpanded(true);		
 		tiRoot.addChild(tiRefObjHierarchies);
 		
-		HeaderItem tiRefObjHierarchiesByCat = new HeaderItem("By Category", 7, true, true);
+		HeaderItem tiRefObjHierarchiesByCat = new HeaderItem("By Category", 8, true, true);
 		tiRefObjHierarchies.addChild(tiRefObjHierarchiesByCat);
 		
 		
-		HeaderItem tiRatios = new HeaderItem("Ratios", 8, true, true);
+		HeaderItem tiRefObjCombinations = new HeaderItem("Reference Object Combinations", 9, true, true);
+		tiRefObjCombinations.setExpanded(true);
+		tiRoot.addChild(tiRefObjCombinations);
+		
+		
+		HeaderItem tiRatios = new HeaderItem("Ratios", 10, true, true);
 		tiRatios.setExpanded(true);		
 		tiRoot.addChild(tiRatios);
 		
-		HeaderItem tiRatiosByCat = new HeaderItem("By Category", 9, true, true);
+		HeaderItem tiRatiosByCat = new HeaderItem("By Category", 11, true, true);
 		tiRatios.addChild(tiRatiosByCat);
 		
 		
-		HeaderItem tiFacts = new HeaderItem("Facts", 10, true, true);
+		HeaderItem tiFacts = new HeaderItem("Facts", 12, true, true);
 		tiFacts.setExpanded(true);		
 		tiRoot.addChild(tiFacts);
 		
-		HeaderItem tiFactsByRatio = new HeaderItem("By Ratio", 11, true, true);
+		HeaderItem tiFactsByRatio = new HeaderItem("By Ratio", 13, true, true);
 		tiFacts.addChild(tiFactsByRatio);
 		
-		HeaderItem tiFactsByReferenceObject = new HeaderItem("By Reference Object", 12, true, true);
+		HeaderItem tiFactsByReferenceObject = new HeaderItem("By Reference Object", 14, true, true);
 		tiFacts.addChild(tiFactsByReferenceObject);
 		
 		
-		HeaderItem tiDimCats = new HeaderItem("Dimension Categories", 13, true, true);
+		HeaderItem tiDimCats = new HeaderItem("Dimension Categories", 15, true, true);
 		tiRoot.addChild(tiDimCats);
 		
-		HeaderItem tiRefObjCats = new HeaderItem("Ratio Categories", 14, true, true);
+		HeaderItem tiRefObjCats = new HeaderItem("Ratio Categories", 16, true, true);
 		tiRoot.addChild(tiRefObjCats);
 		
-		HeaderItem tiUnits = new HeaderItem ("Units", 15, true, true);
+		HeaderItem tiUnits = new HeaderItem ("Units", 17, true, true);
 		tiRoot.addChild(tiUnits);
 	}
 

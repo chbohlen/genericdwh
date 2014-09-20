@@ -2,9 +2,11 @@ package genericdwh.db;
 
 import static genericdwh.db.model.tables.DimensionCategories.DIMENSION_CATEGORIES;
 import static genericdwh.db.model.tables.Dimensions.DIMENSIONS;
+import static genericdwh.db.model.tables.DimensionCombinations.DIMENSION_COMBINATIONS;
 import static genericdwh.db.model.tables.DimensionHierarchies.DIMENSION_HIERARCHIES;
 import static genericdwh.db.model.tables.RatioCategories.RATIO_CATEGORIES;
 import static genericdwh.db.model.tables.ReferenceObjects.REFERENCE_OBJECTS;
+import static genericdwh.db.model.tables.ReferenceObjectCombinations.REFERENCE_OBJECT_COMBINATIONS;
 import static genericdwh.db.model.tables.ReferenceObjectHierarchies.REFERENCE_OBJECT_HIERARCHIES;
 import static genericdwh.db.model.tables.Ratios.RATIOS;
 import static genericdwh.db.model.tables.FactUnits.FACT_UNITS;
@@ -15,11 +17,13 @@ import java.util.List;
 
 import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionCategory;
+import genericdwh.dataobjects.dimension.DimensionCombination;
 import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.fact.Fact;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
+import genericdwh.dataobjects.referenceobject.ReferenceObjectCombination;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
 import genericdwh.dataobjects.unit.Unit;
 import lombok.Setter;
@@ -409,6 +413,260 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 
 	
 	@Override
+	public void createDimensionCombinations(List<DimensionCombination> creations) {
+		Connection con = null;
+		try {
+			con = dslContext.configuration().connectionProvider().acquire();
+			con.setAutoCommit(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		for (DimensionCombination combination : creations) {
+			dslContext
+				.insertInto(DIMENSIONS, DIMENSIONS.NAME)
+				.values(combination.getNameProperty().get())
+				.execute();
+			
+			try {
+				con.commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			long lastID = dslContext.lastID().longValue();
+			
+			try {
+				con.commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+					
+			List<Dimension> components = combination.getComponentsProperty().get();
+			for (int i = 0; i < components.size(); i++) {
+				dslContext
+					.insertInto(DIMENSION_COMBINATIONS, DIMENSION_COMBINATIONS.AGGREGATE_ID, DIMENSION_COMBINATIONS.COMPONENT_ID)
+					.values(lastID, components.get(i).getId())
+					.execute();
+			}
+		}
+		
+		try {
+			con.setAutoCommit(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void updateDimensionCombinations(List<DimensionCombination> updates) {
+		Connection con = null;
+		try {
+			con = dslContext.configuration().connectionProvider().acquire();
+			con.setAutoCommit(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		for (DimensionCombination combination : updates) {
+			List<Dimension> components = combination.getComponents();
+			List<Dimension> changedComponents = combination.getComponentsProperty().get();
+			if (components.size() <= changedComponents.size()) {
+				int i = 0;
+				for (; i < components.size(); i++) {
+					dslContext
+						.update(DIMENSION_COMBINATIONS)
+						.set(DIMENSION_COMBINATIONS.COMPONENT_ID, changedComponents.get(i).getId())
+						.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
+							.and(DIMENSION_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())))
+						.execute();
+				}
+				for (; i < changedComponents.size(); i++) {
+					dslContext
+						.insertInto(DIMENSION_COMBINATIONS, DIMENSION_COMBINATIONS.AGGREGATE_ID, DIMENSION_COMBINATIONS.COMPONENT_ID)
+						.values(combination.getCombination().getId(), changedComponents.get(i).getId())
+						.execute();
+				}
+			} else {
+				int i = 0;
+				for (; i < changedComponents.size(); i++) {
+					dslContext
+						.update(DIMENSION_COMBINATIONS)
+						.set(DIMENSION_COMBINATIONS.COMPONENT_ID, changedComponents.get(i).getId())
+						.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
+							.and(DIMENSION_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())))
+						.execute();
+				}
+				for (; i < components.size(); i++) {
+					dslContext
+						.delete(DIMENSION_COMBINATIONS)
+						.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
+							.and(DIMENSION_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())))
+						.execute();
+				}
+			}
+		}
+		
+		try {
+			con.setAutoCommit(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void deleteDimensionCombinations(List<DimensionCombination> deletions) {
+		Connection con = null;
+		try {
+			con = dslContext.configuration().connectionProvider().acquire();
+			con.setAutoCommit(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		for (DimensionCombination combination : deletions) {
+			dslContext
+				.delete(DIMENSION_COMBINATIONS)
+				.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId()))
+				.execute();
+		}
+		
+		try {
+			con.setAutoCommit(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	@Override
+	public void createReferenceObjectCombinations(List<ReferenceObjectCombination> creations) {
+		Connection con = null;
+		try {
+			con = dslContext.configuration().connectionProvider().acquire();
+			con.setAutoCommit(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		for (ReferenceObjectCombination combination : creations) {
+			dslContext
+				.insertInto(REFERENCE_OBJECTS, REFERENCE_OBJECTS.NAME)
+				.values(combination.getNameProperty().get())
+				.execute();
+			
+			try {
+				con.commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			long lastID = dslContext.lastID().longValue();
+			
+			try {
+				con.commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+					
+			List<ReferenceObject> components = combination.getComponentsProperty().get();
+			for (int i = 0; i < components.size(); i++) {
+				dslContext
+					.insertInto(REFERENCE_OBJECT_COMBINATIONS, REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID, REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID)
+					.values(lastID, components.get(i).getId())
+					.execute();
+			}
+		}
+		
+		try {
+			con.setAutoCommit(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void updateReferenceObjectCombinations(List<ReferenceObjectCombination> updates) {
+		Connection con = null;
+		try {
+			con = dslContext.configuration().connectionProvider().acquire();
+			con.setAutoCommit(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		for (ReferenceObjectCombination combination : updates) {
+			List<ReferenceObject> components = combination.getComponents();
+			List<ReferenceObject> changedComponents = combination.getComponentsProperty().get();
+			if (components.size() <= changedComponents.size()) {
+				int i = 0;
+				for (; i < components.size(); i++) {
+					dslContext
+						.update(REFERENCE_OBJECT_COMBINATIONS)
+						.set(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID, changedComponents.get(i).getId())
+						.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
+							.and(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())))
+						.execute();
+				}
+				for (; i < changedComponents.size(); i++) {
+					dslContext
+						.insertInto(REFERENCE_OBJECT_COMBINATIONS, REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID, REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID)
+						.values(combination.getCombination().getId(), changedComponents.get(i).getId())
+						.execute();
+				}
+			} else {
+				int i = 0;
+				for (; i < changedComponents.size(); i++) {
+					dslContext
+						.update(REFERENCE_OBJECT_COMBINATIONS)
+						.set(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID, changedComponents.get(i).getId())
+						.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
+							.and(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())))
+						.execute();
+				}
+				for (; i < components.size(); i++) {
+					dslContext
+						.delete(REFERENCE_OBJECT_COMBINATIONS)
+						.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
+							.and(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())))
+						.execute();
+				}
+			}
+		}
+		
+		try {
+			con.setAutoCommit(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void deleteReferenceObjectCombinations(List<ReferenceObjectCombination> deletions) {
+		Connection con = null;
+		try {
+			con = dslContext.configuration().connectionProvider().acquire();
+			con.setAutoCommit(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		for (ReferenceObjectCombination combination : deletions) {
+			dslContext
+				.delete(REFERENCE_OBJECT_COMBINATIONS)
+				.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId()))
+				.execute();
+		}
+		
+		try {
+			con.setAutoCommit(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	@Override
 	public void createRatios(List<Ratio> creations) {
 		Connection con = null;
 		try {
@@ -736,6 +994,7 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 			e.printStackTrace();
 		}
 	}
+	
 	@Override
 	public void updateUnits(List<Unit> updates) {
 		Connection con = null;
@@ -762,7 +1021,7 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 	}
-
+	
 	@Override
 	public void deleteUnits(List<Unit> deletions) {
 		Connection con = null;

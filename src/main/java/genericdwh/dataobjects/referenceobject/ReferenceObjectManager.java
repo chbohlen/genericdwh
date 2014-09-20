@@ -18,6 +18,7 @@ public class ReferenceObjectManager extends DataObjectManager {
 
 	@Getter private TreeMap<Long, ReferenceObject> referenceObjects = new TreeMap<>();
 	@Getter private List<ReferenceObjectHierarchy> hierarchies;
+	@Getter private List<ReferenceObjectCombination> combinations;
 	
 	public ReferenceObjectManager(DatabaseController dbController) {
 		super(dbController);
@@ -26,11 +27,6 @@ public class ReferenceObjectManager extends DataObjectManager {
 	
 	public void loadReferenceObjects() {
 		referenceObjects = dbReader.loadRefObjs();
-		
-		List<Entry<Long, Long>> refObjCombinations = dbReader.loadReferenceObjectCombinations();
-		for (Entry<Long, Long> combination : refObjCombinations) {
-			referenceObjects.get(combination.getKey()).addComponent(referenceObjects.get(combination.getValue()));
-		}
 	}
 	
 	public void loadHierarchies() {
@@ -44,6 +40,23 @@ public class ReferenceObjectManager extends DataObjectManager {
 		}
 		
 		hierarchies = generateHierarchies();
+	}
+	
+	public void loadCombinations() {
+		for (ReferenceObject refObj : referenceObjects.values()) {
+			refObj.clearComponents();
+		}
+		
+		combinations = new ArrayList<>();
+		List<Entry<Long, Long>> refObjCombinations = dbReader.loadReferenceObjectCombinations();
+		for (Entry<Long, Long> combination : refObjCombinations) {
+			referenceObjects.get(combination.getKey()).addComponent(referenceObjects.get(combination.getValue()));
+		}
+		for (ReferenceObject refObj : referenceObjects.values()) {
+			if (refObj.isCombination()) {
+				combinations.add(new ReferenceObjectCombination(refObj));
+			}
+		}
 	}
 	
 	private List<ReferenceObjectHierarchy> generateHierarchies() {
@@ -159,11 +172,6 @@ public class ReferenceObjectManager extends DataObjectManager {
 	}
 	
 	
-	public void initAll() {
-		initReferenceObjects();
-		initHierarchies();
-	}
-	
 	public void initHierarchies() {
 		for (ReferenceObjectHierarchy refObjHierarchy : hierarchies) {
 			refObjHierarchy.initProperties();
@@ -173,6 +181,12 @@ public class ReferenceObjectManager extends DataObjectManager {
 	public void initReferenceObjects() {
 		for (ReferenceObject refObj : referenceObjects.values()) {
 			refObj.initProperties();
+		}
+	}
+	
+	public void initCombinations() {
+		for (ReferenceObjectCombination refObjCombination : combinations) {
+			refObjCombination.initProperties();
 		}
 	}
 	
@@ -229,5 +243,36 @@ public class ReferenceObjectManager extends DataObjectManager {
 		dbWriter.updateReferenceObjectHierarchies(updates);
 		
 		loadHierarchies();
+	}
+
+
+	public void saveCombinations(List<DataObject> stagedObjects) {
+		List<ReferenceObjectCombination> deletions = new ArrayList<>();
+		List<ReferenceObjectCombination> creations = new ArrayList<>();
+		List<ReferenceObjectCombination> updates = new ArrayList<>();
+		
+		for (DataObject obj : stagedObjects) {
+			ReferenceObjectCombination combination = (ReferenceObjectCombination)obj;
+			if (combination.isMarkedForDeletion()) {
+				if (!combination.isMarkedForCreation()) {
+					deletions.add(combination);
+				}
+			} else {
+				if (combination.isMarkedForCreation()) {
+					creations.add(combination);
+				} else {
+					updates.add(combination);
+				}
+			}
+		}
+		
+		dbWriter.deleteReferenceObjectCombinations(deletions);
+		dbWriter.createReferenceObjectCombinations(creations);
+		dbWriter.updateReferenceObjectCombinations(updates);
+		
+		if (!creations.isEmpty() || !deletions.isEmpty()) {
+			loadReferenceObjects();
+		}
+		loadCombinations();
 	}
 }

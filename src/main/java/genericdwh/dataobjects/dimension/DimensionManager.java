@@ -18,6 +18,7 @@ public class DimensionManager extends DataObjectManager {
 	@Getter private TreeMap<Long, DimensionCategory> categories;
 	@Getter private TreeMap<Long, Dimension> dimensions;
 	@Getter private List<DimensionHierarchy> hierarchies;
+	@Getter private List<DimensionCombination> combinations;
 		
 	public DimensionManager(DatabaseController dbController) {
 		super(dbController);
@@ -27,9 +28,8 @@ public class DimensionManager extends DataObjectManager {
 	public void loadDimensions() {
 		dimensions = dbReader.loadDimensions();
 		
-		List<Entry<Long, Long>> dimCombinations = dbReader.loadDimensionCombinations();
-			for (Entry<Long, Long> combination : dimCombinations) {
-				dimensions.get(combination.getKey()).addComponent(dimensions.get(combination.getValue()));
+		for (Dimension dim : dimensions.values()) {
+			dim.setIsCombination(dbReader.dimensionIsCombination(dim.getId()));
 		}
 	}
 	
@@ -44,6 +44,23 @@ public class DimensionManager extends DataObjectManager {
 		}
 		
 		hierarchies = generateHierarchies();
+	}
+	
+	public void loadCombinations() {
+		for (Dimension dim : dimensions.values()) {
+			dim.clearComponents();
+		}
+		
+		combinations = new ArrayList<>();
+		List<Entry<Long, Long>> dimCombinations = dbReader.loadDimensionCombinations();
+		for (Entry<Long, Long> combination : dimCombinations) {
+			dimensions.get(combination.getKey()).addComponent(dimensions.get(combination.getValue()));
+		}
+		for (Dimension dim : dimensions.values()) {
+			if (dim.isCombination()) {
+				combinations.add(new DimensionCombination(dim));
+			}
+		}
 	}
 	
 	public void loadCategories() {
@@ -109,12 +126,6 @@ public class DimensionManager extends DataObjectManager {
 		return dimensions.get(dimId);
 	}
 	
-	
-	public void initAll() {
-		initCategories();
-		initDimensions();
-		initHierarchies();
-	}
 
 	public void initCategories() {
 		for (DimensionCategory cat : categories.values()) {
@@ -131,6 +142,12 @@ public class DimensionManager extends DataObjectManager {
 	public void initHierarchies() {
 		for (DimensionHierarchy dimHierarchy : hierarchies) {
 			dimHierarchy.initProperties();
+		}
+	}
+	
+	public void initCombinations() {
+		for (DimensionCombination dimCombination : combinations) {
+			dimCombination.initProperties();
 		}
 	}
 
@@ -187,6 +204,36 @@ public class DimensionManager extends DataObjectManager {
 		dbWriter.updateDimensionHierarchies(updates);
 		
 		loadHierarchies();
+	}
+	
+	public void saveCombinations(List<DataObject> stagedObjects) {
+		List<DimensionCombination> deletions = new ArrayList<>();
+		List<DimensionCombination> creations = new ArrayList<>();
+		List<DimensionCombination> updates = new ArrayList<>();
+		
+		for (DataObject obj : stagedObjects) {
+			DimensionCombination combination = (DimensionCombination)obj;
+			if (combination.isMarkedForDeletion()) {
+				if (!combination.isMarkedForCreation()) {
+					deletions.add(combination);
+				}
+			} else {
+				if (combination.isMarkedForCreation()) {
+					creations.add(combination);
+				} else {
+					updates.add(combination);
+				}
+			}
+		}
+		
+		dbWriter.deleteDimensionCombinations(deletions);
+		dbWriter.createDimensionCombinations(creations);
+		dbWriter.updateDimensionCombinations(updates);
+		
+		if (!creations.isEmpty() || !deletions.isEmpty()) {
+			loadDimensions();
+		}
+		loadCombinations();
 	}
 
 	public void saveCategories(List<DataObject> stagedObjects) {

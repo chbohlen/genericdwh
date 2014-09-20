@@ -34,6 +34,7 @@ public interface DatabaseReader {
 		
 	public boolean dimensionHasRecords(long dimId);
 	public boolean dimensionAndRefObjParentHaveRecords(long dimId, long refObjId);
+	public boolean dimensionIsCombination(long dimId);
 	
 	public long findDimAggregateId(Long[] componentIds);
 	public long findRefObjAggregateId(Long[] componentIds);

@@ -38,11 +38,6 @@ public class RatioManager extends DataObjectManager {
 		return ratios.get(id);
 	}
 	
-	
-	public void initAll() {
-		initCategories();
-		initRatios();
-	}
 
 	public void initCategories() {
 		for (RatioCategory cat : categories.values()) {

@@ -18,6 +18,17 @@ public class ReferenceObjectHierarchy extends DataObjectHierarchy<ReferenceObjec
 		super(levels);
 	}
 	
+	@Override
+	public void addLevel(ReferenceObject level) {		
+		if (levels.isEmpty()) {
+			level.getDimensionProperty().get().getCategoryProperty().get().getId();
+		}
+		levels.add(level);
+		
+		name = generateName(levels);
+	}
+	
+	@Override
 	public ReferenceObjectHierarchy clone() {
 		return new ReferenceObjectHierarchy(levels);
 	}

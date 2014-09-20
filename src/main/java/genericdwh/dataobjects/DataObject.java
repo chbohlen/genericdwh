@@ -20,7 +20,7 @@ public abstract class DataObject {
 	}
 	
 	public DataObject(String name) {
-		this(0, name);
+		this(-1, name);
 		
 		this.name = name;
 	}

@@ -227,6 +227,17 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		return !isEmpty;
 	}
 	
+	@Override
+	public boolean dimensionIsCombination(long dimId) {
+		boolean isEmpty = dslContext
+							.select()
+							.from(DIMENSION_COMBINATIONS)
+							.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(dimId))
+							.fetch()
+							.isEmpty();
+							return !isEmpty;
+	}
+	
 	
 	@Override
 	public long findDimAggregateId(Long[] componentIds) {

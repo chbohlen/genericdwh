@@ -1,9 +1,7 @@
 package genericdwh.dataobjects;
 
-import genericdwh.dataobjects.dimension.Dimension;
 import genericdwh.dataobjects.dimension.DimensionCategory;
 import genericdwh.dataobjects.dimension.DimensionManager;
-import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.main.Main;
 
 import java.util.ArrayList;
@@ -39,19 +37,7 @@ public abstract class DataObjectHierarchy<T extends DataObject> extends DataObje
 		}
 	}
 	
-	public void addLevel(T level) {		
-		if (levels.isEmpty()) {
-			if (level instanceof Dimension) {
-				categoryId = ((Dimension)level).getCategoryId();
-			} else if (level instanceof ReferenceObject) {
-				categoryId = ((ReferenceObject)level).getDimensionProperty().get().getCategoryProperty().get().getId();
-			}
-		}
-		
-		levels.add(level);
-		
-		name = generateName(levels);
-	}
+	public abstract void addLevel(T level);
 	
 	public T getTopLevel() {
 		return levels.get(0);
@@ -65,7 +51,6 @@ public abstract class DataObjectHierarchy<T extends DataObject> extends DataObje
 				newName += "-";
 			}
 		}
-		
 		return newName;
 	}
 	
@@ -76,9 +61,7 @@ public abstract class DataObjectHierarchy<T extends DataObject> extends DataObje
 		super.initProperties();
 		setCategoryProperty(Main.getContext().getBean(DimensionManager.class).getCategories().get(categoryId));
 		getLevelsProperty().get().clear();
-		for (T level : levels) {
-			getLevelsProperty().get().add(level);
-		}
+		getLevelsProperty().get().addAll(levels);
 	};
 		
 	@Getter private ObjectProperty<DimensionCategory> categoryProperty = new SimpleObjectProperty<>();
