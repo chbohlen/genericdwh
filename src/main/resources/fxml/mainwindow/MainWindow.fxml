@@ -24,10 +24,10 @@
             </Menu>
 		  </menus>
 		</MenuBar>
-		<AnchorPane layoutY="25" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+		<AnchorPane layoutY="25" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
    			<children>
-	   			<fx:include source="MainWindowSidebar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0" />
-	   			<fx:include layoutX="230" source="QueryPane.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="230.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+	   			<fx:include source="MainWindowSidebar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="25.0" />
+	   			<fx:include layoutX="230" source="QueryPane.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="230.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
    			</children>
 		</AnchorPane>
 		<fx:include layoutY="724.0" source="../general/StatusBar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />

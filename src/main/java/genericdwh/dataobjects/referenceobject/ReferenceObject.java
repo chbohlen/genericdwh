@@ -25,6 +25,9 @@ public class ReferenceObject extends DataObject {
 	
 	@Getter private List<ReferenceObject> children = new ArrayList<>();
 	@Getter private List<ReferenceObject> components = new ArrayList<>();
+	
+	public static ReferenceObject SELECT_REFERENCE_OBJECT = new ReferenceObject(-1, 0, "Select Reference Object ...");
+	static { SELECT_REFERENCE_OBJECT.initProperties();	}
 
 	public ReferenceObject(long id, long dimensionId, String name) {
 		super(id, name);
@@ -62,8 +65,8 @@ public class ReferenceObject extends DataObject {
 	@Override
 	public void initProperties() {
 		super.initProperties();
-		if (dimensionId == 0) {
-			setDimensionProperty(Dimension.NO_DIMENSION);
+		if (dimensionId == -1) {
+			setDimensionProperty(Dimension.SELECT_DIMENSION);
 		} else {
 			setDimensionProperty(Main.getContext().getBean(DimensionManager.class).getDimension(dimensionId));
 		}

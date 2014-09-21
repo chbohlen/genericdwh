@@ -1011,7 +1011,10 @@ public class EditingViewController implements Initializable {
                     	int oldIndex = combination.getComponentsProperty().get().indexOf(oldComponent);
                     	combination.getComponentsProperty().get().add(oldIndex, newComponent);
                     	combination.getComponentsProperty().get().remove(oldComponent);
+                    	
                     	combination.setNameProperty(combination.generateName(combination.getComponentsProperty().get()));
+                    	
+                    	event.getRowValue().setValue(newComponent);
                     	
                     	Main.getContext().getBean(EditorController.class).stageUpdate(combination);
                     	hasUnsavedChanges.set(true);
@@ -1043,7 +1046,7 @@ public class EditingViewController implements Initializable {
 						dims.add(dim);
 					}
 				}
-				Dimension noDim = Dimension.NO_DIMENSION;
+				Dimension noDim = Dimension.SELECT_DIMENSION;
 				dims.add(noDim);
 				return new DataObjectCBTreeTableCell<Dimension>(dims);
 			}
@@ -1173,7 +1176,10 @@ public class EditingViewController implements Initializable {
                     	int oldIndex = combination.getComponentsProperty().get().indexOf(oldComponent);
                     	combination.getComponentsProperty().get().add(oldIndex, newComponent);
                     	combination.getComponentsProperty().get().remove(oldComponent);
+                    	
                     	combination.setNameProperty(combination.generateName(combination.getComponentsProperty().get()));
+                    	
+                    	event.getRowValue().setValue(newComponent);
                     	
                     	Main.getContext().getBean(EditorController.class).stageUpdate(combination);
                     	hasUnsavedChanges.set(true);
@@ -1205,7 +1211,7 @@ public class EditingViewController implements Initializable {
 						dims.add(dim);
 					}
 				}
-				Dimension noDim = Dimension.NO_DIMENSION;
+				Dimension noDim = Dimension.SELECT_DIMENSION;
 				dims.add(noDim);
 				return new DataObjectCBTreeTableCell<Dimension>(dims);
 			}
@@ -1417,6 +1423,7 @@ public class EditingViewController implements Initializable {
 			@Override
 			public TreeTableCell<DataObject, Unit> call(TreeTableColumn<DataObject, Unit> param) {
 				ObservableList<Unit> units = FXCollections.observableArrayList(unitManager.getUnits().values());
+				units.add(Unit.NO_UNIT);
 				return new DataObjectCBTreeTableCell<Unit>(units);
 			}
 		});
@@ -1493,12 +1500,8 @@ public class EditingViewController implements Initializable {
 			changeParent(tiNewObj, ((ReferenceObject)newObj).getDimensionId());
 		} else if (currEditingViewType == EditingViewType.RATIOS_BY_CATEGORY) {
 			changeParent(tiNewObj, ((Ratio)newObj).getCategoryId());
-		} else if (currEditingViewType == EditingViewType.FACTS_BY_RATIO) {
-			changeParent(tiNewObj, ((Fact)newObj).getRatioId());
-		} else if (currEditingViewType == EditingViewType.FACTS_BY_REFERENCE_OBJECT) {
-			changeParent(tiNewObj, ((Fact)newObj).getReferenceObjectId());
 		}
-			
+		
     	Main.getContext().getBean(EditorController.class).stageCreation(newObj);		
     	hasUnsavedChanges.set(true);
     	
@@ -1672,6 +1675,8 @@ public class EditingViewController implements Initializable {
 	private void changeParent(TreeItem<DataObject> ti, long id) {
 		removeFromParent(ti);
 		addToParent(ti, tiHeaderMap.get(id));
+		
+		focus(ti);
 	}
 	
 	private void removeFromParent(TreeItem<DataObject> ti) {

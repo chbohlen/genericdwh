@@ -1,6 +1,7 @@
 package genericdwh.gui.general;
 
 public class StatusMessage {
+	public static final String QUERYING = "Executing Query ...";
 	public static final String QUERY_OK = "Query completed.";
 	public static final String QUERY_NO_DATA = "No data for given Parameters.";
 	

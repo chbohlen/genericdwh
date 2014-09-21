@@ -22,8 +22,8 @@ public class Dimension extends DataObject {
 	@Getter private List<Dimension> children = new ArrayList<>();
 	@Getter private List<Dimension> components = new ArrayList<>();
 	
-	public static Dimension NO_DIMENSION = new Dimension(0, "No Dimension", 0);
-	static { NO_DIMENSION.initProperties();	}
+	public static Dimension SELECT_DIMENSION = new Dimension(-1, "Select Dimension ...", 0);
+	static { SELECT_DIMENSION.initProperties();	}
 	
 	public Dimension(long id, String name, long categoryId) {
 		super(id, name);

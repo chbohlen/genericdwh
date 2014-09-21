@@ -32,10 +32,22 @@ public class Fact extends DataObject {
 	@Override
 	public void initProperties() {
 		super.initProperties();
-		setRatioProperty(Main.getContext().getBean(RatioManager.class).getRatio(ratioId));
-		setReferenceObjectProperty(Main.getContext().getBean(ReferenceObjectManager.class).getReferenceObject(referenceObjectId));
+		if (ratioId == -1) {
+			setRatioProperty(Ratio.SELECT_RATIO);
+		} else {
+			setRatioProperty(Main.getContext().getBean(RatioManager.class).getRatio(ratioId));
+		}
+		if (referenceObjectId == -1) {
+			setReferenceObjectProperty(ReferenceObject.SELECT_REFERENCE_OBJECT);
+		} else {
+			setReferenceObjectProperty(Main.getContext().getBean(ReferenceObjectManager.class).getReferenceObject(referenceObjectId));
+		}
 		setValueProperty(value);
-		setUnitProperty(Main.getContext().getBean(UnitManager.class).getUnit(unitId));
+		if (unitId == 0) {
+			setUnitProperty(Unit.NO_UNIT);
+		} else {
+			setUnitProperty(Main.getContext().getBean(UnitManager.class).getUnit(unitId));
+		}
 	}
 	
 	@Getter private ObjectProperty<Ratio> ratioProperty = new SimpleObjectProperty<>();

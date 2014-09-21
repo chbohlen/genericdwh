@@ -15,6 +15,9 @@ public class Ratio extends DataObject {
 	
 	@Getter private ArrayList<Ratio> dependencies = new ArrayList<Ratio>();
 	
+	public static Ratio SELECT_RATIO = new Ratio(-1, "Select Ratio ...", 0);
+	static { SELECT_RATIO.initProperties();	}
+	
 	public Ratio(long id, String name, long categoryId) {
 		super(id, name);
 

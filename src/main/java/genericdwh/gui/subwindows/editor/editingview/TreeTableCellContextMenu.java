@@ -24,7 +24,6 @@ public class TreeTableCellContextMenu extends ContextMenu {
 		EditingViewController editingViewController = Main.getContext().getBean(EditingViewController.class);
 		
 		TreeTableView<DataObject> editingView = editingViewController.getEditingView();
-		EditingViewType currEditingViewType = editingViewController.getCurrEditingViewType();
 		
 		MenuItem expand = new MenuItem("Expand");
 		expand.setOnAction(new EventHandler<ActionEvent>() {
@@ -149,6 +148,8 @@ public class TreeTableCellContextMenu extends ContextMenu {
 		setOnShowing(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent event) {
+				EditingViewType currEditingViewType = editingViewController.getCurrEditingViewType();
+				
 				createObject.setVisible(true);
 				deleteObject.setVisible(false);
 				createHierarchy.setVisible(false);
@@ -179,8 +180,8 @@ public class TreeTableCellContextMenu extends ContextMenu {
 					deleteObject.setVisible(false);
 					createHierarchy.setVisible(true);
 					deleteHierarchy.setVisible(true);
-					getItems().add(getItems().indexOf(deleteHierarchy) + 1, separator2);
 					if (!treeTableRow.isEmpty()) {
+						getItems().add(getItems().indexOf(deleteHierarchy) + 1, separator2);
 						addChild.setVisible(true);
 						if (!(treeTableRow.getTreeItem().getValue() instanceof DataObjectHierarchy)) {
 							removeChild.setVisible(true);
@@ -194,8 +195,8 @@ public class TreeTableCellContextMenu extends ContextMenu {
 					deleteObject.setVisible(false);
 					createCombination.setVisible(true);
 					deleteCombination.setVisible(true);
-					getItems().add(getItems().indexOf(deleteCombination) + 1, separator2);
 					if (!treeTableRow.isEmpty()) {
+						getItems().add(getItems().indexOf(deleteCombination) + 1, separator2);
 						addComponent.setVisible(true);
 						if (!(treeTableRow.getTreeItem().getValue() instanceof DataObjectCombination)) {
 							removeComponent.setVisible(true);

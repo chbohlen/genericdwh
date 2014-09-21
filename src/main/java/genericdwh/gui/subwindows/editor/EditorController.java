@@ -209,16 +209,16 @@ public class EditorController implements Initializable{
 		Object[] params = null;
 		if (clazz == Dimension.class) {
 			params = new Object[] { -1, "New Dimension", 0 };
+		} else if (clazz == ReferenceObject.class) {
+			params = new Object[] { -1, -1, "New Reference Object" };
 		} else if (clazz == DimensionCategory.class) {
 			params = new Object[] { -1, "New Category" };
 		} else if (clazz == Fact.class) {
-			params = new Object[] { -1, -1, 0, -1 };
+			params = new Object[] { -1, -1, 0, 0 };
 		} else if (clazz == Ratio.class) {
 			params = new Object[] { -1, "New Ratio", 0 };
 		}  else if (clazz == RatioCategory.class) {
 			params = new Object[] { -1, "New Category" };
-		} else if (clazz == ReferenceObject.class) {
-			params = new Object[] { -1, 0, "New Reference Object" };
 		} else if (clazz == Unit.class) {
 			params = new Object[] { -1, "New Unit", "" };
 		}
@@ -227,6 +227,7 @@ public class EditorController implements Initializable{
 		try {
 			if (clazz == DimensionHierarchy.class || clazz == ReferenceObjectHierarchy.class) {
 				newObj = (DataObject)clazz.newInstance();
+				newObj.setName("New Hierarchy");
 			} else {
 				newObj = (DataObject)constructors[0].newInstance(params);
 			}

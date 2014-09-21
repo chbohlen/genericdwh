@@ -219,7 +219,7 @@ public class QueryPaneController implements Initializable {
 	}	
 	
 	@FXML public void buttonExecQueryOnClickHandler() {
-		Main.getContext().getBean(MainWindowController.class).clearStatus();
+		Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessage.QUERYING);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 		

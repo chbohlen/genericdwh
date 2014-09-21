@@ -6,7 +6,7 @@
 
 <AnchorPane prefHeight="664.0" prefWidth="215.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.subwindows.editor.sidebar.EditorSidebarController">
 	<children>
-      <TreeView fx:id="sidebar" prefHeight="690.0" prefWidth="215.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <TreeView fx:id="sidebar" prefHeight="664.0" prefWidth="215.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0" />
    </children>
 </AnchorPane>
 

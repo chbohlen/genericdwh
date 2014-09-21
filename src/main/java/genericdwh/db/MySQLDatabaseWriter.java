@@ -45,9 +45,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (Dimension dim : creations) {
+			Long catId = dim.getCategoryProperty().get().getId() == 0 ? null : dim.getCategoryProperty().get().getId();
 			dslContext
 				.insertInto(DIMENSIONS, DIMENSIONS.NAME, DIMENSIONS.CATEGORY_ID)
-				.values(dim.getNameProperty().get(), dim.getCategoryProperty().get().getId())
+				.values(dim.getNameProperty().get(), catId)
 				.execute();
 		}
 		
@@ -69,10 +70,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (Dimension dim : updates) {
+			Long catId = dim.getCategoryProperty().get().getId() == 0 ? null : dim.getCategoryProperty().get().getId();
 			dslContext
 				.update(DIMENSIONS)
 				.set(DIMENSIONS.NAME, dim.getNameProperty().get())
-				.set(DIMENSIONS.CATEGORY_ID, dim.getCategoryProperty().get().getId())
+				.set(DIMENSIONS.CATEGORY_ID, catId)
 				.where(DIMENSIONS.DIMENSION_ID.equal(dim.getId()))
 				.execute();
 		}
@@ -144,13 +146,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (ReferenceObject refObj : updates) {
-		dslContext
-			.update(REFERENCE_OBJECTS)
-			.set(REFERENCE_OBJECTS.NAME, refObj.getNameProperty().get())
-			.set(REFERENCE_OBJECTS.DIMENSION_ID, refObj.getDimensionProperty().get().getId())
-			.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(refObj.getId()))
-			.execute();
-		}
+			dslContext
+				.update(REFERENCE_OBJECTS)
+				.set(REFERENCE_OBJECTS.NAME, refObj.getNameProperty().get())
+				.set(REFERENCE_OBJECTS.DIMENSION_ID, refObj.getDimensionProperty().get().getId())
+				.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(refObj.getId()))
+				.execute();
+			}
 		
 		try {
 			con.setAutoCommit(true);
@@ -690,9 +692,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (Ratio ratio : creations) {
+			Long catId = ratio.getCategoryProperty().get().getId() == 0 ? null : ratio.getCategoryProperty().get().getId();
 			dslContext
 				.insertInto(RATIOS, RATIOS.NAME, RATIOS.CATEGORY_ID)
-				.values(ratio.getNameProperty().get(), ratio.getCategoryProperty().get().getId())
+				.values(ratio.getNameProperty().get(), catId)
 				.execute();
 		}
 		
@@ -714,10 +717,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (Ratio ratio : updates) {
+			Long catId = ratio.getCategoryProperty().get().getId() == 0 ? null : ratio.getCategoryProperty().get().getId();
 			dslContext
 				.update(RATIOS)
 				.set(RATIOS.NAME, ratio.getNameProperty().get())
-				.set(RATIOS.CATEGORY_ID, ratio.getCategoryProperty().get().getId())
+				.set(RATIOS.CATEGORY_ID, catId)
 				.where(RATIOS.RATIO_ID.equal(ratio.getId()))
 				.execute();
 		}
@@ -752,7 +756,6 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 			e.printStackTrace();
 		}
 	}
-
 	
 
 	@Override
@@ -766,12 +769,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (Fact fact : creations) {
+			Long unitId = fact.getUnitProperty().get().getId() == 0 ? null : fact.getUnitProperty().get().getId();
 			dslContext
 				.insertInto(FACTS, FACTS.RATIO_ID, FACTS.REFERENCE_OBJECT_ID, FACTS.VALUE, FACTS.UNIT_ID)
 				.values(fact.getRatioProperty().get().getId(),
 						fact.getReferenceObjectProperty().get().getId(),
 						fact.getValueProperty().get(),
-						fact.getUnitProperty().get().getId())
+						unitId)
 				.execute();
 		}
 		
@@ -793,12 +797,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (Fact fact : updates) {
+			Long unitId = fact.getUnitProperty().get().getId() == 0 ? null : fact.getUnitProperty().get().getId();
 			dslContext
 				.update(FACTS)
 				.set(FACTS.RATIO_ID, fact.getRatioProperty().get().getId())
 				.set(FACTS.REFERENCE_OBJECT_ID, fact.getReferenceObjectProperty().get().getId())
 				.set(FACTS.VALUE, fact.getValueProperty().get())
-				.set(FACTS.UNIT_ID, fact.getUnitProperty().get().getId())
+				.set(FACTS.UNIT_ID, unitId)
 				.where(FACTS.RATIO_ID.equal(fact.getRatioProperty().get().getId())
 					.and(FACTS.REFERENCE_OBJECT_ID.equal(fact.getReferenceObjectProperty().get().getId())))
 				.execute();

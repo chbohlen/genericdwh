@@ -9,7 +9,7 @@ public class ReferenceObjectCombination extends DataObjectCombination<ReferenceO
 	public ReferenceObjectCombination() {
 		super();
 		
-		combination = new ReferenceObject(-1, 0, "New Reference Object Combination");
+		combination = new ReferenceObject(-1, -1, "New Combination");
 		combination.initProperties();
 	}
 	

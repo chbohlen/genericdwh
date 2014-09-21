@@ -9,7 +9,7 @@ public class DimensionCombination extends DataObjectCombination<Dimension> {
 	public DimensionCombination() {
 		super();
 		
-		combination = new Dimension(-1, "New Dimension Combination", 0);
+		combination = new Dimension(-1, "New Combination", 0);
 		combination.initProperties();
 	}
 	

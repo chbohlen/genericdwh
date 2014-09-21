@@ -5,7 +5,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="searchBox" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.subwindows.editor.editingview.SearchBoxController">
+<AnchorPane fx:id="searchBox" prefHeight="50.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.subwindows.editor.editingview.SearchBoxController">
 	<children>
 		<HBox alignment="CENTER" prefHeight="50.0">
 	         <children>
