@@ -9,10 +9,8 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.WindowEvent;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,7 +32,7 @@ public class ResultGridCell extends BorderPane {
 	private DimensionHierarchy hierarchy;
 	private Dimension currLevel;
 
-	private boolean collapsed;
+	@Getter private boolean collapsed;
 		
 	public ResultGridCell(String text, int colIndex, int rowIndex, int cellType) {
 		this.colIndex = colIndex;
@@ -43,6 +41,10 @@ public class ResultGridCell extends BorderPane {
 		getStylesheets().add("/css/ResultGridCellStyles.css");
 		getStyleClass().add("border");
 		getStyleClass().add("cell-" + cellType);
+		
+		if (button != null) {
+			button.getStyleClass().add("button");
+		}
 		
 		setPadding(new Insets(1));
 		
@@ -87,12 +89,12 @@ public class ResultGridCell extends BorderPane {
 		
 		this.collapsed = collapsed;
 		
-		ContextMenu contextMenu = createContextMenu();
-		BorderPane pane = this;
+		ResultGridCell thisCell = this;
+		ContextMenu contextMenu = new ResultGridCellContextMenu(thisCell);
 		setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {  
 			  @Override  
 			  public void handle(ContextMenuEvent event) {  
-				  contextMenu.show(pane, event.getScreenX(), event.getScreenY());
+				  contextMenu.show(thisCell, event.getScreenX(), event.getScreenY());
 			  }  
 		}); 
 		
@@ -115,50 +117,13 @@ public class ResultGridCell extends BorderPane {
 		label.setText(text);
 	}
 	
-	private void expand() {
+	public void expand() {
     	Main.getContext().getBean(ResultGridController.class)
 			.expandCollapseGridHandler(((ResultGrid)getParent()).getGridId(), hierarchy, currLevel, true);
 	}
 	
-	private void collapse() {
+	public void collapse() {
     	Main.getContext().getBean(ResultGridController.class)
 			.expandCollapseGridHandler(((ResultGrid)getParent()).getGridId(), hierarchy, currLevel, false);
-	}
-	
-	private ContextMenu createContextMenu() {
-		ContextMenu contextMenu = new ContextMenu();
-		
-		MenuItem expand = new MenuItem("Expand");
-		expand.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				expand();
-			}
-		});
-		
-		MenuItem collapse = new MenuItem("Collapse");
-		collapse.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				collapse();
-			}
-		});
-		
-		contextMenu.getItems().addAll(expand, collapse);
-		
-		contextMenu.setOnShowing(new EventHandler<WindowEvent>() {
-			@Override
-			public void handle(WindowEvent event) {
-				if (collapsed) {
-					expand.setVisible(true);
-					collapse.setVisible(false);
-				} else {
-					expand.setVisible(false);
-					collapse.setVisible(true);
-				}
-			}
-		});
-		
-		return contextMenu;
 	}
 }

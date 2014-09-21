@@ -38,3 +38,11 @@
 	-fx-font-weight: bold;
 	-fx-padding: 2;
 }
+
+.button {
+	-fx-font-size: 12;
+	-fx-font-weight: bolder;
+	-fx-pref-height: 15;
+	-fx-pref-width: 15;
+	-fx-padding: 0;
+}
