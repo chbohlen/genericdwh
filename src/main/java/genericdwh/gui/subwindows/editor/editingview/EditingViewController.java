@@ -27,6 +27,7 @@ import genericdwh.dataobjects.unit.UnitManager;
 import genericdwh.gui.general.sidebar.DataObjectTreeItem;
 import genericdwh.gui.general.sidebar.HeaderItem;
 import genericdwh.gui.subwindows.editor.EditorController;
+import genericdwh.gui.subwindows.editor.editingview.searchbox.SearchBoxController;
 import genericdwh.main.Main;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

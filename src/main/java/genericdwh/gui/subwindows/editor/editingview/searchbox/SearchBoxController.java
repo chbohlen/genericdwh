@@ -1,8 +1,9 @@
-package genericdwh.gui.subwindows.editor.editingview;
+package genericdwh.gui.subwindows.editor.editingview.searchbox;
 
 import genericdwh.dataobjects.DataObject;
 import genericdwh.dataobjects.DataObjectHierarchy;
 import genericdwh.dataobjects.fact.Fact;
+import genericdwh.gui.subwindows.editor.editingview.EditingViewController;
 import genericdwh.gui.subwindows.editor.editingview.EditingViewController.EditingViewType;
 import genericdwh.main.Main;
 

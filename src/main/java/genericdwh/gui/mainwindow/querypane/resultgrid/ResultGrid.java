@@ -523,61 +523,50 @@ public class ResultGrid extends GridPane {
 		if (rowHeaderTree.isEmpty()) {
 			return firstRowIndex;
 		}
-
-		TreeMap<Long, ResultGridNode> currNodes = rowHeaderTree;
-		int index = -1;
-		ResultGridNode lastMatch = null;
-		while (index == -1) {
-			ResultGridNode foundNode = null;
+		
+		LinkedList<ResultGridNode> queue = new LinkedList<>(rowHeaderTree.values());
+		while (!queue.isEmpty()) {
+			ResultGridNode currNode = queue.pop();
 			for (long componentId : componentIds) {
-				foundNode = currNodes.get(componentId);
-				if (foundNode != null) {
-					lastMatch = foundNode;
-					if (foundNode.isLeaf()) {
-						index = foundNode.getCell().getRowIndex();
-					} else {
-						currNodes = foundNode.getChildren();
+				if (currNode.getId() == componentId) {
+					if (currNode.isLeaf()) {
+						return currNode.getCell().getRowIndex();
+					}
+					for (ResultGridNode currChild : currNode.getChildren().values()) {
+						queue.push(currChild);
 					}
 					break;
 				}
 			}
-			if (foundNode == null && lastMatch != null) {
-				index = lastMatch.getCell().getRowIndex();
-			}
+			
 		}
-
-		return index;
+		
+		return -1;
 	}
 	
 	private int getColIndex(Long[] componentIds) {
 		if (colHeaderTree.isEmpty()) {
 			return firstColIndex;
 		}
-
-		TreeMap<Long, ResultGridNode> currNodes = colHeaderTree;
-		int index = -1;
-		ResultGridNode lastMatch = null;
-		while (index == -1) {
-			ResultGridNode foundNode = null;
+		
+		LinkedList<ResultGridNode> queue = new LinkedList<>(colHeaderTree.values());
+		while (!queue.isEmpty()) {
+			ResultGridNode currNode = queue.pop();
 			for (long componentId : componentIds) {
-				foundNode = currNodes.get(componentId);
-				if (foundNode != null) {
-					lastMatch = foundNode;
-					if (foundNode.isLeaf()) {
-						index = foundNode.getCell().getColIndex();
-					} else {
-						currNodes = foundNode.getChildren();
+				if (currNode.getId() == componentId) {
+					if (currNode.isLeaf()) {
+						return currNode.getCell().getColIndex();
 					}
+					for (ResultGridNode currChild : currNode.getChildren().values()) {
+						queue.push(currChild);
+					}					
 					break;
 				}
 			}
-
-			if (foundNode == null && lastMatch != null) {
-				index = lastMatch.getCell().getColIndex();
-			}
+			
 		}
-
-		return index;
+		
+		return -1;
 	}
 	
 	private int getFirstRowIndex(ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs) {

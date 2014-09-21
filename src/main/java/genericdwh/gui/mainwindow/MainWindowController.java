@@ -1,11 +1,9 @@
 package genericdwh.gui.mainwindow;
 
 import genericdwh.dataobjects.DataObject;
-import genericdwh.dataobjects.dimension.Dimension;
-import genericdwh.dataobjects.dimension.DimensionCategory;
-import genericdwh.dataobjects.dimension.DimensionHierarchy;
-import genericdwh.dataobjects.ratio.Ratio;
-import genericdwh.dataobjects.ratio.RatioCategory;
+import genericdwh.dataobjects.dimension.DimensionManager;
+import genericdwh.dataobjects.ratio.RatioManager;
+import genericdwh.dataobjects.unit.UnitManager;
 import genericdwh.db.DatabaseController;
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.general.Icons;
@@ -18,9 +16,7 @@ import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.main.Main;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.TreeMap;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
@@ -109,12 +105,21 @@ public class MainWindowController implements Initializable{
 		}
 	}
 	
-	public void createSidebars(TreeMap<Long, DimensionCategory> dimensionCategories, List<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions, 
-			TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
+	public void createSidebars() {
+		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
+		dimManager.loadCategories();
+		dimManager.loadDimensions();
+		dimManager.loadHierarchies();
 		
-		sidebarController.createSidebars(dimensionCategories, hierarchies, dimensions, ratioCategories, ratios);
+		RatioManager ratioManager = Main.getContext().getBean(RatioManager.class);
+		ratioManager.loadCategories();
+		ratioManager.loadRatios();
+		
+		Main.getContext().getBean(UnitManager.class).loadUnits();
+					
+		sidebarController.createSidebars(dimManager.getCategories(), dimManager.getHierarchies(),  dimManager.getDimensions(),
+										ratioManager.getCategories(), ratioManager.getRatios());
 	}
-	
 	
 	public void showSidebars() {
 		sidebarController.showSidebars();
@@ -124,7 +129,6 @@ public class MainWindowController implements Initializable{
 		sidebarController.hideSidebars();
 	}
 	
-	
 	public void showQueryPane() {
 		queryPaneController.showQueryPane();
 	}
@@ -132,7 +136,10 @@ public class MainWindowController implements Initializable{
 	public void hideQueryPane() {
 		queryPaneController.hideQueryPane();
 	}
-
+	
+	private void clearQueryPane() {
+		queryPaneController.clear();
+	}
 	
 	public void postStatus(String status) {
 		statusBarController.postStatus(status);
@@ -150,8 +157,10 @@ public class MainWindowController implements Initializable{
 	@FXML private void menuBarDisconnectOnClickHandler() {
 		Main.getContext().getBean(DatabaseController.class).disconnect();
 		
+		clearQueryPane();
+		
 		hideSidebars();
-		hideQueryPane();
+		hideQueryPane();	
 		
 		postStatus(StatusMessage.DISCONNECTED);
 	}
@@ -187,5 +196,10 @@ public class MainWindowController implements Initializable{
 	
 	public void addRatio(DataObject dim) {
 		queryPaneController.addRatio(dim);
+	}
+
+	public void refresh() {
+		createSidebars();
+		clearQueryPane();
 	}
 }

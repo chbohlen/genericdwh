@@ -1,5 +1,6 @@
 package genericdwh.gui.subwindows.editor.subwindows.confirmationdialog;
 
+import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.main.Main;
 import javafx.fxml.FXML;
@@ -33,6 +34,7 @@ public class SaveOrDiscardDialogController extends ConfirmationDialogController 
 		stage.close();
 		if (closeEditor) {
 			editorController.close();
+			Main.getContext().getBean(MainWindowController.class).refresh();
 		}
 	}
 

@@ -7,6 +7,6 @@
 <AnchorPane prefHeight="664.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="genericdwh.gui.subwindows.editor.editingview.EditingViewController">
 	<children>
 		<fx:include source="SearchBox.fxml" AnchorPane.topAnchor="0.0" />
-		<TreeTableView fx:id="editingView" layoutY="50.0" layoutX="215.0" prefHeight="614.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="50.0" />
+		<TreeTableView fx:id="editingView" layoutY="50.0" layoutX="235.0" prefHeight="614.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="50.0" />
 	</children>
 </AnchorPane>

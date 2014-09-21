@@ -3,9 +3,6 @@ package genericdwh.gui.subwindows.connectdialog;
 import java.util.Properties;
 
 import genericdwh.configfiles.ConfigFileReader;
-import genericdwh.dataobjects.dimension.DimensionManager;
-import genericdwh.dataobjects.ratio.RatioManager;
-import genericdwh.dataobjects.unit.UnitManager;
 import genericdwh.db.DatabaseController;
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.general.Icons;
@@ -73,23 +70,9 @@ public class ConnectDialogController {
 		
 		if (connected) {
 			storeDbCredentials();
-			
-			DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
-			dimManager.loadCategories();
-			dimManager.loadDimensions();
-			dimManager.loadHierarchies();
-			
-			RatioManager ratioManager = Main.getContext().getBean(RatioManager.class);
-			ratioManager.loadCategories();
-			ratioManager.loadRatios();
-			
-			Main.getContext().getBean(UnitManager.class).loadUnits();
-						
-			mainWindowController.createSidebars(dimManager.getCategories(), dimManager.getHierarchies(), dimManager.getDimensions(),
-												ratioManager.getCategories(), ratioManager.getRatios());
+			mainWindowController.createSidebars();
 			mainWindowController.showSidebars();
 			mainWindowController.showQueryPane();
-			
 			mainWindowController.postStatus(StatusMessage.CONNECTION_OK);
 		} else {
 			mainWindowController.postStatus(StatusMessage.CONNECTION_FAILED);

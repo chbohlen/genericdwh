@@ -9,7 +9,7 @@ import genericdwh.gui.mainwindow.sidebar.MainWindowSidebarController;
 import genericdwh.gui.subwindows.connectdialog.ConnectDialogController;
 import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.gui.subwindows.editor.editingview.EditingViewController;
-import genericdwh.gui.subwindows.editor.editingview.SearchBoxController;
+import genericdwh.gui.subwindows.editor.editingview.searchbox.SearchBoxController;
 import genericdwh.gui.subwindows.editor.sidebar.EditorSidebarController;
 import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DeleteDialogController;
 import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DiscardDialogController;

@@ -27,11 +27,11 @@ public class DataObjectTreeCellContextMenu extends ContextMenu {
             }
         });
 		
-		MenuItem expandAll = new MenuItem("Expand all");
+		MenuItem expandAll = new MenuItem("Expand all underlying");
 		expandAll.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {
-				mainWindowSidebarController.expandAll(treeCell.getTreeItem());
+				mainWindowSidebarController.expandAll(treeCell.getTreeView().getSelectionModel().getSelectedItem());
             }
         });
 		
@@ -43,11 +43,11 @@ public class DataObjectTreeCellContextMenu extends ContextMenu {
             }
         });
 		
-		MenuItem collapseAll = new MenuItem("Collapse all");
+		MenuItem collapseAll = new MenuItem("Collapse all underlying");
 		collapseAll.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {
-				mainWindowSidebarController.collapseAll(treeCell.getTreeItem());
+				mainWindowSidebarController.collapseAll(treeCell.getTreeView().getSelectionModel().getSelectedItem());
             }
         });
 		
@@ -55,7 +55,7 @@ public class DataObjectTreeCellContextMenu extends ContextMenu {
 		addColDimension.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {
-				mainWindowController.addColDimension(treeCell.getItem());
+				mainWindowController.addColDimension(treeCell.getTreeView().getSelectionModel().getSelectedItem().getValue());
             }
         });
 		
@@ -63,7 +63,7 @@ public class DataObjectTreeCellContextMenu extends ContextMenu {
 		addRowDimension.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {
-				mainWindowController.addRowDimension(treeCell.getItem());
+				mainWindowController.addRowDimension(treeCell.getTreeView().getSelectionModel().getSelectedItem().getValue());
             }
         });
 		
@@ -71,7 +71,7 @@ public class DataObjectTreeCellContextMenu extends ContextMenu {
 		addFilter.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {
-				mainWindowController.addFilter(treeCell.getItem());
+				mainWindowController.addFilter(treeCell.getTreeView().getSelectionModel().getSelectedItem().getValue());
             }
         });
 		
@@ -79,7 +79,7 @@ public class DataObjectTreeCellContextMenu extends ContextMenu {
 		addRatio.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {
-				mainWindowController.addRatio(treeCell.getItem());
+				mainWindowController.addRatio(treeCell.getTreeView().getSelectionModel().getSelectedItem().getValue());
             }
         });
 		
@@ -124,7 +124,7 @@ public class DataObjectTreeCellContextMenu extends ContextMenu {
 						}
 					}
 
-					if (treeCell.getTreeItem().getChildren().size() == 0) {
+					if (!treeCell.getTreeItem().getChildren().isEmpty()) {
 						if (treeCell.getTreeItem().isExpanded()) {
 							collapse.setVisible(true);
 						} else {

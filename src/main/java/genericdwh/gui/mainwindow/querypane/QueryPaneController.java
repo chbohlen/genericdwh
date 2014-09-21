@@ -298,6 +298,10 @@ public class QueryPaneController implements Initializable {
 	}	
 	
 	@FXML public void buttonClearOnClickHandler() {
+		clear();
+	}
+	
+	public void clear() {
 		Main.getContext().getBean(MainWindowController.class).clearStatus();
 
 		tvRatios.getItems().clear();                    

@@ -18,7 +18,7 @@
 	  </menus>
 	</MenuBar>
       <fx:include layoutY="25.0" source="EditorSidebar.fxml" AnchorPane.bottomAnchor="26.0" AnchorPane.topAnchor="25.0" />
-      <fx:include layoutY="25.0" source="EditingView.fxml" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="215.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
+      <fx:include layoutY="25.0" source="EditingView.fxml" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="235.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
       <fx:include layoutY="689.0" source="../../general/StatusBar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
    </children>
 </AnchorPane>
