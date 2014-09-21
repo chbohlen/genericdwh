@@ -20,7 +20,7 @@ public abstract class ConfirmationDialogController {
 	@FXML protected Button btnYes;
 	@FXML protected Button btnNo;
 	@FXML protected Button btnCancel;
-	
+		
 	protected Stage stage;
 	
 	public void createWindow(String title, Class<?> controllerClass) {

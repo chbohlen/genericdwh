@@ -1,11 +1,9 @@
 ResultGrid
+!!! fix bug !!!
 a------
 unnecessary load of higher hierarchy levels
 filter hierarchies
 b------
 empty cells
-result grid highlighting
-
-plaintext queries
 
 arraylist->list

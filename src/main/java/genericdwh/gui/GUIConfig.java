@@ -14,7 +14,7 @@ import genericdwh.gui.subwindows.editor.sidebar.EditorSidebarController;
 import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DeleteDialogController;
 import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DiscardDialogController;
 import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveDialogController;
-import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveOrDiscardOnLoadDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveOrDiscardDialogController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
@@ -28,13 +28,13 @@ public class GUIConfig {
 
 	@Bean
 	public MainWindowController mainWindowController() {
-		return new MainWindowController(statusBarController(),
+		return new MainWindowController(mainStatusBarController(),
 				mainWindowSidebarController(), queryPaneController(),
 				connectWindowController(), editorWindowController());
 	}
 	
 	@Bean
-	public StatusBarController statusBarController() {
+	public StatusBarController mainStatusBarController() {
 		return new StatusBarController();
 	}
 	
@@ -61,11 +61,16 @@ public class GUIConfig {
 	@Bean
 	public EditorController editorWindowController() {
 		return new EditorController(objManagerConfig.changeManager(),
-				statusBarController(),
+				editorStatusBarController(),
 				editorSidebarController(), editingViewController(),
 				saveChangesDialogController(), discardChangesDialogController(),
 				saveOrDiscardOnLoadDialogController(),
 				deleteObjectDialogController());
+	}
+	
+	@Bean
+	public StatusBarController editorStatusBarController() {
+		return new StatusBarController();
 	}
 	
 	@Bean
@@ -94,8 +99,8 @@ public class GUIConfig {
 	}
 	
 	@Bean
-	public SaveOrDiscardOnLoadDialogController saveOrDiscardOnLoadDialogController() {
-		return new SaveOrDiscardOnLoadDialogController();
+	public SaveOrDiscardDialogController saveOrDiscardOnLoadDialogController() {
+		return new SaveOrDiscardDialogController();
 	}
 	
 	@Bean

@@ -25,7 +25,7 @@ import genericdwh.gui.subwindows.editor.sidebar.EditorSidebarController;
 import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DeleteDialogController;
 import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DiscardDialogController;
 import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveDialogController;
-import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveOrDiscardOnLoadDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveOrDiscardDialogController;
 import genericdwh.main.Main;
 import javafx.beans.binding.Bindings;
 import javafx.event.EventHandler;
@@ -52,7 +52,7 @@ public class EditorController implements Initializable{
 	private SaveDialogController saveChangesDialogController;
 	private DiscardDialogController discardChangesDialogController;
 	
-	private SaveOrDiscardOnLoadDialogController saveOrDiscardOnLoadDialogController;
+	private SaveOrDiscardDialogController saveOrDiscardOnLoadDialogController;
 	
 	private DeleteDialogController deleteObjectDialogController;
 	
@@ -65,7 +65,7 @@ public class EditorController implements Initializable{
 			StatusBarController statusBarController,
 			EditorSidebarController sidebarController, EditingViewController resultViewController,
 			SaveDialogController saveChangesDialogController, DiscardDialogController discardChangesDialogController,
-			SaveOrDiscardOnLoadDialogController saveOrDiscardOnLoadDialogController,
+			SaveOrDiscardDialogController saveOrDiscardOnLoadDialogController,
 			DeleteDialogController deleteObjectDialogController) {
 		
 		this.changeManager = changeManager;
@@ -103,7 +103,8 @@ public class EditorController implements Initializable{
 			stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 				@Override
 				public void handle(WindowEvent event) {
-					
+					serveCloseRequest();
+					event.consume();
 				}
 			});
 			
@@ -152,7 +153,7 @@ public class EditorController implements Initializable{
 	}
 	
 	@FXML public void menuBarExitOnClickHandler() {
-		stage.close();
+		serveCloseRequest();
 	}
 	
 	public void saveChanges() {
@@ -162,7 +163,13 @@ public class EditorController implements Initializable{
 	public void saveChanges(int id) {
 		changeManager.saveChanges();
 		postStatus(StatusMessage.CHANGES_SAVED);
-		createEditorTreeTable(id);
+		if (id == -1) {
+			editingViewController.setHasUnsavedChanges(false);
+			Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessage.CHANGES_SAVED);
+		} else {
+			postStatus(StatusMessage.CHANGES_SAVED);
+			createEditorTreeTable(id);
+		}
 	}
 	
 	public void discardChanges() {
@@ -171,8 +178,13 @@ public class EditorController implements Initializable{
 	
 	public void discardChanges(int id) {
 		changeManager.discardChanges();
-		postStatus(StatusMessage.CHANGES_DISCARDED);
-		createEditorTreeTable(id);
+		if (id == -1) {
+			editingViewController.setHasUnsavedChanges(false);
+			Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessage.CHANGES_DISCARDED);
+		} else {
+			postStatus(StatusMessage.CHANGES_DISCARDED);
+			createEditorTreeTable(id);
+		}
 	}
 
 	public void stageCreation(DataObject obj) {
@@ -235,5 +247,17 @@ public class EditorController implements Initializable{
 	
 	private void clearStatus() {
 		statusBarController.clearStatus();
+	}
+	
+	private void serveCloseRequest() {
+		if (editingViewController.getHasUnsavedChanges().get()) {
+			saveOrDiscardOnLoadDialogController.createWindow();
+		} else {
+			close();
+		}
+	}
+	
+	public void close() {
+		stage.close();
 	}
 }

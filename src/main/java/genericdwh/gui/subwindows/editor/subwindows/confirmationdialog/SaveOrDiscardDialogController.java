@@ -4,9 +4,11 @@ import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.main.Main;
 import javafx.fxml.FXML;
 
-public class SaveOrDiscardOnLoadDialogController extends ConfirmationDialogController {
+public class SaveOrDiscardDialogController extends ConfirmationDialogController {
 		
 	private int id;
+	
+	private boolean closeEditor = false;
 	
 	public void createWindow(int id) {
 		super.createWindow("Save or Discard Changes?", this.getClass());
@@ -17,17 +19,31 @@ public class SaveOrDiscardOnLoadDialogController extends ConfirmationDialogContr
 		
 		this.id = id;
 	}
+	
+	public void createWindow() {
+		createWindow(-1);
+		
+		closeEditor = true;
+	}
 
 	@Override
 	@FXML public void buttonYesOnClickHandler() {
-		Main.getContext().getBean(EditorController.class).saveChanges(id);
+		EditorController editorController = Main.getContext().getBean(EditorController.class);
+		editorController.saveChanges(id);
 		stage.close();
+		if (closeEditor) {
+			editorController.close();
+		}
 	}
 
 	@Override
 	@FXML public void buttonNoOnClickHandler() {
-		Main.getContext().getBean(EditorController.class).discardChanges(id);
+		EditorController editorController = Main.getContext().getBean(EditorController.class);
+		editorController.discardChanges(id);
 		stage.close();
+		if (closeEditor) {
+			editorController.close();
+		}
 	}
 
 	@Override
