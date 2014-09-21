@@ -27,6 +27,7 @@ import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveDialog
 import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveOrDiscardOnLoadDialogController;
 import genericdwh.main.Main;
 import javafx.beans.binding.Bindings;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -35,6 +36,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import lombok.Getter;
 
 public class EditorController implements Initializable{
@@ -94,7 +96,15 @@ public class EditorController implements Initializable{
 			stage.initModality(Modality.WINDOW_MODAL);
 			stage.initOwner(Main.getContext().getBean(MainWindowController.class).getStage().getScene().getWindow());
 			stage.setScene(scene);
-			stage.setTitle("Editor");
+			stage.setTitle("Core Data Editor");
+			
+			stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+				@Override
+				public void handle(WindowEvent event) {
+					
+				}
+			});
+			
 			stage.show();
 		} catch (Exception e) {
 			throw new RuntimeException(e);

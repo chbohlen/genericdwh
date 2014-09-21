@@ -7,8 +7,12 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.WindowEvent;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,13 +33,16 @@ public class ResultGridCell extends BorderPane {
 	
 	private DimensionHierarchy hierarchy;
 	private Dimension currLevel;
+
+	private boolean collapsed;
 		
-	public ResultGridCell(String text, int colIndex, int rowIndex) {
+	public ResultGridCell(String text, int colIndex, int rowIndex, int cellType) {
 		this.colIndex = colIndex;
 		this.rowIndex = rowIndex;
 		
-		getStylesheets().add("/css/ResultGridVisibleBorders.css");
+		getStylesheets().add("/css/ResultGridCellStyles.css");
 		getStyleClass().add("border");
+		getStyleClass().add("cell-" + cellType);
 		
 		setPadding(new Insets(1));
 		
@@ -45,15 +52,15 @@ public class ResultGridCell extends BorderPane {
 		setText(text);
 	}
 		
-	public ResultGridCell(String text, int colIndex, int rowIndex, int colSpan, int rowSpan) {
-		this(text, colIndex, rowIndex);
+	public ResultGridCell(String text, int colIndex, int rowIndex, int cellType, int colSpan, int rowSpan) {
+		this(text, colIndex, rowIndex, cellType);
 		
 		this.colSpan = colSpan;
 		this.rowSpan = rowSpan;
 	}
 	
-	public ResultGridCell(String text, int colIndex, int rowIndex, int colSpan, int rowSpan, DimensionHierarchy hierarchy, Dimension currLevel, boolean collapsed) {
-		this(text, colIndex, rowIndex, colSpan, rowSpan);
+	public ResultGridCell(String text, int colIndex, int rowIndex, int cellType, int colSpan, int rowSpan, DimensionHierarchy hierarchy, Dimension currLevel, boolean collapsed) {
+		this(text, colIndex, rowIndex, cellType, colSpan, rowSpan);
 		
 		this.hierarchy = hierarchy;
 		this.currLevel = currLevel;
@@ -77,7 +84,18 @@ public class ResultGridCell extends BorderPane {
 			    }
 			});
 		}
-
+		
+		this.collapsed = collapsed;
+		
+		ContextMenu contextMenu = createContextMenu();
+		BorderPane pane = this;
+		setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {  
+			  @Override  
+			  public void handle(ContextMenuEvent event) {  
+				  contextMenu.show(pane, event.getScreenX(), event.getScreenY());
+			  }  
+		}); 
+		
 		setRight(button);
 		ResultGridCell.setMargin(button, new Insets(0, 0, 0, 3));
 	}
@@ -105,5 +123,42 @@ public class ResultGridCell extends BorderPane {
 	private void collapse() {
     	Main.getContext().getBean(ResultGridController.class)
 			.expandCollapseGridHandler(((ResultGrid)getParent()).getGridId(), hierarchy, currLevel, false);
+	}
+	
+	private ContextMenu createContextMenu() {
+		ContextMenu contextMenu = new ContextMenu();
+		
+		MenuItem expand = new MenuItem("Expand");
+		expand.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				expand();
+			}
+		});
+		
+		MenuItem collapse = new MenuItem("Collapse");
+		collapse.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				collapse();
+			}
+		});
+		
+		contextMenu.getItems().addAll(expand, collapse);
+		
+		contextMenu.setOnShowing(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent event) {
+				if (collapsed) {
+					expand.setVisible(true);
+					collapse.setVisible(false);
+				} else {
+					expand.setVisible(false);
+					collapse.setVisible(true);
+				}
+			}
+		});
+		
+		return contextMenu;
 	}
 }

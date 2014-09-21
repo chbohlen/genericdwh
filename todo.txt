@@ -1,12 +1,7 @@
-QueryPane
-a------
-reorder ratios/dimensions per dnd
-
 ResultGrid
 a------
 unnecessary load of higher hierarchy levels
 filter hierarchies
-context menu
 b------
 empty cells
 grid collapsible
@@ -16,12 +11,6 @@ cell padding
 
 no new connection when connecting to same database
 
-db-status notification (invalid password etc)/generally better messages
-
-refactor statusbar
-refactor resultgridnode
-
 plaintext queries
-
 
 arraylist->list

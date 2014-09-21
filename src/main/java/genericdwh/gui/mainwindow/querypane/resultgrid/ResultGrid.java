@@ -126,7 +126,7 @@ public class ResultGrid extends GridPane {
 
 	
 	private void setTitle(String ratioName) {
-		ResultGridCell title = new ResultGridCell(ratioName, 0, 0);
+		ResultGridCell title = new ResultGridCell(ratioName, 0, 0, 0);
 		add(title, 0, 0);
 	}
 	
@@ -242,17 +242,17 @@ public class ResultGrid extends GridPane {
 				ResultGridCell newCell = null;
 				if (isRowHeader) {
 					if (currHierarchy != null && !isLastLevel && currNode.getSuccessorIds() != null) {
-						newCell = new ResultGridCell(currNode.getName(), i, j, 1, childCount, currHierarchy, currLevel, collapsed);
+						newCell = new ResultGridCell(currNode.getName(), i, j, 1, 1, childCount, currHierarchy, currLevel, collapsed);
 					} else {
-						newCell = new ResultGridCell(currNode.getName(), i, j, 1, childCount);
+						newCell = new ResultGridCell(currNode.getName(), i, j, 1, 1, childCount);
 					}
 					ResultGrid.setRowSpan(newCell, childCount);
 					add(newCell, i, j);
 				} else {
 					if (currHierarchy != null && !isLastLevel && currNode.getSuccessorIds() != null) {
-						newCell = new ResultGridCell(currNode.getName(), j, i, childCount, 1, currHierarchy, currLevel, collapsed) ;
+						newCell = new ResultGridCell(currNode.getName(), j, i, 1, childCount, 1, currHierarchy, currLevel, collapsed) ;
 					} else {
-						newCell = new ResultGridCell(currNode.getName(), j, i, childCount, 1);
+						newCell = new ResultGridCell(currNode.getName(), j, i, 1, childCount, 1);
 					}
 					ResultGrid.setColumnSpan(newCell, childCount);
 					add(newCell, j, i);
@@ -292,13 +292,13 @@ public class ResultGrid extends GridPane {
 		if (isRowHeader) {
 			int colIndex = offset - 1;
 			int rowIndex = firstRowIndex + rowCount;
-			ResultGridCell totalsHeader = new ResultGridCell("Subtotals", colIndex, rowIndex);
+			ResultGridCell totalsHeader = new ResultGridCell("Subtotals", colIndex, rowIndex, 2);
 			add(totalsHeader, colIndex, rowIndex);
 			ResultGrid.setRowSpan(totalsHeader, span);
 		} else {
 			int colIndex = firstColIndex + colCount;
 			int rowIndex = offset - 1;
-			ResultGridCell totalsHeader = new ResultGridCell("Subtotals", colIndex, rowIndex);
+			ResultGridCell totalsHeader = new ResultGridCell("Subtotals", colIndex, rowIndex, 2);
 			add(totalsHeader, colIndex, rowIndex);
 			ResultGrid.setColumnSpan(totalsHeader, span);
 		}
@@ -319,7 +319,7 @@ public class ResultGrid extends GridPane {
 				colIndex = firstColIndex + colCount + j;
 				rowIndex = offset;
 			}
-			newNode = new ResultGridNode(dim.getId(), new ResultGridCell(dim.getName(), colIndex, rowIndex));
+			newNode = new ResultGridNode(dim.getId(), new ResultGridCell(dim.getName(), colIndex, rowIndex, 2));
 			newNode.setComponentIds(refObjManager.readRefObjIds(new ArrayList<>(currMap.values())));
 			add(newNode.getCell(), colIndex, rowIndex);
 			headers.add(newNode);
@@ -332,7 +332,7 @@ public class ResultGrid extends GridPane {
 	private void createResultCells() {
 		for (int i = firstRowIndex; i < firstRowIndex + rowCount; i++) {
 			for (int j = firstColIndex; j < firstColIndex + colCount; j++) {
-				ResultGridNode newNode = new ResultGridNode(0, new ResultGridCell("no data", j, i));
+				ResultGridNode newNode = new ResultGridNode(0, new ResultGridCell("no data", j, i, 3));
 				add(newNode.getCell(), j, i);
 				resultsTable.put(i, j, newNode);
 			}
@@ -347,7 +347,7 @@ public class ResultGrid extends GridPane {
 			
 			for (int i = firstColIndex, j = 0; i < firstColIndex + colCount; j++) {
 				
-				ResultGridCell newCell = new ResultGridCell("no data", i, rowIndex);
+				ResultGridCell newCell = new ResultGridCell("no data", i, rowIndex, 4);
 				add(newCell, i, rowIndex);
 				int span = 1;
 				if (j < headerNodes.size()) {
@@ -367,7 +367,7 @@ public class ResultGrid extends GridPane {
 			ArrayList<ResultGridNode> headerNodes = getHeaderNodesByDimensionId(rowHeaderTree, currTotalHeader.getId());
 
 			for (int i = firstRowIndex, j = 0; i < firstRowIndex + rowCount; j++) {	
-				ResultGridCell newCell = new ResultGridCell("no data", colIndex, i);
+				ResultGridCell newCell = new ResultGridCell("no data", colIndex, i, 4);
 				add(newCell, colIndex, i);
 				int span = 1;
 				if (j < headerNodes.size()) {
@@ -383,7 +383,7 @@ public class ResultGrid extends GridPane {
 		grandTotalCol = firstColIndex + colCount;
 		grandTotalRow = firstRowIndex + rowCount;
 
-		ResultGridCell grandTotalCell = new ResultGridCell("no data", grandTotalCol, grandTotalRow);
+		ResultGridCell grandTotalCell = new ResultGridCell("no data", grandTotalCol, grandTotalRow, 5);
 		add(grandTotalCell, grandTotalCol, grandTotalRow);
 		ResultGrid.setColumnSpan(grandTotalCell, (rowTotalHeaders.size() > 0) ? rowTotalHeaders.size() : 1);
 		ResultGrid.setRowSpan(grandTotalCell, (colTotalHeaders.size() > 0) ? colTotalHeaders.size() : 1);

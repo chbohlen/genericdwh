@@ -9,6 +9,7 @@ import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.db.DatabaseController;
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.general.StatusBarController;
+import genericdwh.gui.general.StatusMessage;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController;
 import genericdwh.gui.mainwindow.sidebar.MainWindowSidebarController;
 import genericdwh.gui.subwindows.connectdialog.ConnectDialogController;
@@ -150,6 +151,8 @@ public class MainWindowController implements Initializable{
 		
 		hideSidebars();
 		hideQueryPane();
+		
+		postStatus(StatusMessage.DISCONNECTED);
 	}
 	
 	@FXML private void menuBarExitOnClickHandler() {

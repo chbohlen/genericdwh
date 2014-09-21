@@ -1,0 +1,40 @@
+.border {
+	-fx-border-color: gray;
+    -fx-border-width: 1;
+    -fx-border-style: solid;
+}
+
+.cell-0 { /* Title */
+	-fx-border-color: black;
+	-fx-background-color: #FFFFFF;
+	-fx-font-weight: bold;
+	-fx-padding: 2;
+}
+
+.cell-1 { /* Header */
+	-fx-background-color: #CDD7E1;
+	-fx-padding: 3;
+}
+
+.cell-2 { /* TotalHeader  */
+    -fx-background-color: #E1E1E1;
+	-fx-font-weight: bold;
+	-fx-padding: 2;
+}
+
+.cell-3 { /* ResultCell */
+	-fx-background-color: #FFFFFF;
+	-fx-padding: 3;
+}
+
+.cell-4 { /* TotalCell */
+    -fx-background-color: #E1E1E1;
+	-fx-font-weight: bold;
+	-fx-padding: 2;
+}
+
+.cell-5 { /* GrandTotal */
+    -fx-background-color: #CFCFCF;
+	-fx-font-weight: bold;
+	-fx-padding: 2;
+}
