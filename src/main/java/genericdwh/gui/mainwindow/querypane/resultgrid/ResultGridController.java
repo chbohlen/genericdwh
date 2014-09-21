@@ -147,13 +147,20 @@ public class ResultGridController {
 		
 		ArrayList<DataObject> combinedDims = grid.getCombinedDims();
 		
+		int index = -1;
 		for (Dimension level : hierarchy.getLevels()) {
+			if (level == currLevel && hierarchy.getTopLevel() != currLevel) {
+				index = combinedDims.indexOf(level);
+			}
 			combinedDims.remove(level);
 		}
 		if (newLevel != hierarchy.getTopLevel()) {
+			if (hierarchy.getTopLevel() == currLevel) {
+				index = combinedDims.indexOf(hierarchy);
+			}
 			combinedDims.remove(hierarchy);
 		}
-		combinedDims.add(newLevel);
+		combinedDims.add(index, newLevel);
 		
 		ArrayList<Entry<DimensionHierarchy, Integer>> allHierarchies = grid.getHierarchies();
 		
