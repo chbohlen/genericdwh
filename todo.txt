@@ -4,12 +4,7 @@ unnecessary load of higher hierarchy levels
 filter hierarchies
 b------
 empty cells
-grid collapsible
-button style
 result grid highlighting
-cell padding
-
-no new connection when connecting to same database
 
 plaintext queries
 

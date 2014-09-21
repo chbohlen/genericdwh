@@ -1,6 +1,7 @@
 package genericdwh.gui.subwindows.editor.subwindows.confirmationdialog;
 
 import genericdwh.gui.SpringFXMLLoader;
+import genericdwh.gui.general.Icons;
 import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.main.Main;
 import javafx.fxml.FXML;
@@ -32,6 +33,7 @@ public abstract class ConfirmationDialogController {
 			stage.initOwner(Main.getContext().getBean(EditorController.class).getStage().getScene().getWindow());
 			stage.setScene(scene);
 			stage.setTitle(title);
+			stage.getIcons().add(Icons.CONFIRMATION_DIALOG);
 			stage.setResizable(false);
 			stage.show();
 		} catch (Exception e) {

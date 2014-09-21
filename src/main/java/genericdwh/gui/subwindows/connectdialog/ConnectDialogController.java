@@ -8,6 +8,7 @@ import genericdwh.dataobjects.ratio.RatioManager;
 import genericdwh.dataobjects.unit.UnitManager;
 import genericdwh.db.DatabaseController;
 import genericdwh.gui.SpringFXMLLoader;
+import genericdwh.gui.general.Icons;
 import genericdwh.gui.general.StatusMessage;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.main.Main;
@@ -50,7 +51,8 @@ public class ConnectDialogController {
 			stage.initModality(Modality.WINDOW_MODAL);
 			stage.initOwner(Main.getContext().getBean(MainWindowController.class).getStage().getScene().getWindow());
 			stage.setScene(scene);
-			stage.setTitle("Connect to database");
+			stage.setTitle("Connect to Database");
+			stage.getIcons().add(Icons.CONNECT_DIALOG);
 			stage.setResizable(false);
 			stage.show();
 		} catch (Exception e) {

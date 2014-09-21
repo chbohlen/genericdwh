@@ -13,6 +13,7 @@ import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
+import genericdwh.gui.general.Icons;
 import genericdwh.gui.general.sidebar.HeaderItem;
 import genericdwh.gui.general.sidebar.TreeCellRightClickHandler;
 import genericdwh.main.Main;
@@ -23,6 +24,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
@@ -31,6 +33,8 @@ public class MainWindowSidebarController implements Initializable {
 	@FXML private AnchorPane sidebars;
 	@FXML private TreeView<DataObject> dimensionSidebar;
 	@FXML private TreeView<DataObject> ratioSidebar;
+	
+
 	
 	public MainWindowSidebarController() {
 	}
@@ -77,22 +81,22 @@ public class MainWindowSidebarController implements Initializable {
 	
 	private void createDimensionSidebar(TreeMap<Long, DimensionCategory> dimensionCategories, List<DimensionHierarchy> hierarchies, TreeMap<Long, Dimension> dimensions) {
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
-		
-		HeaderItem tiRoot = new HeaderItem("Dimensions", 0, true, false);
+	    
+		HeaderItem tiRoot = new HeaderItem("Dimensions", 0, true, false, new ImageView(Icons.FOLDER));
 				
 		TreeMap<Long, LazyLoadDataObjectTreeItem> categoryTreeItemMap = new TreeMap<>();
 		for (DimensionCategory currCat : dimensionCategories.values()) {
-			LazyLoadDataObjectTreeItem tiNewCategory = new LazyLoadDataObjectTreeItem(currCat);
+			LazyLoadDataObjectTreeItem tiNewCategory = new LazyLoadDataObjectTreeItem(currCat, new ImageView(Icons.FOLDER));
 			tiRoot.addChild(tiNewCategory);
 			
 			categoryTreeItemMap.put(currCat.getId(), tiNewCategory);
 		}
 				
 		DimensionCategory noCat = new DimensionCategory(-1, "Uncategorized");
-		LazyLoadDataObjectTreeItem tiNoCat = new LazyLoadDataObjectTreeItem(noCat);
+		LazyLoadDataObjectTreeItem tiNoCat = new LazyLoadDataObjectTreeItem(noCat, new ImageView(Icons.FOLDER));
 		
 		for (DimensionHierarchy hierarchy : hierarchies) {
-			LazyLoadDataObjectTreeItem tiNewHierarchy = new LazyLoadDataObjectTreeItem(hierarchy);
+			LazyLoadDataObjectTreeItem tiNewHierarchy = new LazyLoadDataObjectTreeItem(hierarchy, new ImageView(Icons.DIMENSION_HIERARCHY));
 			LazyLoadDataObjectTreeItem tiCat = categoryTreeItemMap.get(hierarchy.getCategoryId());
 			if (tiCat != null) {
 				tiCat.addChild(tiNewHierarchy);
@@ -113,17 +117,12 @@ public class MainWindowSidebarController implements Initializable {
 			}
 		}
 		
-		DimensionCategory combinations = new DimensionCategory(-1, "Combinations");
-		LazyLoadDataObjectTreeItem tiCombinations = new LazyLoadDataObjectTreeItem(combinations);
-		
 		for (Dimension currDim : dimensions.values()) {
-			LazyLoadDataObjectTreeItem tiNewDim = new LazyLoadDataObjectTreeItem(currDim);
+			LazyLoadDataObjectTreeItem tiNewDim = new LazyLoadDataObjectTreeItem(currDim, new ImageView(Icons.DIMENSION));
 			LazyLoadDataObjectTreeItem tiCat = categoryTreeItemMap.get(currDim.getCategoryId());
 			if (tiCat != null) {
 				tiCat.addChild(tiNewDim);
-			} else if (currDim.isCombination()) {
-				tiCombinations.addChild(tiNewDim);
-			} else {
+			}  else {
 				tiNoCat.addChild(tiNewDim);
 			}
 			
@@ -132,10 +131,7 @@ public class MainWindowSidebarController implements Initializable {
 				tiNewDim.addChild(tiPlaceholder);
 			}
 		}
-		
-		if (tiCombinations.hasChildren()) {
-			tiRoot.addChild(tiCombinations);
-		}
+
 		if (tiNoCat.hasChildren()) {
 			tiRoot.addChild(tiNoCat);
 		}
@@ -144,19 +140,19 @@ public class MainWindowSidebarController implements Initializable {
 	}
 	
 	private void createRatioSidebar(TreeMap<Long, RatioCategory> ratioCategories, TreeMap<Long, Ratio> ratios) {
-		HeaderItem tiRoot = new HeaderItem("Ratios", 1, true, false);
+		HeaderItem tiRoot = new HeaderItem("Ratios", 1, true, false, new ImageView(Icons.FOLDER));
 		tiRoot.setExpanded(true);
 		
 		TreeMap<Long, LazyLoadDataObjectTreeItem> categoryTreeItemMap = new TreeMap<>();
 		for (RatioCategory currCat : ratioCategories.values()) {
-			LazyLoadDataObjectTreeItem tiNewCategory = new LazyLoadDataObjectTreeItem(currCat);
+			LazyLoadDataObjectTreeItem tiNewCategory = new LazyLoadDataObjectTreeItem(currCat, new ImageView(Icons.FOLDER));
 			tiRoot.addChild(tiNewCategory);
 			
 			categoryTreeItemMap.put(currCat.getId(), tiNewCategory);
 		}
 		
 		for (Ratio currRatio : ratios.values()) {
-			LazyLoadDataObjectTreeItem tiNewRatio = new LazyLoadDataObjectTreeItem(currRatio);
+			LazyLoadDataObjectTreeItem tiNewRatio = new LazyLoadDataObjectTreeItem(currRatio, new ImageView(Icons.RATIO));
 			LazyLoadDataObjectTreeItem tiCat = categoryTreeItemMap.get(currRatio.getCategoryId());
 			if (tiCat != null) {
 				tiCat.addChild(tiNewRatio);
@@ -164,7 +160,7 @@ public class MainWindowSidebarController implements Initializable {
 			
 			if (currRatio.isRelation()) {
 				for (Ratio dependency : currRatio.getDependencies()) {
-					LazyLoadDataObjectTreeItem tiNewDependency = new LazyLoadDataObjectTreeItem(dependency);
+					LazyLoadDataObjectTreeItem tiNewDependency = new LazyLoadDataObjectTreeItem(dependency, new ImageView(Icons.RATIO));
 					tiNewRatio.addChild(tiNewDependency);
 				}
 			}

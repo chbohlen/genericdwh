@@ -16,6 +16,7 @@ import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
 import genericdwh.dataobjects.unit.Unit;
 import genericdwh.gui.SpringFXMLLoader;
+import genericdwh.gui.general.Icons;
 import genericdwh.gui.general.StatusBarController;
 import genericdwh.gui.general.StatusMessage;
 import genericdwh.gui.mainwindow.MainWindowController;
@@ -97,6 +98,7 @@ public class EditorController implements Initializable{
 			stage.initOwner(Main.getContext().getBean(MainWindowController.class).getStage().getScene().getWindow());
 			stage.setScene(scene);
 			stage.setTitle("Core Data Editor");
+			stage.getIcons().add(Icons.EDITOR_WINDOW);
 			
 			stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 				@Override

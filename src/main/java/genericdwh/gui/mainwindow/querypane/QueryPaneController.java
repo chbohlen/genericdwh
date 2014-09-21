@@ -35,6 +35,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TreeView;
 import javafx.util.Callback;
 import lombok.Getter;
 
@@ -56,6 +57,8 @@ public class QueryPaneController implements Initializable {
 
 	@FXML private Button btnExecQuery;
 	@FXML private Button btnClear;
+	
+	@FXML private TreeView<String> test;
 	
 	ResultGridController resultGridController;
 	
@@ -169,6 +172,8 @@ public class QueryPaneController implements Initializable {
 				@SuppressWarnings("unchecked")
 				TableView<DataObject> tvTarget = (TableView<DataObject>)gestureTarget;
 				tvTarget.getItems().add(draggedDataObject);
+				
+				queryPane.requestFocus();
 			}
 
 			completed = true;
@@ -603,24 +608,28 @@ public class QueryPaneController implements Initializable {
 		if (!tvColDims.getItems().contains(dim)) {
 			tvColDims.getItems().add(dim);
 		}
+		queryPane.requestFocus();
 	}
 	
 	public void addRowDimension(DataObject dim) {
 		if (!tvRowDims.getItems().contains(dim)) {
 			tvRowDims.getItems().add(dim);
 		}
+		queryPane.requestFocus();
 	}
 	
 	public void addFilter(DataObject dim) {
 		if (!tvFilters.getItems().contains(dim)) {
 			tvFilters.getItems().add(dim);
 		}
+		queryPane.requestFocus();
 	}
 	
 	public void addRatio(DataObject dim) {
 		if (!tvRatios.getItems().contains(dim)) {
 			tvRatios.getItems().add(dim);
 		}
+		queryPane.requestFocus();
 	}
 
 }

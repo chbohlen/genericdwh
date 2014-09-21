@@ -6,7 +6,7 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.control.TreeCell;
 import lombok.Getter;
 
-public class DataObjectTreeCell extends TreeCell<DataObject>{
+public class DataObjectTreeCell extends TreeCell<DataObject> {
 		
 	@Getter private StringProperty title = new SimpleStringProperty("");
 	
@@ -16,9 +16,11 @@ public class DataObjectTreeCell extends TreeCell<DataObject>{
 
         if (obj != null) {
         	setText(obj.toString());
+        	setGraphic(getTreeItem().getGraphic());
             title.set(obj.toString());
         } else {
         	setText(null);
+        	setGraphic(null);
         }
     }
 }

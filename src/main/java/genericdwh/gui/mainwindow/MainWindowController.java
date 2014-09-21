@@ -8,6 +8,7 @@ import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.db.DatabaseController;
 import genericdwh.gui.SpringFXMLLoader;
+import genericdwh.gui.general.Icons;
 import genericdwh.gui.general.StatusBarController;
 import genericdwh.gui.general.StatusMessage;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController;
@@ -99,9 +100,9 @@ public class MainWindowController implements Initializable{
 			    	updateLayouts();
 			    }
 			});
-			
 			stage.setScene(scene);
 			stage.setTitle("Generic DWH");
+			stage.getIcons().add(Icons.MAIN_WINDOW);
 			stage.show();
 		} catch(Exception e) {
 			throw new RuntimeException(e);

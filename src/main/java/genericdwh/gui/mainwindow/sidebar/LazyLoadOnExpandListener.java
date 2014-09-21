@@ -6,6 +6,7 @@ import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
+import genericdwh.gui.general.Icons;
 import genericdwh.gui.general.sidebar.HeaderItem;
 import genericdwh.main.Main;
 
@@ -15,6 +16,7 @@ import java.util.Map.Entry;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.image.ImageView;
 
 public 	class LazyLoadOnExpandListener implements ChangeListener<Boolean> {
 
@@ -51,7 +53,7 @@ public 	class LazyLoadOnExpandListener implements ChangeListener<Boolean> {
     		tiObj.getChildren().clear();
     		
     		for (Entry<Long, ReferenceObject> currEntry : refObjs.entrySet()) {
-    			LazyLoadDataObjectTreeItem tiRefObjNode = new LazyLoadDataObjectTreeItem(currEntry.getValue());
+    			LazyLoadDataObjectTreeItem tiRefObjNode = new LazyLoadDataObjectTreeItem(currEntry.getValue(), new ImageView(Icons.REFERENCE_OBJECT));
     			if (nextLvl != null && refObjManager.dimensionAndRefObjParentHaveRecords((Dimension)nextLvl.getValue(), currEntry.getValue())) {
 	    			tiRefObjNode.addChild(nextLvl);
     			}
