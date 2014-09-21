@@ -32,6 +32,7 @@ public class EditorSidebarController implements Initializable {
 		
 		
 		HeaderItem tiDims = new HeaderItem("Dimensions", 0, true, true, new ImageView(Icons.UNGROUPED));
+		tiDims.setExpanded(false);
 		tiRoot.addChild(tiDims);
 		
 		HeaderItem tiDimsByCat = new HeaderItem("By Category", 1, true, true, new ImageView(Icons.GROUPED));
@@ -39,6 +40,7 @@ public class EditorSidebarController implements Initializable {
 		
 		
 		HeaderItem tiDimHierarchies = new HeaderItem("Dimension Hierarchies", 2, true, true, new ImageView(Icons.UNGROUPED));
+		tiDimHierarchies.setExpanded(false);
 		tiRoot.addChild(tiDimHierarchies);
 		
 		HeaderItem tiDimHierarchiesByCat = new HeaderItem("By Category", 3, true, true, new ImageView(Icons.GROUPED));
@@ -46,10 +48,12 @@ public class EditorSidebarController implements Initializable {
 		
 		
 		HeaderItem tiDimCombinations = new HeaderItem("Dimension Combinations", 4, true, true, new ImageView(Icons.UNGROUPED));
+		tiDimCombinations.setExpanded(false);
 		tiRoot.addChild(tiDimCombinations);
 		
 		
 		HeaderItem tiRefObjs = new HeaderItem("Reference Objects", 5, true, true, new ImageView(Icons.UNGROUPED));
+		tiRefObjs.setExpanded(false);
 		tiRoot.addChild(tiRefObjs);
 		
 		HeaderItem tiRefObjsByDim = new HeaderItem("By Dimension", 6, true, true, new ImageView(Icons.GROUPED));
@@ -57,6 +61,7 @@ public class EditorSidebarController implements Initializable {
 		
 		
 		HeaderItem tiRefObjHierarchies = new HeaderItem("Reference Object Hierarchies", 7, true, true, new ImageView(Icons.UNGROUPED));
+		tiRefObjHierarchies.setExpanded(false);
 		tiRoot.addChild(tiRefObjHierarchies);
 		
 		HeaderItem tiRefObjHierarchiesByCat = new HeaderItem("By Category", 8, true, true, new ImageView(Icons.GROUPED));
@@ -64,6 +69,7 @@ public class EditorSidebarController implements Initializable {
 		
 		
 		HeaderItem tiRefObjCombinations = new HeaderItem("Reference Object Combinations", 9, true, true, new ImageView(Icons.UNGROUPED));
+		tiRefObjCombinations.setExpanded(false);
 		tiRoot.addChild(tiRefObjCombinations);
 		
 		HeaderItem tiRefObjCombinationsByDim = new HeaderItem("By Dimension", 10, true, true, new ImageView(Icons.GROUPED));
@@ -71,6 +77,7 @@ public class EditorSidebarController implements Initializable {
 		
 		
 		HeaderItem tiRatios = new HeaderItem("Ratios", 11, true, true, new ImageView(Icons.UNGROUPED));
+		tiRatios.setExpanded(false);
 		tiRoot.addChild(tiRatios);
 		
 		HeaderItem tiRatiosByCat = new HeaderItem("By Category", 12, true, true, new ImageView(Icons.GROUPED));
@@ -78,6 +85,7 @@ public class EditorSidebarController implements Initializable {
 		
 		
 		HeaderItem tiFacts = new HeaderItem("Facts", 13, true, true, new ImageView(Icons.UNGROUPED));
+		tiFacts.setExpanded(false);
 		tiRoot.addChild(tiFacts);
 		
 		HeaderItem tiFactsByRatio = new HeaderItem("By Ratio", 14, true, true, new ImageView(Icons.GROUPED));
