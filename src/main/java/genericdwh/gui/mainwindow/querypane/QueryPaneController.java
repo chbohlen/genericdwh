@@ -16,13 +16,13 @@ import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.db.DatabaseReader;
 import genericdwh.db.ResultObject;
-import genericdwh.gui.general.StatusMessage;
+import genericdwh.gui.general.Icons;
+import genericdwh.gui.general.StatusMessages;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGrid;
 import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGridController;
 import genericdwh.gui.mainwindow.sidebar.TableCellRightClickHandler;
 import genericdwh.main.Main;
-import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableView;
@@ -32,7 +32,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TreeView;
@@ -96,10 +95,7 @@ public class QueryPaneController implements Initializable {
             	DataObjectTableCell tableCell =  new DataObjectTableCell();
             	
             	tableCell.setOnMouseClicked(new TableCellRightClickHandler(tvColDims));
-            	tableCell.contextMenuProperty().bind(Bindings
-					            				.when(tableCell.emptyProperty())
-					            				.then((ContextMenu)null)
-					            				.otherwise(new TableCellContextMenu(tvColDims, tableCell))); 
+            	tableCell.setContextMenu(new TableCellContextMenu(tvColDims, tableCell));
             	return tableCell;            
             }
         });
@@ -109,10 +105,8 @@ public class QueryPaneController implements Initializable {
             	DataObjectTableCell tableCell =  new DataObjectTableCell();
             	
             	tableCell.setOnMouseClicked(new TableCellRightClickHandler(tvRowDims));
-            	tableCell.contextMenuProperty().bind(Bindings
-						        				.when(tableCell.emptyProperty())
-						        				.then((ContextMenu)null)
-						        				.otherwise(new TableCellContextMenu(tvRowDims, tableCell))); 
+            	tableCell.setContextMenu(new TableCellContextMenu(tvRowDims, tableCell));
+
             	return tableCell;
             }
         });
@@ -122,10 +116,8 @@ public class QueryPaneController implements Initializable {
             	DataObjectTableCell tableCell =  new DataObjectTableCell();
             	
             	tableCell.setOnMouseClicked(new TableCellRightClickHandler(tvFilters));
-            	tableCell.contextMenuProperty().bind(Bindings
-						        				.when(tableCell.emptyProperty())
-						        				.then((ContextMenu)null)
-						        				.otherwise(new TableCellContextMenu(tvFilters, tableCell))); 
+            	tableCell.setContextMenu(new TableCellContextMenu(tvFilters, tableCell));
+
             	return tableCell;            
             }
         });
@@ -135,10 +127,8 @@ public class QueryPaneController implements Initializable {
             	DataObjectTableCell tableCell =  new DataObjectTableCell();
             	
             	tableCell.setOnMouseClicked(new TableCellRightClickHandler(tvRatios));
-            	tableCell.contextMenuProperty().bind(Bindings
-						        				.when(tableCell.emptyProperty())
-						        				.then((ContextMenu)null)
-						        				.otherwise(new TableCellContextMenu(tvRatios, tableCell))); 
+            	tableCell.setContextMenu(new TableCellContextMenu(tvRatios, tableCell));
+
             	return tableCell;
             }
         });
@@ -219,7 +209,10 @@ public class QueryPaneController implements Initializable {
 	}	
 	
 	@FXML public void buttonExecQueryOnClickHandler() {
-		Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessage.QUERYING);
+		Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.QUERYING, Icons.NOTIFICATION);
+		
+		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
+		
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 		
@@ -268,6 +261,10 @@ public class QueryPaneController implements Initializable {
 				}
 				case SINGLE_DIMENSION_W_HIERARCHY: {
 					hasResults = handleSingleDimensionWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter);
+					if (!hasResults) {
+						mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
+						return;
+					}
 					break;
 				}
 				case DIMENSION_COMBINATION: {
@@ -276,6 +273,10 @@ public class QueryPaneController implements Initializable {
 				}
 				case DIMENSION_COMBINATION_W_HIERARCHY: {
 					hasResults = handleDimensionCombinationWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter);
+					if (!hasResults) {
+						mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
+						return;
+					}
 					break;
 				}
 				case MIXED: {
@@ -284,16 +285,19 @@ public class QueryPaneController implements Initializable {
 				}
 				case MIXED_W_HIERARCHY: {
 					hasResults = handleMixedWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter);
+					if (!hasResults) {
+						mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
+						return;
+					}
 					break;
 				}
 			}
 		}
 		
-		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
 		if (hasResults) {
-			mainWindowController.postStatus(StatusMessage.QUERY_OK);
+			mainWindowController.postStatus(StatusMessages.QUERY_OK, Icons.NOTIFICATION);
 		} else {
-			mainWindowController.postStatus(StatusMessage.QUERY_NO_DATA);
+			mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA, Icons.WARNING);
 		}
 	}	
 	
@@ -482,6 +486,8 @@ public class QueryPaneController implements Initializable {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 				
+		boolean hasResults = false;
+		
 		for (DataObject ratio : ratios) {
 			ResultGrid newResultGrid = new ResultGrid();
 			resultGridContainer.getChildren().add(newResultGrid);
@@ -492,9 +498,13 @@ public class QueryPaneController implements Initializable {
 						
 			List<ResultObject> facts = dbReader.loadFactsForSingleDim(ratio.getId(), dimId, filterRefObjIds);	
 			resultGridController.fillDimension(facts);
+			
+			if (facts != null) {
+				hasResults = true;
+			}
 		}
 		
-		return true;		
+		return hasResults;		
 	}
 		
 	private boolean handleDimensionCombination(List<DataObject> ratios, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs,
@@ -526,7 +536,9 @@ public class QueryPaneController implements Initializable {
 			ArrayList<DataObject> combinedDims, List<DataObject> filter) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
-						
+					
+		boolean hasResults = false;
+		
 		for (DataObject ratio : ratios) {
 			ResultGrid newResultGrid = new ResultGrid();
 			resultGridContainer.getChildren().add(newResultGrid);
@@ -537,9 +549,13 @@ public class QueryPaneController implements Initializable {
 			
 			List<ResultObject> facts = dbReader.loadFactsForDimCombination(ratio.getId(), dimId, filterRefObjIds);
 			resultGridController.fillDimension(facts);
+			
+			if (facts != null) {
+				hasResults = true;
+			}
 		}
 		
-		return true;
+		return hasResults;
 	}
 		
 	private boolean handleMixed(List<DataObject> ratios, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs,
@@ -580,6 +596,8 @@ public class QueryPaneController implements Initializable {
 		
 		Long[] refObjIds = refObjManager.readRefObjIds(combinedDims);
 		
+		boolean hasResults = false;
+		
 		for (DataObject ratio : ratios) {
 			ResultGrid newResultGrid = new ResultGrid();
 			resultGridContainer.getChildren().add(newResultGrid);
@@ -590,9 +608,13 @@ public class QueryPaneController implements Initializable {
 			
 			List<ResultObject> facts = dbReader.loadFactsForDimCombinationAndRefObjs(ratio.getId(), dimId, refObjIds, filterRefObjIds);
 			resultGridController.fillDimension(facts);
+
+			if (facts != null) {
+				hasResults = true;
+			}
 		}
 		
-		return true;
+		return hasResults;
 	}
 	
 

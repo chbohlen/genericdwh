@@ -30,6 +30,6 @@
 	   			<fx:include layoutX="230" source="QueryPane.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="230.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
    			</children>
 		</AnchorPane>
-		<fx:include layoutY="724.0" source="../general/StatusBar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+		<fx:include layoutY="724.0" source="../statusbar/StatusBar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
 	</children>
 </AnchorPane>

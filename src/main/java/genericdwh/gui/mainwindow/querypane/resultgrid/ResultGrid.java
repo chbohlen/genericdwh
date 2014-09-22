@@ -123,7 +123,7 @@ public class ResultGrid extends GridPane {
 
 		createTotalCells();
 	}
-
+	
 	
 	private void setTitle(String ratioName) {
 		ResultGridCell title = new ResultGridCell(ratioName, 0, 0, 0);

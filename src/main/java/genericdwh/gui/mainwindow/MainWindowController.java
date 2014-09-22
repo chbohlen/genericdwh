@@ -7,11 +7,11 @@ import genericdwh.dataobjects.unit.UnitManager;
 import genericdwh.db.DatabaseController;
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.general.Icons;
-import genericdwh.gui.general.StatusBarController;
-import genericdwh.gui.general.StatusMessage;
+import genericdwh.gui.general.StatusMessages;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController;
 import genericdwh.gui.mainwindow.sidebar.MainWindowSidebarController;
-import genericdwh.gui.subwindows.connectdialog.ConnectDialogController;
+import genericdwh.gui.statusbar.StatusBarController;
+import genericdwh.gui.subwindows.connectwindow.ConnectWindowController;
 import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.main.Main;
 
@@ -26,6 +26,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,21 +43,21 @@ public class MainWindowController implements Initializable{
 	private MainWindowSidebarController sidebarController;
 	private QueryPaneController queryPaneController;
 	
-	private ConnectDialogController connectDialogController;
+	private ConnectWindowController connectWindowController;
 	private EditorController editorController;
 	
 	@ Getter @Setter private DataObject draggedDataObject;
 	
 	public MainWindowController(StatusBarController statusBarController,
 			MainWindowSidebarController sidebarController, QueryPaneController queryPaneController,
-			ConnectDialogController connectDialogController, EditorController editorController) {
+			ConnectWindowController connectWindowController, EditorController editorController) {
 		
 		this.statusBarController = statusBarController;
 		
 		this.sidebarController = sidebarController;
 		this.queryPaneController = queryPaneController;
 		
-		this.connectDialogController = connectDialogController;
+		this.connectWindowController = connectWindowController;
 		this.editorController = editorController;
 	}
 	
@@ -141,8 +142,8 @@ public class MainWindowController implements Initializable{
 		queryPaneController.clear();
 	}
 	
-	public void postStatus(String status) {
-		statusBarController.postStatus(status);
+	public void postStatus(String status, Image icon) {
+		statusBarController.postStatus(status, icon);
 	}
 	
 	public void clearStatus() {
@@ -151,7 +152,7 @@ public class MainWindowController implements Initializable{
 
 
 	@FXML private void menuBarConnectOnClickHandler() {
-		connectDialogController.createWindow();
+		connectWindowController.createWindow();
 	}
 
 	@FXML private void menuBarDisconnectOnClickHandler() {
@@ -162,7 +163,7 @@ public class MainWindowController implements Initializable{
 		hideSidebars();
 		hideQueryPane();	
 		
-		postStatus(StatusMessage.DISCONNECTED);
+		postStatus(StatusMessages.DISCONNECTED, Icons.NOTIFICATION);
 	}
 	
 	@FXML private void menuBarExitOnClickHandler() {

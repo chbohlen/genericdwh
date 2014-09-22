@@ -7,8 +7,9 @@ public class Icons {
 	/* Windows */
 	public static Image MAIN_WINDOW = new Image(Main.class.getResourceAsStream("/icons/windows/main.png"));
 	public static Image EDITOR_WINDOW = new Image(Main.class.getResourceAsStream("/icons/windows/editor.png"));
-	public static Image CONNECT_DIALOG = new Image(Main.class.getResourceAsStream("/icons/windows/connect.png"));
+	public static Image CONNECT_WINDOW = new Image(Main.class.getResourceAsStream("/icons/windows/connect.png"));
 	public static Image CONFIRMATION_DIALOG = new Image(Main.class.getResourceAsStream("/icons/windows/confirmation.png"));
+	public static Image WARNING_DIALOG = new Image(Main.class.getResourceAsStream("/icons/windows/warning.png"));
 	
 	/* Main */
 	public static Image FOLDER = new Image(Main.class.getResourceAsStream("/icons/main/folder.png"));
@@ -20,4 +21,8 @@ public class Icons {
 	/* Editor */
 	public static Image UNGROUPED = new Image(Main.class.getResourceAsStream("/icons/editor/ungrouped.png"));
 	public static Image GROUPED = new Image(Main.class.getResourceAsStream("/icons/editor/grouped.png"));
+	
+	/* StatusBar */
+	public static Image NOTIFICATION = new Image(Main.class.getResourceAsStream("/icons/statusbar/notification.png"));
+	public static Image WARNING = new Image(Main.class.getResourceAsStream("/icons/statusbar/warning.png"));
 }

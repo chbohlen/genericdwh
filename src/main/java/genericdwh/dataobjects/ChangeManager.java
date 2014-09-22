@@ -16,6 +16,7 @@ import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.dataobjects.unit.Unit;
 import genericdwh.dataobjects.unit.UnitManager;
+import genericdwh.gui.general.ValidationMessages;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,8 @@ public class ChangeManager {
 	
 	private List<DataObject> stagedObjects = new ArrayList<>();
 	
+	private Class<?> stagedObjectClass = null;
+	
 	public ChangeManager(DimensionManager dimManager, ReferenceObjectManager refObjManager, RatioManager ratioManager, UnitManager unitManager, FactManager factManager) {
 		this.dimManager = dimManager;
 		this.refObjManager = refObjManager;
@@ -40,48 +43,42 @@ public class ChangeManager {
 	}
 	
 	public void stageCreation(DataObject obj) {
-		if (!stagedObjects.contains(obj)) {
-			stagedObjects.add(obj);
-		}
+		stageObject(obj);
 		obj.setMarkedForCreation(true);
 	}
 	
 	public void stageUpdate(DataObject obj) {
-		if (!stagedObjects.contains(obj)) {
-			stagedObjects.add(obj);
-		}
+		stageObject(obj);
 		obj.setMarkedForUpdate(true);
 	}
 	
 	public void stageDeletion(DataObject obj) {
-		if (!stagedObjects.contains(obj)) {
-			stagedObjects.add(obj);
-		}
+		stageObject(obj);
 		obj.setMarkedForDeletion(true);
 	}
 	
 	public void saveChanges() {
-		if (stagedObjects.get(0) instanceof Dimension) {
+		if (stagedObjectClass == Dimension.class) {
 			dimManager.saveDimensions(stagedObjects);
-		} else if (stagedObjects.get(0) instanceof DimensionHierarchy) {
+		} else if (stagedObjectClass == DimensionHierarchy.class) {
 			dimManager.saveHierarchies(stagedObjects);
-		}  else if (stagedObjects.get(0) instanceof DimensionCombination) {
+		}  else if (stagedObjectClass == DimensionCombination.class) {
 			dimManager.saveCombinations(stagedObjects);
-		} else if (stagedObjects.get(0) instanceof ReferenceObject) {
+		} else if (stagedObjectClass == ReferenceObject.class) {
 			refObjManager.saveReferenceObjects(stagedObjects);
-		} else if (stagedObjects.get(0) instanceof ReferenceObjectHierarchy) {
+		} else if (stagedObjectClass == ReferenceObjectHierarchy.class) {
 			refObjManager.saveHierarchies(stagedObjects);
-		}  else if (stagedObjects.get(0) instanceof ReferenceObjectCombination) {
+		}  else if (stagedObjectClass == ReferenceObjectCombination.class) {
 			refObjManager.saveCombinations(stagedObjects);
-		} else if (stagedObjects.get(0) instanceof Ratio) {
+		} else if (stagedObjectClass == Ratio.class) {
 			ratioManager.saveRatios(stagedObjects);
-		} else if (stagedObjects.get(0) instanceof Fact) {
+		} else if (stagedObjectClass == Fact.class) {
 			factManager.saveFacts(stagedObjects);
-		} else if (stagedObjects.get(0) instanceof DimensionCategory) {
+		} else if (stagedObjectClass == DimensionCategory.class) {
 			dimManager.saveCategories(stagedObjects);
-		} else if (stagedObjects.get(0) instanceof RatioCategory) {
+		} else if (stagedObjectClass == RatioCategory.class) {
 			ratioManager.saveCategories(stagedObjects);
-		} else if (stagedObjects.get(0) instanceof Unit) {
+		} else if (stagedObjectClass == Unit.class) {
 			unitManager.saveUnits(stagedObjects);
 		}
 		
@@ -97,5 +94,48 @@ public class ChangeManager {
 		}
 		
 		stagedObjects.clear();
+		stagedObjectClass = null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String validateChanges() {
+		if (stagedObjectClass == ReferenceObject.class) {
+			for (DataObject refObj : stagedObjects) {
+				if (((ReferenceObject)refObj).getDimensionProperty().get().getId() == -1) {
+					return ValidationMessages.REFERENCE_OBJECT_NO_DIMENSION;
+				}
+			}
+		} else if (stagedObjectClass == DimensionHierarchy.class || stagedObjectClass == ReferenceObjectHierarchy.class) {
+			for (DataObject hierarchy : stagedObjects) {
+				if (((DataObjectHierarchy<DataObject>)hierarchy).getLevelsProperty().get().size() < 2) {
+					return ValidationMessages.HIERARCHY_MIN_2_OBJECTS;
+				}
+			}
+		} else if (stagedObjectClass == DimensionCombination.class || stagedObjectClass == ReferenceObjectCombination.class) {
+			for (DataObject combination : stagedObjects) {
+				if (((DataObjectCombination<DataObject>)combination).getComponentsProperty().get().size() < 2) {
+					return ValidationMessages.COMBINATION_MIN_2_OBJECTS;
+				}
+			}
+		} else if (stagedObjectClass == Fact.class) {
+			for (DataObject fact : stagedObjects) {
+				if (((Fact)fact).getRatioProperty().get().getId() == -1) {
+					return ValidationMessages.FACT_NO_RATIO;
+				} else if (((Fact)fact).getReferenceObjectProperty().get().getId() == -1) {
+					return ValidationMessages.FACT_NO_REFERENCE_OBJECT;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	private void stageObject(DataObject obj) {
+		if (!stagedObjects.contains(obj)) {
+			stagedObjects.add(obj);
+			if (stagedObjectClass == null) {
+				stagedObjectClass = obj.getClass();
+			}
+		}
 	}
 }

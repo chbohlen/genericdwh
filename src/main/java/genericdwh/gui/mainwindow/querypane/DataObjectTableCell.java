@@ -1,10 +1,16 @@
 package genericdwh.gui.mainwindow.querypane;
 
 import genericdwh.dataobjects.DataObject;
+import genericdwh.dataobjects.dimension.Dimension;
+import genericdwh.dataobjects.dimension.DimensionHierarchy;
+import genericdwh.dataobjects.ratio.Ratio;
+import genericdwh.dataobjects.referenceobject.ReferenceObject;
+import genericdwh.gui.general.Icons;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.main.Main;
 import javafx.event.EventHandler;
 import javafx.scene.control.TableCell;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
@@ -40,6 +46,22 @@ public class DataObjectTableCell extends TableCell<DataObject, DataObject> {
         
         this.dataObj = (DataObject)getTableRow().getItem();
         
-        setText((dataObj == null) ? null : dataObj.toString());
+        if (dataObj != null) {
+        	setText(dataObj.toString());
+        	ImageView icon = null;
+        	if (dataObj instanceof DimensionHierarchy) {
+        		icon = new ImageView(Icons.DIMENSION_HIERARCHY);
+        	} else if (dataObj instanceof Dimension) {
+        		icon = new ImageView(Icons.DIMENSION);
+        	} else if (dataObj instanceof ReferenceObject) {
+        		icon = new ImageView(Icons.REFERENCE_OBJECT);
+        	} else if (dataObj instanceof Ratio) {
+        		icon = new ImageView(Icons.RATIO);
+        	}
+        	setGraphic(icon);
+        } else {
+        	setText(null);
+        	setGraphic(null);
+        }
     }
 }

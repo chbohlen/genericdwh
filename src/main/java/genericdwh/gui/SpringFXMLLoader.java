@@ -2,8 +2,8 @@ package genericdwh.gui;
 
 import java.net.URL;
 
-import genericdwh.gui.general.StatusBarController;
 import genericdwh.gui.mainwindow.MainWindowController;
+import genericdwh.gui.statusbar.StatusBarController;
 import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.main.Main;
 import javafx.fxml.FXMLLoader;

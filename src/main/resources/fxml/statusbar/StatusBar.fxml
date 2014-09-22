@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="genericdwh.gui.statusbar.StatusBarController">
+	<children>
+		<Separator AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+		<Label fx:id="lStatus" alignment="CENTER_RIGHT" layoutY="1.0" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+			<padding>
+				<Insets right="20.0" />
+			</padding>
+		</Label>
+      	<ImageView fx:id="ivIcon" fitHeight="11.0" fitWidth="11.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="3.0" />
+	</children>
+</AnchorPane>

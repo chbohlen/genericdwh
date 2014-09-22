@@ -17,15 +17,16 @@ import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
 import genericdwh.dataobjects.unit.Unit;
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.general.Icons;
-import genericdwh.gui.general.StatusBarController;
-import genericdwh.gui.general.StatusMessage;
+import genericdwh.gui.general.StatusMessages;
 import genericdwh.gui.mainwindow.MainWindowController;
+import genericdwh.gui.statusbar.StatusBarController;
 import genericdwh.gui.subwindows.editor.editingview.EditingViewController;
 import genericdwh.gui.subwindows.editor.sidebar.EditorSidebarController;
-import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DeleteDialogController;
-import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.DiscardDialogController;
-import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveDialogController;
-import genericdwh.gui.subwindows.editor.subwindows.confirmationdialog.SaveOrDiscardDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.dialogpopup.DeletePopupDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.dialogpopup.DiscardPopupDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.dialogpopup.SavePopupDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.dialogpopup.SaveOrDiscardPopupDialogController;
+import genericdwh.gui.subwindows.editor.subwindows.dialogpopup.ValidationFailurePopupDialogController;
 import genericdwh.main.Main;
 import javafx.beans.binding.Bindings;
 import javafx.event.EventHandler;
@@ -35,6 +36,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -49,12 +51,11 @@ public class EditorController implements Initializable{
 	private EditorSidebarController sidebarController;
 	private EditingViewController editingViewController;
 	
-	private SaveDialogController saveChangesDialogController;
-	private DiscardDialogController discardChangesDialogController;
-	
-	private SaveOrDiscardDialogController saveOrDiscardOnLoadDialogController;
-	
-	private DeleteDialogController deleteObjectDialogController;
+	private SavePopupDialogController saveChangesDialogPopupController;
+	private ValidationFailurePopupDialogController validationFailurePopupDialogController;
+	private DiscardPopupDialogController discardChangesDialogPopupController;
+	private SaveOrDiscardPopupDialogController saveOrDiscardOnLoadDialogPopupController;
+	private DeletePopupDialogController deleteObjectDialogPopupController;
 	
 	@Getter private Stage stage;
 	
@@ -64,9 +65,11 @@ public class EditorController implements Initializable{
 	public EditorController(ChangeManager changeManager,
 			StatusBarController statusBarController,
 			EditorSidebarController sidebarController, EditingViewController resultViewController,
-			SaveDialogController saveChangesDialogController, DiscardDialogController discardChangesDialogController,
-			SaveOrDiscardDialogController saveOrDiscardOnLoadDialogController,
-			DeleteDialogController deleteObjectDialogController) {
+			SavePopupDialogController saveChangesDialogPopupController,
+			ValidationFailurePopupDialogController validationFailurePopupDialogController,
+			DiscardPopupDialogController discardChangesDialogPopupController,
+			SaveOrDiscardPopupDialogController saveOrDiscardOnLoadDialogPopupController,
+			DeletePopupDialogController deleteObjectDialogPopupController) {
 		
 		this.changeManager = changeManager;
 		
@@ -75,12 +78,11 @@ public class EditorController implements Initializable{
 		this.sidebarController = sidebarController;
 		this.editingViewController = resultViewController;
 		
-		this.saveChangesDialogController = saveChangesDialogController;
-		this.discardChangesDialogController = discardChangesDialogController;
-		
-		this.saveOrDiscardOnLoadDialogController = saveOrDiscardOnLoadDialogController;
-		
-		this.deleteObjectDialogController = deleteObjectDialogController;
+		this.saveChangesDialogPopupController = saveChangesDialogPopupController;
+		this.validationFailurePopupDialogController = validationFailurePopupDialogController;
+		this.discardChangesDialogPopupController = discardChangesDialogPopupController;
+		this.saveOrDiscardOnLoadDialogPopupController = saveOrDiscardOnLoadDialogPopupController;
+		this.deleteObjectDialogPopupController = deleteObjectDialogPopupController;
 	}
 	
 	public void createWindow() {
@@ -132,7 +134,7 @@ public class EditorController implements Initializable{
 	
 	public void loadEditingView(int id) {
 		if (editingViewController.getHasUnsavedChanges().get()) {
-			saveOrDiscardOnLoadDialogController.createWindow(id);
+			saveOrDiscardOnLoadDialogPopupController.createWindow(id);
 		} else {
 			createEditorTreeTable(id);
 		}
@@ -145,11 +147,11 @@ public class EditorController implements Initializable{
 	}
 	
 	@FXML public void menuBarSaveOnClickHandler() {
-		saveChangesDialogController.createWindow();
+		saveChangesDialogPopupController.createWindow();
 	}
 	
 	@FXML public void menuBarDiscardOnClickHandler() {
-		discardChangesDialogController.createWindow();
+		discardChangesDialogPopupController.createWindow();
 	}
 	
 	@FXML public void menuBarExitOnClickHandler() {
@@ -161,13 +163,29 @@ public class EditorController implements Initializable{
 	}
 	
 	public void saveChanges(int id) {
+		String validationResult = changeManager.validateChanges();
+		if (validationResult != null) {
+			if (id == -1) {
+				editingViewController.setHasUnsavedChanges(false);
+				validationFailurePopupDialogController.createWindow(validationResult, true);
+				MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
+				mainWindowController.refresh();
+				mainWindowController.postStatus(StatusMessages.VALIDATION_FAILED, Icons.WARNING);
+			} else {
+				validationFailurePopupDialogController.createWindow(validationResult, false);
+				postStatus(StatusMessages.VALIDATION_FAILED, Icons.WARNING);
+			}
+			return;
+		}
+		
 		changeManager.saveChanges();
-		postStatus(StatusMessage.CHANGES_SAVED);
+		postStatus(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
 		if (id == -1) {
 			editingViewController.setHasUnsavedChanges(false);
-			Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessage.CHANGES_SAVED);
+			Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
+			close();
 		} else {
-			postStatus(StatusMessage.CHANGES_SAVED);
+			postStatus(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
 			createEditorTreeTable(id);
 		}
 	}
@@ -180,9 +198,9 @@ public class EditorController implements Initializable{
 		changeManager.discardChanges();
 		if (id == -1) {
 			editingViewController.setHasUnsavedChanges(false);
-			Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessage.CHANGES_DISCARDED);
+			Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.CHANGES_DISCARDED, Icons.NOTIFICATION);
 		} else {
-			postStatus(StatusMessage.CHANGES_DISCARDED);
+			postStatus(StatusMessages.CHANGES_DISCARDED, Icons.NOTIFICATION);
 			createEditorTreeTable(id);
 		}
 	}
@@ -200,7 +218,7 @@ public class EditorController implements Initializable{
 	}
 	
 	public void confirmDeletion(TreeItem<DataObject> tiObjToDelete) {
-		deleteObjectDialogController.createWindow(tiObjToDelete);
+		deleteObjectDialogPopupController.createWindow(tiObjToDelete);
 	}
 
 	public DataObject createObject(Class<? extends DataObject> clazz) {
@@ -242,8 +260,8 @@ public class EditorController implements Initializable{
 		editingViewController.deleteObject(tiObjToDelete);
 	}
 	
-	private void postStatus(String status) {
-		statusBarController.postStatus(status);
+	private void postStatus(String status, Image icon) {
+		statusBarController.postStatus(status, icon);
 	}
 	
 	private void clearStatus() {
@@ -252,7 +270,7 @@ public class EditorController implements Initializable{
 	
 	private void serveCloseRequest() {
 		if (editingViewController.getHasUnsavedChanges().get()) {
-			saveOrDiscardOnLoadDialogController.createWindow();
+			saveOrDiscardOnLoadDialogPopupController.createWindow();
 		} else {
 			close();
 		}

@@ -11,6 +11,9 @@ import genericdwh.dataobjects.unit.Unit;
 import genericdwh.dataobjects.unit.UnitManager;
 import genericdwh.db.DatabaseReader;
 import genericdwh.db.ResultObject;
+import genericdwh.gui.general.Icons;
+import genericdwh.gui.general.StatusMessages;
+import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController.QueryType;
 import genericdwh.main.Main;
 
@@ -147,20 +150,13 @@ public class ResultGridController {
 		
 		ArrayList<DataObject> combinedDims = grid.getCombinedDims();
 		
-		int index = -1;
 		for (Dimension level : hierarchy.getLevels()) {
-			if (level == currLevel && hierarchy.getTopLevel() != currLevel) {
-				index = combinedDims.indexOf(level);
-			}
 			combinedDims.remove(level);
 		}
 		if (newLevel != hierarchy.getTopLevel()) {
-			if (hierarchy.getTopLevel() == currLevel) {
-				index = combinedDims.indexOf(hierarchy);
-			}
 			combinedDims.remove(hierarchy);
 		}
-		combinedDims.add(index, newLevel);
+		combinedDims.add(newLevel);
 		
 		ArrayList<Entry<DimensionHierarchy, Integer>> allHierarchies = grid.getHierarchies();
 		
@@ -204,9 +200,11 @@ public class ResultGridController {
 			}
 		}
 		
-		if (facts != null) {
-			fillDimensionWHierarchy(gridId, facts, hierarchyComponentIds);
+		if (facts == null) {
+			Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
 		}
+		
+		fillDimensionWHierarchy(gridId, facts, hierarchyComponentIds);
 	}
 	
 	private int insertHierarchyLevel(List<DataObject> dims, DimensionHierarchy hierarchy, Dimension currLevel, Dimension newLevel) {

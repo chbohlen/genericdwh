@@ -126,7 +126,8 @@ public class EditorSidebarController implements Initializable {
 		load.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {
-				Main.getContext().getBean(EditorController.class).loadEditingView((int)treeCell.getItem().getId());
+				Main.getContext().getBean(EditorController.class).loadEditingView(
+						(int)treeCell.getTreeView().getSelectionModel().getSelectedItem().getValue().getId());
             }
         });
 		
