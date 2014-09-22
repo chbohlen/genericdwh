@@ -178,12 +178,8 @@ public class ResultGridController {
 		}
 		
 		ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs = refObjManager.loadRefObjs(rowDims, grid.getFilter());
-		if (rowRefObjs.isEmpty()) {
-			Main.getContext().getBean(QueryPaneController.class).showExecutionFailure(ExecutionMessages.NO_REFERENCE_OBJECTS);
-			return;
-		}
 		ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs = refObjManager.loadRefObjs(colDims, grid.getFilter());
-		if (colRefObjs.isEmpty()) {
+		if (rowRefObjs.isEmpty() && colRefObjs.isEmpty()) {
 			Main.getContext().getBean(QueryPaneController.class).showExecutionFailure(ExecutionMessages.NO_REFERENCE_OBJECTS);
 			return;
 		}

@@ -2,7 +2,6 @@ genericdwh\gui\editor\editingview\EditingViewController$17.class
 genericdwh\gui\general\ValidationMessages.class
 genericdwh\gui\mainwindow\querypane\resultgrid\ResultGridCell$3.class
 genericdwh\gui\editor\editingview\EditingViewController$37.class
-genericdwh\gui\editor\popupdialog\DialogPopupController.class
 genericdwh\gui\mainwindow\querypane\TableCellContextMenu$4.class
 genericdwh\dataobjects\fact\FactManager.class
 genericdwh\db\model\tables\records\DimensionsRecord.class
@@ -18,6 +17,7 @@ genericdwh\gui\editor\editingview\EditingViewController$44.class
 genericdwh\gui\editor\EditorController$1.class
 genericdwh\db\model\tables\Ratios.class
 genericdwh\gui\editor\editingview\EditingViewController$11.class
+genericdwh\gui\mainwindow\querypane\dialogpopups\ExecutionFailurePopupDialogController.class
 genericdwh\dataobjects\ratio\Ratio.class
 genericdwh\gui\editor\editingview\EditingViewController$31.class
 genericdwh\gui\editor\editingview\EditingViewController$51.class
@@ -34,14 +34,16 @@ genericdwh\dataobjects\DataObjectCombination.class
 genericdwh\db\ResultObject.class
 genericdwh\gui\editor\editingview\EditingViewController$45.class
 genericdwh\gui\editor\editingview\EditingViewController$7.class
+genericdwh\gui\editor\dialogpopups\SaveOrDiscardDialogPopupController.class
 genericdwh\gui\editor\editingview\EditingViewController$32.class
 genericdwh\db\model\tables\ReferenceObjectCombinations.class
 genericdwh\gui\general\sidebar\HeaderItemOnCollapseListener.class
-genericdwh\gui\editor\popupdialog\SaveOrDiscardPopupDialogController.class
 genericdwh\gui\mainwindow\MainWindowController.class
 genericdwh\gui\editor\editingview\EditingViewController$29.class
 genericdwh\gui\mainwindow\MainWindowController$1.class
 genericdwh\gui\mainwindow\querypane\DataObjectTableCell.class
+genericdwh\gui\editor\dialogpopups\DiscardDialogPopupController.class
+genericdwh\gui\general\statusbar\StatusBarController.class
 genericdwh\db\model\DefaultSchema.class
 genericdwh\gui\general\sidebar\TreeCellRightClickHandler.class
 genericdwh\gui\mainwindow\sidebar\DataObjectTreeCellContextMenu$6.class
@@ -53,6 +55,7 @@ genericdwh\gui\editor\editingview\DataObjectTFTreeTableCell.class
 genericdwh\gui\mainwindow\sidebar\DataObjectTreeCellContextMenu$7.class
 genericdwh\gui\mainwindow\MainWindowController$2.class
 genericdwh\gui\mainwindow\querypane\resultgrid\ResultGridCell$2.class
+genericdwh\gui\editor\dialogpopups\DeleteDialogPopupController.class
 genericdwh\gui\editor\editingview\EditingViewController$10.class
 genericdwh\gui\mainwindow\querypane\QueryPaneController.class
 genericdwh\gui\general\Icons.class
@@ -86,7 +89,6 @@ genericdwh\gui\mainwindow\querypane\resultgrid\ResultGridNode.class
 genericdwh\db\jooqutils\EntryLongLongRecordMapper.class
 genericdwh\db\model\tables\records\RatioCategoriesRecord.class
 genericdwh\gui\editor\editingview\EditingViewController$42.class
-genericdwh\gui\editor\popupdialog\DiscardPopupDialogController.class
 genericdwh\gui\editor\editingview\EditingViewController$12.class
 genericdwh\gui\mainwindow\querypane\TableCellContextMenu$2.class
 genericdwh\gui\SpringFXMLLoader$1.class
@@ -118,6 +120,7 @@ genericdwh\dataobjects\dimension\DimensionCategory.class
 genericdwh\db\model\tables\RatioRelations.class
 genericdwh\gui\mainwindow\querypane\TableCellContextMenu$7.class
 genericdwh\gui\editor\sidebar\EditorSidebarController$1.class
+genericdwh\gui\editor\dialogpopups\ValidationFailureDialogPopupController.class
 genericdwh\gui\editor\editingview\EditingViewController$54.class
 genericdwh\db\model\tables\DimensionCategories.class
 genericdwh\gui\editor\editingview\EditingViewController$14.class
@@ -128,7 +131,6 @@ genericdwh\db\model\tables\ReferenceObjects.class
 genericdwh\gui\editor\editingview\TreeTableCellContextMenu$12.class
 genericdwh\gui\mainwindow\querypane\resultgrid\ResultGridCellContextMenu$3.class
 genericdwh\gui\editor\editingview\searchbox\SearchBoxController$3.class
-genericdwh\gui\editor\popupdialog\ValidationFailurePopupDialogController.class
 genericdwh\db\model\tables\records\FactsRecord.class
 genericdwh\gui\general\sidebar\HeaderItem$1.class
 genericdwh\gui\editor\EditorController.class
@@ -145,6 +147,7 @@ genericdwh\gui\editor\editingview\EditingViewController$22.class
 genericdwh\dataobjects\referenceobject\ReferenceObjectCombination.class
 genericdwh\gui\editor\editingview\EditingViewController$39.class
 genericdwh\gui\editor\editingview\searchbox\SearchBoxController.class
+genericdwh\gui\editor\dialogpopups\SaveDialogPopupController.class
 genericdwh\gui\mainwindow\querypane\resultgrid\ResultGridCell$1.class
 genericdwh\gui\mainwindow\sidebar\LazyLoadOnExpandListener.class
 genericdwh\gui\editor\editingview\EditingViewController$21.class
@@ -163,13 +166,11 @@ genericdwh\gui\mainwindow\querypane\resultgrid\ResultGridController$1.class
 genericdwh\gui\editor\editingview\EditingViewController$30.class
 genericdwh\dataobjects\dimension\DimensionHierarchy.class
 genericdwh\gui\mainwindow\querypane\QueryPaneController$4.class
-genericdwh\gui\statusbar\StatusBarController.class
 genericdwh\gui\mainwindow\querypane\resultgrid\ResultGridController.class
 genericdwh\db\model\tables\Dimensions.class
 genericdwh\dataobjects\ratio\RatioManager.class
 genericdwh\dataobjects\dimension\DimensionCombination.class
 genericdwh\dataobjects\unit\Unit.class
-genericdwh\gui\editor\popupdialog\DeletePopupDialogController.class
 genericdwh\gui\mainwindow\querypane\QueryPaneController$1.class
 genericdwh\gui\mainwindow\sidebar\DataObjectTreeCellContextMenu$8.class
 genericdwh\db\model\Keys$ForeignKeys0.class
@@ -183,9 +184,11 @@ genericdwh\gui\connectwindow\ConnectWindowController.class
 genericdwh\db\MySQLDatabaseController.class
 genericdwh\gui\mainwindow\querypane\QueryPaneController$QueryType.class
 genericdwh\db\model\tables\ReferenceObjectHierarchies.class
+genericdwh\gui\general\ExecutionMessages.class
 genericdwh\gui\editor\editingview\TreeTableCellContextMenu$7.class
 genericdwh\gui\editor\editingview\EditingViewController$26.class
 genericdwh\gui\editor\editingview\EditingViewController$46.class
+genericdwh\gui\general\dialogpopup\DialogPopupController.class
 genericdwh\db\model\tables\records\RatiosRecord.class
 genericdwh\gui\mainwindow\sidebar\TableCellRightClickHandler.class
 genericdwh\gui\mainwindow\sidebar\MainWindowSidebarController.class
@@ -218,4 +221,3 @@ genericdwh\db\DatabaseController.class
 genericdwh\gui\editor\editingview\TreeTableCellContextMenu$6.class
 genericdwh\dataobjects\ChangeManager.class
 genericdwh\gui\editor\editingview\EditingViewController$48.class
-genericdwh\gui\editor\popupdialog\SavePopupDialogController.class

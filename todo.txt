@@ -1,9 +1,0 @@
-ResultGrid
-!!! fix bug !!!
-a------
-unnecessary load of higher hierarchy levels
-filter hierarchies
-b------
-empty cells
-
-arraylist->list

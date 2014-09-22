@@ -75,7 +75,7 @@ public class ConnectWindowController {
 			mainWindowController.showQueryPane();
 			mainWindowController.postStatus(StatusMessages.CONNECTION_OK, Icons.NOTIFICATION);
 		} else {
-			mainWindowController.postStatus(StatusMessages.CONNECTION_FAILED, Icons.NOTIFICATION);
+			mainWindowController.postStatus(StatusMessages.CONNECTION_FAILED, Icons.WARNING);
 		}
 		
 		closeWindow();

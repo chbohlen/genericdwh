@@ -28,7 +28,7 @@
             <TableColumn fx:id="tcFilters" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Filter" />
          </columns>
       </TableView>
-      <ScrollPane layoutX="200.0" pannable="false" prefHeight="700.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <ScrollPane layoutX="200.0" pannable="true" prefHeight="700.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
             <VBox fx:id="resultGridContainer" minHeight="695.0" minWidth="595.0" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" />
          </content>

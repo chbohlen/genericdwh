@@ -245,12 +245,8 @@ public class QueryPaneController implements Initializable {
 			combinedDims.addAll(colDims);
 			
 			ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs = refObjManager.loadRefObjs(rowDims, filter);
-			if (rowRefObjs.isEmpty()) {
-				showExecutionFailure(ExecutionMessages.NO_REFERENCE_OBJECTS);
-				return;
-			}
 			ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs = refObjManager.loadRefObjs(colDims, filter);
-			if (colRefObjs.isEmpty()) {
+			if (rowRefObjs.isEmpty() && colRefObjs.isEmpty()) {
 				showExecutionFailure(ExecutionMessages.NO_REFERENCE_OBJECTS);
 				return;
 			}
