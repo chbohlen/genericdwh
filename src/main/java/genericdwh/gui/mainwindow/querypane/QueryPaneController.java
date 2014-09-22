@@ -16,9 +16,11 @@ import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.db.DatabaseReader;
 import genericdwh.db.ResultObject;
+import genericdwh.gui.general.ExecutionMessages;
 import genericdwh.gui.general.Icons;
 import genericdwh.gui.general.StatusMessages;
 import genericdwh.gui.mainwindow.MainWindowController;
+import genericdwh.gui.mainwindow.querypane.dialogpopups.ExecutionFailurePopupDialogController;
 import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGrid;
 import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGridController;
 import genericdwh.gui.mainwindow.sidebar.TableCellRightClickHandler;
@@ -59,7 +61,9 @@ public class QueryPaneController implements Initializable {
 	
 	@FXML private TreeView<String> test;
 	
-	ResultGridController resultGridController;
+	private ResultGridController resultGridController;
+	
+	private ExecutionFailurePopupDialogController executionFailurePopupDialogController;
 	
 	public enum QueryType {
 		MIXED,
@@ -73,8 +77,9 @@ public class QueryPaneController implements Initializable {
 	}
 
 	
-	public QueryPaneController(ResultGridController resultGridController) {
+	public QueryPaneController(ResultGridController resultGridController, ExecutionFailurePopupDialogController executionFailurePopupDialogController) {
 		this.resultGridController = resultGridController;
+		this.executionFailurePopupDialogController = executionFailurePopupDialogController;
 	}
 	
 	public void initialize(URL location, ResourceBundle resources) {				
@@ -240,7 +245,15 @@ public class QueryPaneController implements Initializable {
 			combinedDims.addAll(colDims);
 			
 			ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs = refObjManager.loadRefObjs(rowDims, filter);
+			if (rowRefObjs.isEmpty()) {
+				showExecutionFailure(ExecutionMessages.NO_REFERENCE_OBJECTS);
+				return;
+			}
 			ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs = refObjManager.loadRefObjs(colDims, filter);
+			if (colRefObjs.isEmpty()) {
+				showExecutionFailure(ExecutionMessages.NO_REFERENCE_OBJECTS);
+				return;
+			}
 			
 			long refObjId = refObjManager.findRefObjAggregateId(combinedDims);
 			long dimId = dimManager.findDimAggregateId(combinedDims);
@@ -629,6 +642,10 @@ public class QueryPaneController implements Initializable {
 		return hierarchies;
 	}
 	
+	public void showExecutionFailure(String message) {
+		executionFailurePopupDialogController.createWindow(message);
+
+	}
 	
 	public void addColDimension(DataObject dim) {
 		if (!tvColDims.getItems().contains(dim)) {

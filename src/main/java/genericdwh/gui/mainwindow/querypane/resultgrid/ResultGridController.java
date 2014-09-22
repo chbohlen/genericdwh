@@ -11,9 +11,11 @@ import genericdwh.dataobjects.unit.Unit;
 import genericdwh.dataobjects.unit.UnitManager;
 import genericdwh.db.DatabaseReader;
 import genericdwh.db.ResultObject;
+import genericdwh.gui.general.ExecutionMessages;
 import genericdwh.gui.general.Icons;
 import genericdwh.gui.general.StatusMessages;
 import genericdwh.gui.mainwindow.MainWindowController;
+import genericdwh.gui.mainwindow.querypane.QueryPaneController;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController.QueryType;
 import genericdwh.main.Main;
 
@@ -175,7 +177,18 @@ public class ResultGridController {
 			}
 		}
 		
-		grid.reinitializeWHierarchiesWTotals(refObjManager.loadRefObjs(rowDims, grid.getFilter()), refObjManager.loadRefObjs(colDims, grid.getFilter()), hierarchy, newLevel);
+		ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs = refObjManager.loadRefObjs(rowDims, grid.getFilter());
+		if (rowRefObjs.isEmpty()) {
+			Main.getContext().getBean(QueryPaneController.class).showExecutionFailure(ExecutionMessages.NO_REFERENCE_OBJECTS);
+			return;
+		}
+		ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs = refObjManager.loadRefObjs(colDims, grid.getFilter());
+		if (colRefObjs.isEmpty()) {
+			Main.getContext().getBean(QueryPaneController.class).showExecutionFailure(ExecutionMessages.NO_REFERENCE_OBJECTS);
+			return;
+		}
+		
+		grid.reinitializeWHierarchiesWTotals(rowRefObjs, colRefObjs, hierarchy, newLevel);
 		
 		Long[] filterRefObjIds = refObjManager.readRefObjIds(grid.getFilter());
 		long dimId = dimManager.findDimAggregateId(combinedDims);

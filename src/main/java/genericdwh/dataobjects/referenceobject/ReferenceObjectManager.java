@@ -131,7 +131,9 @@ public class ReferenceObjectManager extends DataObjectManager {
 				for (ReferenceObject refObj : refObjs.values()) {
 					refObj.setChildrenIds(dbReader.loadRefObjChildrenIds(refObj.getId()));
 				}
-				result.add(refObjs);
+				if (!refObjs.isEmpty()) {
+					result.add(refObjs);
+				}
 			}
 		}
 		

@@ -6,13 +6,13 @@ import genericdwh.dataobjects.ratio.RatioManager;
 import genericdwh.dataobjects.unit.UnitManager;
 import genericdwh.db.DatabaseController;
 import genericdwh.gui.SpringFXMLLoader;
+import genericdwh.gui.connectwindow.ConnectWindowController;
+import genericdwh.gui.editor.EditorController;
 import genericdwh.gui.general.Icons;
 import genericdwh.gui.general.StatusMessages;
+import genericdwh.gui.general.statusbar.StatusBarController;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController;
 import genericdwh.gui.mainwindow.sidebar.MainWindowSidebarController;
-import genericdwh.gui.statusbar.StatusBarController;
-import genericdwh.gui.subwindows.connectwindow.ConnectWindowController;
-import genericdwh.gui.subwindows.editor.EditorController;
 import genericdwh.main.Main;
 
 import java.net.URL;

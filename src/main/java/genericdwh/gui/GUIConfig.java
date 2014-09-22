@@ -1,21 +1,22 @@
 package genericdwh.gui;
 
 import genericdwh.dataobjects.DataObjectManagerConfig;
+import genericdwh.gui.connectwindow.ConnectWindowController;
+import genericdwh.gui.editor.EditorController;
+import genericdwh.gui.editor.dialogpopups.DeleteDialogPopupController;
+import genericdwh.gui.editor.dialogpopups.DiscardDialogPopupController;
+import genericdwh.gui.editor.dialogpopups.SaveOrDiscardDialogPopupController;
+import genericdwh.gui.editor.dialogpopups.SaveDialogPopupController;
+import genericdwh.gui.editor.dialogpopups.ValidationFailureDialogPopupController;
+import genericdwh.gui.editor.editingview.EditingViewController;
+import genericdwh.gui.editor.editingview.searchbox.SearchBoxController;
+import genericdwh.gui.editor.sidebar.EditorSidebarController;
+import genericdwh.gui.general.statusbar.StatusBarController;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController;
+import genericdwh.gui.mainwindow.querypane.dialogpopups.ExecutionFailurePopupDialogController;
 import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGridController;
 import genericdwh.gui.mainwindow.sidebar.MainWindowSidebarController;
-import genericdwh.gui.statusbar.StatusBarController;
-import genericdwh.gui.subwindows.connectwindow.ConnectWindowController;
-import genericdwh.gui.subwindows.editor.EditorController;
-import genericdwh.gui.subwindows.editor.editingview.EditingViewController;
-import genericdwh.gui.subwindows.editor.editingview.searchbox.SearchBoxController;
-import genericdwh.gui.subwindows.editor.sidebar.EditorSidebarController;
-import genericdwh.gui.subwindows.editor.subwindows.dialogpopup.DeletePopupDialogController;
-import genericdwh.gui.subwindows.editor.subwindows.dialogpopup.DiscardPopupDialogController;
-import genericdwh.gui.subwindows.editor.subwindows.dialogpopup.SavePopupDialogController;
-import genericdwh.gui.subwindows.editor.subwindows.dialogpopup.SaveOrDiscardPopupDialogController;
-import genericdwh.gui.subwindows.editor.subwindows.dialogpopup.ValidationFailurePopupDialogController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
@@ -46,7 +47,7 @@ public class GUIConfig {
 	
 	@Bean
 	public QueryPaneController queryPaneController() {
-		return new QueryPaneController(resultGridController());
+		return new QueryPaneController(resultGridController(), executionFailurePopupDialogController());
 	}
 	
 	@Bean
@@ -64,11 +65,11 @@ public class GUIConfig {
 		return new EditorController(objManagerConfig.changeManager(),
 				editorStatusBarController(),
 				editorSidebarController(), editingViewController(),
-				savePopupDialogController(),
-				validationFailurePopupDialogController(),
-				discardChangesPopupDialogController(),
-				saveOrDiscardOnLoadPopupDialogController(),
-				deleteObjectDialogPopupController());
+				saveDialogPopupController(),
+				validationFailureDialogPopupController(),
+				discardDialogPopupController(),
+				saveOrDiscardDialogPopupController(),
+				deleteDialogPopupController());
 	}
 	
 	@Bean
@@ -92,30 +93,37 @@ public class GUIConfig {
 	}
 	
 	
-	/* PopupDialogController */
+	/* DialogPopup-Controller */
 	
+	/* QueryPane */
 	@Bean
-	public SavePopupDialogController savePopupDialogController() {
-		return new SavePopupDialogController();
+	public ExecutionFailurePopupDialogController executionFailurePopupDialogController() {
+		return new ExecutionFailurePopupDialogController();
+	}
+	
+	/* Editor */
+	@Bean
+	public SaveDialogPopupController saveDialogPopupController() {
+		return new SaveDialogPopupController();
 	}
 	
 	@Bean
-	public ValidationFailurePopupDialogController validationFailurePopupDialogController() {
-		return new ValidationFailurePopupDialogController();
+	public ValidationFailureDialogPopupController validationFailureDialogPopupController() {
+		return new ValidationFailureDialogPopupController();
 	}
 	
 	@Bean
-	public DiscardPopupDialogController discardChangesPopupDialogController() {
-		return new DiscardPopupDialogController();
+	public DiscardDialogPopupController discardDialogPopupController() {
+		return new DiscardDialogPopupController();
 	}
 	
 	@Bean
-	public SaveOrDiscardPopupDialogController saveOrDiscardOnLoadPopupDialogController() {
-		return new SaveOrDiscardPopupDialogController();
+	public SaveOrDiscardDialogPopupController saveOrDiscardDialogPopupController() {
+		return new SaveOrDiscardDialogPopupController();
 	}
 	
 	@Bean
-	public DeletePopupDialogController deleteObjectDialogPopupController() {
-		return new DeletePopupDialogController();
+	public DeleteDialogPopupController deleteDialogPopupController() {
+		return new DeleteDialogPopupController();
 	}
 }
