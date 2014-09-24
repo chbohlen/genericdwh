@@ -96,14 +96,14 @@ public class DimensionManager extends DataObjectManager {
 	}
 
 	
-	public long findDimAggregateId(ArrayList<DataObject> combinedDims)  {
+	public long findDimAggregateId(List<DataObject> combinedDims)  {
 		if (combinedDims.size() < 2) {
 			return determineDimCombinationComponentIds(combinedDims)[0];
 		}
 		return dbReader.findDimAggregateId(determineDimCombinationComponentIds(combinedDims));
 	}
 	
-	private Long[] determineDimCombinationComponentIds(ArrayList<DataObject> combinedDims) {
+	private Long[] determineDimCombinationComponentIds(List<DataObject> combinedDims) {
 		ArrayList<Long> combination = new ArrayList<>();
 		
 		for (DataObject obj : combinedDims) {

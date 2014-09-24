@@ -35,16 +35,16 @@ public class ResultGridController {
 	}
 
 	
-	public void initializeGrid(Ratio ratio, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs) {
+	public void initializeGrid(Ratio ratio, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs) {
 		resultGrids.getLast().initializeDefault(ratio, rowRefObjs, colRefObjs);
 	}
 	
-	public void initializeGridWTotals(Ratio ratio, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs) {
+	public void initializeGridWTotals(Ratio ratio, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs) {
 		resultGrids.getLast().initializeWTotals(ratio, rowRefObjs, colRefObjs);
 	}
 	
 	public void initializeGridWHierarchiesWTotals(Ratio ratio, List<DataObject> rowDims, List<DataObject> colDims,
-			ArrayList<DataObject> combinedDims, List<DataObject> filter, List<DimensionHierarchy> hierarchies, QueryType queryType) {
+			List<DataObject> combinedDims, List<DataObject> filter, List<DimensionHierarchy> hierarchies, QueryType queryType) {
 		
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
 		
@@ -150,7 +150,7 @@ public class ResultGridController {
 			}
 		}
 		
-		ArrayList<DataObject> combinedDims = grid.getCombinedDims();
+		List<DataObject> combinedDims = grid.getCombinedDims();
 		
 		for (Dimension level : hierarchy.getLevels()) {
 			combinedDims.remove(level);

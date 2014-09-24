@@ -148,7 +148,7 @@ public class ReferenceObjectManager extends DataObjectManager {
 	}
 
 		
-	public long findRefObjAggregateId(ArrayList<DataObject> combinedDims) {
+	public long findRefObjAggregateId(List<DataObject> combinedDims) {
 		if (combinedDims.size() < 2) {
 			return readRefObjIds(combinedDims)[0];
 		}

@@ -56,7 +56,7 @@ public class ResultGrid extends GridPane {
 	
 	@Getter @Setter private List<DataObject> rowDims;
 	@Getter @Setter private List<DataObject> colDims;
-	@Getter @Setter private ArrayList<DataObject> combinedDims;
+	@Getter @Setter private List<DataObject> combinedDims;
 	@Getter @Setter private QueryType queryType;
 	@Getter @Setter private List<DataObject> filter;
 
@@ -66,7 +66,7 @@ public class ResultGrid extends GridPane {
 		setPadding(new Insets(20));
 	}
 
-	private void initialize(Ratio ratio, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs, DimensionHierarchy changedHierarchy, Dimension newLevel) {
+	private void initialize(Ratio ratio, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs, DimensionHierarchy changedHierarchy, Dimension newLevel) {
 		this.ratio = ratio;
 		setTitle(ratio.getName());
 		
@@ -82,11 +82,11 @@ public class ResultGrid extends GridPane {
 		createResultCells();
 	}
 	
-	public void initializeDefault(Ratio ratio, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs) {
+	public void initializeDefault(Ratio ratio, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs) {
 		initialize(ratio, rowRefObjs, colRefObjs, null, null);
 	}
 	
-	public void initializeWTotals(Ratio ratio, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs) {
+	public void initializeWTotals(Ratio ratio, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs) {
 		initialize(ratio, rowRefObjs, colRefObjs, null, null);
 		
 		colTotalHeaders = createTotalHeaders(colRefObjs, rowRefObjs.size(), true);
@@ -95,7 +95,7 @@ public class ResultGrid extends GridPane {
 		createTotalCells();
 	}
 	
-	public void initializeWHierarchiesWTotals(Ratio ratio, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs,
+	public void initializeWHierarchiesWTotals(Ratio ratio, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs,
 			List<DataObject> filter, List<DimensionHierarchy> hierarchies) {
 		
 		for(DimensionHierarchy hierarchy : hierarchies) {
@@ -131,7 +131,7 @@ public class ResultGrid extends GridPane {
 	}
 	
 	
-	private TreeMap<Long, ResultGridNode> createHeaders(ArrayList<TreeMap<Long, ReferenceObject>> refObjs, int baseOffset, boolean isRowHeader,
+	private TreeMap<Long, ResultGridNode> createHeaders(List<TreeMap<Long, ReferenceObject>> refObjs, int baseOffset, boolean isRowHeader,
 			DimensionHierarchy changedHierarchy, Dimension newLevel) {
 		
 		TreeMap<Long, ResultGridNode> root = new TreeMap<>();
@@ -206,7 +206,7 @@ public class ResultGrid extends GridPane {
 		return root;
 	}
 	
-	private void createHeaderCells(TreeMap<Long, ResultGridNode> root, ArrayList<TreeMap<Long, ReferenceObject>> refObjs, int baseOffset, boolean isRowHeader) {
+	private void createHeaderCells(TreeMap<Long, ResultGridNode> root, List<TreeMap<Long, ReferenceObject>> refObjs, int baseOffset, boolean isRowHeader) {
 		LinkedList<TreeMap<Long, ResultGridNode>> queue = new LinkedList<>();
 		queue.add(root);
 		
@@ -291,7 +291,7 @@ public class ResultGrid extends GridPane {
 	}
 
 	
-	private ArrayList<ResultGridNode> createTotalHeaders(ArrayList<TreeMap<Long, ReferenceObject>> refObjs, int offset, boolean isRowHeader) {
+	private ArrayList<ResultGridNode> createTotalHeaders(List<TreeMap<Long, ReferenceObject>> refObjs, int offset, boolean isRowHeader) {
 		ArrayList<ResultGridNode> headers = new ArrayList<>();
 		
 		if (refObjs.isEmpty()) {
@@ -584,7 +584,7 @@ public class ResultGrid extends GridPane {
 		return -1;
 	}
 	
-	private int getFirstRowIndex(ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs) {
+	private int getFirstRowIndex(List<TreeMap<Long, ReferenceObject>> colRefObjs) {
 		if (colRefObjs.size() < 2) {
 			return 2;
 		} else {
@@ -592,7 +592,7 @@ public class ResultGrid extends GridPane {
 		}
 	}
 	
-	private int getFirstColIndex(ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs) {
+	private int getFirstColIndex(List<TreeMap<Long, ReferenceObject>> rowRefObjs) {
 		if (rowRefObjs.size() < 2) {
 			return 2;
 		} else {

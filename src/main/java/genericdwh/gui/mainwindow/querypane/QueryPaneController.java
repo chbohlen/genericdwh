@@ -240,12 +240,12 @@ public class QueryPaneController implements Initializable {
 		if (rowDims.isEmpty() && colDims.isEmpty()) {
 			hasResults = handleNoReferenceObjectsOrDimensions(ratios, filter);
 		} else {	
-			ArrayList<DataObject> combinedDims = new ArrayList<>();
+			List<DataObject> combinedDims = new ArrayList<>();
 			combinedDims.addAll(rowDims);
 			combinedDims.addAll(colDims);
 			
-			ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs = refObjManager.loadRefObjs(rowDims, filter);
-			ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs = refObjManager.loadRefObjs(colDims, filter);
+			List<TreeMap<Long, ReferenceObject>> rowRefObjs = refObjManager.loadRefObjs(rowDims, filter);
+			List<TreeMap<Long, ReferenceObject>> colRefObjs = refObjManager.loadRefObjs(colDims, filter);
 			if (rowRefObjs.isEmpty() && colRefObjs.isEmpty()) {
 				showExecutionFailure(ExecutionMessages.NO_REFERENCE_OBJECTS);
 				return;
@@ -332,7 +332,7 @@ public class QueryPaneController implements Initializable {
 	}
 	
 	
-	private QueryType determineQueryType(ArrayList<DataObject> dims) {
+	private QueryType determineQueryType(List<DataObject> dims) {
 		boolean mixed = false;
 		boolean hasHierarchy = false;
 		
@@ -406,7 +406,7 @@ public class QueryPaneController implements Initializable {
 					ReferenceObject refObj = refObjManager.loadRefObj(resObj.getId());
 					refObjs.put(refObj.getId(), refObj);
 				}
-				ArrayList<TreeMap<Long, ReferenceObject>> rows = new ArrayList<>();
+				List<TreeMap<Long, ReferenceObject>> rows = new ArrayList<>();
 				rows.add(refObjs);
 
 				resultGridController.initializeGrid((Ratio)ratio, rows, new ArrayList<>());
@@ -417,7 +417,7 @@ public class QueryPaneController implements Initializable {
 		return hasResults;
 	}
 
-	private boolean handleSingleReferenceObject(List<DataObject> ratios, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs,
+	private boolean handleSingleReferenceObject(List<DataObject> ratios, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs,
 			long refObjId) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
@@ -441,7 +441,7 @@ public class QueryPaneController implements Initializable {
 		return hasResults;
 	}
 	
-	private boolean handleReferenceObjectCombination(List<DataObject> ratios, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs,
+	private boolean handleReferenceObjectCombination(List<DataObject> ratios, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs,
 			long refObjId) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
@@ -465,7 +465,7 @@ public class QueryPaneController implements Initializable {
 		return hasResults;
 	}
 		
-	private boolean handleSingleDimension(List<DataObject> ratios, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs,
+	private boolean handleSingleDimension(List<DataObject> ratios, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs,
 			long dimId, Long[] filterRefObjIds) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
@@ -491,7 +491,7 @@ public class QueryPaneController implements Initializable {
 		
 	private boolean handleSingleDimensionWHierarchy(List<DataObject> ratios, List<DataObject> rowDims, List<DataObject> colDims,
 			long dimId, Long[] filterRefObjIds,
-			ArrayList<DataObject> combinedDims, List<DataObject> filter) {
+			List<DataObject> combinedDims, List<DataObject> filter) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 				
@@ -516,7 +516,7 @@ public class QueryPaneController implements Initializable {
 		return hasResults;		
 	}
 		
-	private boolean handleDimensionCombination(List<DataObject> ratios, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs,
+	private boolean handleDimensionCombination(List<DataObject> ratios, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs,
 			long dimId, Long[] filterRefObjIds) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
@@ -542,7 +542,7 @@ public class QueryPaneController implements Initializable {
 		
 	private boolean handleDimensionCombinationWHierarchy(List<DataObject> ratios, List<DataObject> rowDims, List<DataObject> colDims,
 			long dimId, Long[] filterRefObjIds,
-			ArrayList<DataObject> combinedDims, List<DataObject> filter) {
+			List<DataObject> combinedDims, List<DataObject> filter) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 					
@@ -567,9 +567,9 @@ public class QueryPaneController implements Initializable {
 		return hasResults;
 	}
 		
-	private boolean handleMixed(List<DataObject> ratios, ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs, ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs,
+	private boolean handleMixed(List<DataObject> ratios, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs,
 			long dimId, Long[] filterRefObjIds,
-			ArrayList<DataObject> combinedDims) {
+			List<DataObject> combinedDims) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
@@ -598,7 +598,7 @@ public class QueryPaneController implements Initializable {
 			
 	private boolean handleMixedWHierarchy(List<DataObject> ratios, List<DataObject> rowDims, List<DataObject> colDims,
 			long dimId, Long[] filterRefObjIds,
-			ArrayList<DataObject> combinedDims, List<DataObject> filter) {
+			List<DataObject> combinedDims, List<DataObject> filter) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
