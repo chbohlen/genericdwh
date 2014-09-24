@@ -57,6 +57,8 @@ public class EditorController implements Initializable{
 	private SaveOrDiscardDialogPopupController saveOrDiscardDialogPopupController;
 	private DeleteDialogPopupController deleteDialogPopupController;
 	
+	private boolean refreshNeeded;
+	
 	@Getter private Stage stage;
 	
 	@FXML MenuItem miSave;
@@ -130,6 +132,8 @@ public class EditorController implements Initializable{
 				.when(editingViewController.getHasUnsavedChanges())
 				.then(false)
 				.otherwise(true));
+		
+		refreshNeeded = false;
 	}
 	
 	public void loadEditingView(int id) {
@@ -168,9 +172,7 @@ public class EditorController implements Initializable{
 			if (id == -1) {
 				editingViewController.setHasUnsavedChanges(false);
 				validationFailurePopupDialogController.createWindow(validationResult, true);
-				MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
-				mainWindowController.refresh();
-				mainWindowController.postStatus(StatusMessages.VALIDATION_FAILED, Icons.WARNING);
+				Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.VALIDATION_FAILED, Icons.WARNING);
 			} else {
 				validationFailurePopupDialogController.createWindow(validationResult, false);
 				postStatus(StatusMessages.VALIDATION_FAILED, Icons.WARNING);
@@ -179,6 +181,7 @@ public class EditorController implements Initializable{
 		}
 		
 		changeManager.saveChanges();
+		refreshNeeded = true;
 		postStatus(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
 		if (id == -1) {
 			editingViewController.setHasUnsavedChanges(false);
@@ -278,5 +281,8 @@ public class EditorController implements Initializable{
 	
 	public void close() {
 		stage.close();
+		if (refreshNeeded) {
+			Main.getContext().getBean(MainWindowController.class).refresh();
+		}
 	}
 }

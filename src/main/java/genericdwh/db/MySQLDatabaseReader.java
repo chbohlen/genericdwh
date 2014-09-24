@@ -37,6 +37,8 @@ import org.jooq.JoinType;
 import org.jooq.Record;
 import org.jooq.Record1;
 import org.jooq.Result;
+import org.jooq.SelectConditionStep;
+import org.jooq.SelectHavingStep;
 import org.jooq.SelectQuery;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
@@ -329,13 +331,14 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	
 
 	@Override
-	public ResultObject loadFactForSingleRefObj(long ratioId, long refObjId) {		
-		Result<Record> result = dslContext
-									.select()
-									.from(FACTS)
-									.where(FACTS.RATIO_ID.equal(ratioId)
-										.and(FACTS.REFERENCE_OBJECT_ID.equal(refObjId)))
-									.fetch();	
+	public ResultObject loadFactForSingleRefObj(long ratioId, long refObjId) {
+		SelectConditionStep<Record> query = dslContext
+												.select()
+												.from(FACTS)
+												.where(FACTS.RATIO_ID.equal(ratioId)
+													.and(FACTS.REFERENCE_OBJECT_ID.equal(refObjId)));
+		
+		Result<Record> result = query.fetch();	
 		
 		if (result.isEmpty()) {
 			return null;
@@ -350,14 +353,15 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	
 	@Override
 	public ResultObject loadFactForRefObjCombination(long ratioId, long refObjId) {
-		Result<Record> result = dslContext
-									.select()
-									.from(FACTS)
-									.join(REFERENCE_OBJECT_COMBINATIONS)
-										.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
-									.where(FACTS.RATIO_ID.equal(ratioId)
-										.and(FACTS.REFERENCE_OBJECT_ID.equal(refObjId)))
-									.fetch();
+		SelectConditionStep<Record> query = dslContext
+												.select()
+												.from(FACTS)
+												.join(REFERENCE_OBJECT_COMBINATIONS)
+													.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
+												.where(FACTS.RATIO_ID.equal(ratioId)
+													.and(FACTS.REFERENCE_OBJECT_ID.equal(refObjId)));
+		
+		Result<Record> result = query.fetch();
 		
 		if (result.isEmpty()) {
 			return null;
@@ -379,16 +383,17 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		
 		Field<Object> filterCombinationField = filterCombinationsQuery.asField();
 		
-		Result<Record> result = dslContext
-									.select()
-									.from(FACTS)
-									.join(REFERENCE_OBJECTS)
-										.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID))
-									.where(FACTS.RATIO_ID.equal(ratioId))
-										.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
-										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
-										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField))
-									.fetch();
+		SelectConditionStep<Record> query = dslContext
+												.select()
+												.from(FACTS)
+												.join(REFERENCE_OBJECTS)
+													.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID))
+												.where(FACTS.RATIO_ID.equal(ratioId))
+													.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
+													.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
+													.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField));
+		
+		Result<Record> result = query.fetch();
 		
 		if (result.isEmpty()) {
 			return null;
@@ -414,18 +419,19 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		
 		Field<Object> filterCombinationField = filterCombinationsQuery.asField();
 		
-		Result<Record> result = dslContext
-									.select()
-									.from(FACTS)
-									.join(REFERENCE_OBJECTS)
-										.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID))
-									.join(REFERENCE_OBJECT_COMBINATIONS)
-										.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
-									.where(FACTS.RATIO_ID.equal(ratioId))
-										.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
-										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
-										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField))
-									.fetch();
+		SelectConditionStep<Record> query = dslContext
+												.select()
+												.from(FACTS)
+												.join(REFERENCE_OBJECTS)
+													.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID))
+												.join(REFERENCE_OBJECT_COMBINATIONS)
+													.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
+												.where(FACTS.RATIO_ID.equal(ratioId))
+													.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
+													.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
+													.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField));
+		
+		Result<Record> result = query.fetch();		
 		
 		if (result.isEmpty()) {
 			return null;
@@ -458,19 +464,20 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		
 		Field<Object> componentField = componentQuery.asField();
 		
-		Result<Record> result = dslContext
-									.select()
-									.from(FACTS)
-									.join(REFERENCE_OBJECTS)
-										.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID))
-									.join(REFERENCE_OBJECT_COMBINATIONS)
-										.on(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
-									.where(FACTS.RATIO_ID.equal(ratioId))
-										.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
-										.and(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.in(componentField))
-										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
-										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField))
-									.fetch();
+		SelectConditionStep<Record> query = dslContext
+												.select()
+												.from(FACTS)
+												.join(REFERENCE_OBJECTS)
+													.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID))
+												.join(REFERENCE_OBJECT_COMBINATIONS)
+													.on(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
+												.where(FACTS.RATIO_ID.equal(ratioId))
+													.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
+													.and(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.in(componentField))
+													.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
+													.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField));
+		
+		Result<Record> result = query.fetch();
 
 		if (result.isEmpty()) {
 			return null;
@@ -495,15 +502,16 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		filterCombinationsQuery.addConditions(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.in(filterRefObjIds));
 		
 		Field<Object> filterCombinationField = filterCombinationsQuery.asField();
+		
+		SelectHavingStep<Record> query = dslContext
+											.select()
+											.from(FACTS)
+											.where(FACTS.RATIO_ID.equal(ratioId))
+												.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
+												.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField))
+											.groupBy(FACTS.REFERENCE_OBJECT_ID);
 	
-		Result<Record> result = dslContext
-									.select()
-									.from(FACTS)
-									.where(FACTS.RATIO_ID.equal(ratioId))
-										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
-										.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField))
-									.groupBy(FACTS.REFERENCE_OBJECT_ID)
-									.fetch();
+		Result<Record> result = query.fetch();
 
 		if (result.isEmpty()) {
 			return null;
