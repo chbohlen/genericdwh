@@ -39,6 +39,7 @@ public class MainWindowController implements Initializable{
 	@FXML private MenuItem menuBarDisconnect;
 	@FXML private MenuItem menuBarOpenEditor;
 	@FXML private MenuItem menuBarToggleSQLQueries;
+	@FXML private MenuItem menuBarRefreshSQLQueries;
 	
 	@Getter private Stage stage;
 	
@@ -92,6 +93,11 @@ public class MainWindowController implements Initializable{
 				.when(taPlaintextQueries.visibleProperty())
 				.then("Hide")
 				.otherwise("Show"));
+		
+		menuBarRefreshSQLQueries.disableProperty().bind(Bindings
+				.when(taPlaintextQueries.visibleProperty())
+				.then(false)
+				.otherwise(true));
 	}
 
 	
@@ -194,22 +200,28 @@ public class MainWindowController implements Initializable{
 	
 	@FXML public void menuBarToggleSQLQueries() {
 		if (!taPlaintextQueries.isVisible()) {
-			if (taPlaintextQueries.getText().equals("")) {
-				List<String> lastQueries = Main.getContext().getBean(DatabaseReader.class).getLastQueries();
-				String queries = "";
-				for (String query : lastQueries) {
-					queries += query;
-					if (!lastQueries.get(lastQueries.size() - 1).equals(query)) {
-						queries += "\n\n";
-					}
-				}
-				taPlaintextQueries.setText(queries);	
-			}
+			taPlaintextQueries.setText(createQueryString());
 			taPlaintextQueries.setVisible(true);
 			taPlaintextQueries.toFront();
 		} else {
 			hideSQLQueries();
 		}
+	}
+	
+	@FXML public void menuBarRefreshSQLQueries() {
+		taPlaintextQueries.setText(createQueryString());
+	}
+	
+	private String createQueryString() {
+		List<String> lastQueries = Main.getContext().getBean(DatabaseReader.class).getLastQueries();
+		String queries = "";
+		for (String query : lastQueries) {
+			queries += query;
+			if (!lastQueries.get(lastQueries.size() - 1).equals(query)) {
+				queries += "\n\n";
+			}
+		}
+		return queries;
 	}
 	
 	

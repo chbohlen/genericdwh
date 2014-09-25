@@ -21,14 +21,17 @@
                 <MenuItem fx:id="menuBarOpenEditor" mnemonicParsing="false" onAction="#menuBarOpenEditor" text="Open Editor" />
               </items>
             </Menu>
-            <Menu mnemonicParsing="false" text="SQL-Query">
+            <Menu mnemonicParsing="false" text="Last SQL-Queries">
               <items>
                 <MenuItem fx:id="menuBarToggleSQLQueries" mnemonicParsing="false" onAction="#menuBarToggleSQLQueries" text="Show" />
+              </items>
+              <items>
+                <MenuItem fx:id="menuBarRefreshSQLQueries" mnemonicParsing="false" onAction="#menuBarRefreshSQLQueries" text="Refresh" />
               </items>
             </Menu>
 		  </menus>
 		</MenuBar>
-		<TextArea fx:id="taPlaintextQueries" layoutY="35.0" prefHeight="100.0" prefWidth="1020.0" visible="false" wrapText="true" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
+		<TextArea fx:id="taPlaintextQueries" prefHeight="100.0" prefWidth="1020.0" visible="false" wrapText="true" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
 		<AnchorPane layoutY="25.0" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
    			<children>
 	   			<fx:include source="MainWindowSidebar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="25.0" />

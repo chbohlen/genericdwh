@@ -203,6 +203,7 @@ genericdwh\db\model\Keys$Identities0.class
 genericdwh\gui\mainwindow\sidebar\DraggableDataObjectTreeCell.class
 genericdwh\gui\editor\editingview\EditingViewController$52.class
 genericdwh\gui\editor\editingview\EditingViewController$49.class
+genericdwh\gui\mainwindow\querypane\TableCellContextMenu$9.class
 genericdwh\gui\mainwindow\sidebar\DataObjectTreeCellContextMenu$9.class
 genericdwh\gui\mainwindow\querypane\QueryPaneController$3.class
 genericdwh\main\Main.class

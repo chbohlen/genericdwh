@@ -9,7 +9,6 @@ public class StatusMessages {
 	public static final String CONNECTING = "Connecting to Database ...";
 	public static final String CONNECTION_OK = "Connected.";
 	public static final String CONNECTION_FAILED = "Could not connect to Database.";
-	
 	public static final String CONNECTION_INVALID_USERNAME_PW = "Invalid username/password.";
 	public static final String CONNECTION_INVALID_DATABASE_SCHEMA = "Invalid Database Schema.";
 	

@@ -276,6 +276,7 @@ public class QueryPaneController implements Initializable {
 					hasResults = handleSingleDimensionWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter);
 					if (!hasResults) {
 						mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
+						setExecutedQuery(true);
 						return;
 					}
 					break;
@@ -288,6 +289,7 @@ public class QueryPaneController implements Initializable {
 					hasResults = handleDimensionCombinationWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter);
 					if (!hasResults) {
 						mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
+						setExecutedQuery(true);
 						return;
 					}
 					break;
@@ -300,6 +302,7 @@ public class QueryPaneController implements Initializable {
 					hasResults = handleMixedWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter);
 					if (!hasResults) {
 						mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
+						setExecutedQuery(true);
 						return;
 					}
 					break;
