@@ -1,5 +1,10 @@
 package genericdwh.db;
 
+import genericdwh.gui.general.Icons;
+import genericdwh.gui.general.StatusMessages;
+import genericdwh.gui.mainwindow.MainWindowController;
+import genericdwh.main.Main;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -8,16 +13,12 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import lombok.Getter;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
 public class MySQLDatabaseController implements DatabaseController {
-	
-	private final Logger logger = LogManager.getLogger(this.getClass());
-	
+		
 	private Connection dbConnection;
 	
 	@Getter private BooleanProperty isConnected = new SimpleBooleanProperty(false);
@@ -31,16 +32,26 @@ public class MySQLDatabaseController implements DatabaseController {
 	}
 	
 	public boolean connect(String ip, String port, String dbName, String userName, String password) {
+		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
+		
 		String dbDriver = com.mysql.jdbc.Driver.class.getName();
 		try {
 			Class.forName(dbDriver);
 			dbConnection = DriverManager.getConnection("jdbc:mysql://"+ip+":"+port+"/"+dbName, userName, password);
-			logger.info("Database connection established.");
-		} catch (ClassNotFoundException e) {
-			logger.error(dbDriver+" not found!");
-			return false;
 		} catch (SQLException e) {
-			logger.error("Could not establish database connection!");
+			int errorCode = e.getErrorCode();
+			if (errorCode == 1045) {
+				mainWindowController.postStatus(StatusMessages.CONNECTION_INVALID_USERNAME_PW, Icons.WARNING);
+				return false;
+			}
+			if (errorCode == 1049) {
+				mainWindowController.postStatus(StatusMessages.CONNECTION_INVALID_DATABASE_SCHEMA, Icons.WARNING);
+				return false;
+			}
+			mainWindowController.postStatus(StatusMessages.CONNECTION_FAILED, Icons.WARNING);
+			return false;
+		} catch (Exception e) {
+				e.printStackTrace();
 			return false;
 		}
 			
@@ -49,6 +60,8 @@ public class MySQLDatabaseController implements DatabaseController {
 		dbWriter.setDslContext(context);
 		
 		isConnected.set(true);
+		
+		mainWindowController.postStatus(StatusMessages.CONNECTION_OK, Icons.NOTIFICATION);
 		return true;
 	}
 	
@@ -56,15 +69,10 @@ public class MySQLDatabaseController implements DatabaseController {
 		try {
 			if (dbConnection != null) {
 				dbConnection.close();
-				logger.info("Database connection closed.");
 			}
-			else {
-				logger.info("No open database connection.");
-			}
-		} catch (SQLException e) {
-			logger.error("Could not close database connection!");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
 		isConnected.set(false);
 	}
 }

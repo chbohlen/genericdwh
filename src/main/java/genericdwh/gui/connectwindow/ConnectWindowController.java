@@ -65,20 +65,16 @@ public class ConnectWindowController {
 		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
 
 		mainWindowController.postStatus(StatusMessages.CONNECTING, Icons.NOTIFICATION);
-		boolean connected  = Main.getContext().getBean(DatabaseController.class).connect("localhost", "3306", "genericdwh" , "root", "root");
-//		boolean connected  = Main.getContext().getBean(DatabaseController.class).connect(tfIp.getText(), tfPort.getText(), tfDbName.getText() , tfUserName.getText(), tfPassword.getText());
+//		boolean connected  = Main.getContext().getBean(DatabaseController.class).connect("localhost", "3306", "genericdwh" , "root", "root");
+		boolean connected  = Main.getContext().getBean(DatabaseController.class).connect(tfIp.getText(), tfPort.getText(), tfDbName.getText() , tfUserName.getText(), tfPassword.getText());
 		
 		if (connected) {
 			storeDbCredentials();
 			mainWindowController.createSidebars();
 			mainWindowController.showSidebars();
 			mainWindowController.showQueryPane();
-			mainWindowController.postStatus(StatusMessages.CONNECTION_OK, Icons.NOTIFICATION);
-		} else {
-			mainWindowController.postStatus(StatusMessages.CONNECTION_FAILED, Icons.WARNING);
+			closeWindow();
 		}
-		
-		closeWindow();
 	}
 	
 	private void storeDbCredentials() {
