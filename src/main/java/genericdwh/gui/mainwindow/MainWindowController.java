@@ -51,7 +51,6 @@ public class MainWindowController implements Initializable{
 	private EditorController editorController;
 	
 	@FXML private TextArea taPlaintextQueries;
-	private boolean queriesVisible;
 	
 	@Getter @Setter private DataObject draggedDataObject;
 	
@@ -83,7 +82,6 @@ public class MainWindowController implements Initializable{
 				.then(false)
 				.otherwise(true));
 		
-		queriesVisible = false;
 		
 		menuBarToggleSQLQueries.disableProperty().bind(Bindings
 				.when(queryPaneController.getExecutedQuery())
@@ -195,7 +193,7 @@ public class MainWindowController implements Initializable{
 	}
 	
 	@FXML public void menuBarToggleSQLQueries() {
-		if (!queriesVisible) {
+		if (!taPlaintextQueries.isVisible()) {
 			if (taPlaintextQueries.getText().equals("")) {
 				List<String> lastQueries = Main.getContext().getBean(DatabaseReader.class).getLastQueries();
 				String queries = "";
@@ -209,7 +207,6 @@ public class MainWindowController implements Initializable{
 			}
 			taPlaintextQueries.setVisible(true);
 			taPlaintextQueries.toFront();
-			queriesVisible = true;
 		} else {
 			hideSQLQueries();
 		}
@@ -254,6 +251,5 @@ public class MainWindowController implements Initializable{
 	
 	public void hideSQLQueries() {
 		taPlaintextQueries.setVisible(false);
-		queriesVisible = false;
 	}
 }

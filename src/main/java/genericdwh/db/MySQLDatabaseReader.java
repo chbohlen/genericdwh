@@ -50,16 +50,14 @@ public class MySQLDatabaseReader implements DatabaseReader {
 	@Setter private DSLContext dslContext;
 	
 	@Getter List<String> lastQueries = new ArrayList<>();
-	
 	public void addLastQuery(String query) { 
 		lastQueries.add(query); 
 	}
-	
 	public void clearLastQueries() {
 		lastQueries.clear();
 	}
+
 	
-		
 	@Override
 	public TreeMap<Long, DimensionCategory> loadDimensionCategories() {
 		Map<Long, DimensionCategory> result = dslContext

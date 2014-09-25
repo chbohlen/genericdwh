@@ -3,6 +3,7 @@ package genericdwh.gui.mainwindow.querypane;
 import genericdwh.dataobjects.DataObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.main.Main;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
@@ -52,6 +53,18 @@ public class TableCellContextMenu extends ContextMenu {
         });
 		
 		SeparatorMenuItem separator1 = new SeparatorMenuItem();
+		
+		MenuItem flip = new MenuItem("Flip Dimensions");
+		flip.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+            public void handle(ActionEvent event) {
+				ObservableList<DataObject> tmpItems = queryPaneController.getTvRowDims().getItems();
+				queryPaneController.getTvRowDims().setItems(queryPaneController.getTvColDims().getItems());
+				queryPaneController.getTvColDims().setItems(tmpItems);
+            }
+        });
+		
+		SeparatorMenuItem separator2 = new SeparatorMenuItem();
 				
 		MenuItem moveUp = new MenuItem("Move up");
 		moveUp.setOnAction(new EventHandler<ActionEvent>() {
@@ -87,7 +100,7 @@ public class TableCellContextMenu extends ContextMenu {
             }
         });
 		
-		SeparatorMenuItem separator2 = new SeparatorMenuItem();
+		SeparatorMenuItem separator3 = new SeparatorMenuItem();
 		
 		MenuItem remove = new MenuItem("Remove");
 		remove.setOnAction(new EventHandler<ActionEvent>() {
@@ -105,8 +118,9 @@ public class TableCellContextMenu extends ContextMenu {
             }
         });
 		
-		getItems().addAll(changeToColDimension, changeToRowDimension, changeToFilter, separator1, 
-				moveUp, moveDown, separator2,
+		getItems().addAll(changeToColDimension, changeToRowDimension, changeToFilter, separator1,
+				flip, separator2,
+				moveUp, moveDown, separator3,
 				remove, removeAll);
 		
 		setOnShowing(new EventHandler<WindowEvent>() {
@@ -116,9 +130,11 @@ public class TableCellContextMenu extends ContextMenu {
 				changeToRowDimension.setVisible(false);
 				changeToFilter.setVisible(false);
 				getItems().remove(separator1);
+				flip.setVisible(false);
+				getItems().remove(separator2);
 				moveUp.setVisible(false);
 				moveDown.setVisible(false);
-				getItems().remove(separator2);
+				getItems().remove(separator3);
 				remove.setVisible(false);
 				removeAll.setVisible(true);
 				
@@ -140,10 +156,15 @@ public class TableCellContextMenu extends ContextMenu {
 					if (tableView != queryPaneController.getTvFilters() && tableView.getItems().size() > 1) {
 						moveUp.setVisible(true);
 						moveDown.setVisible(true);
-						getItems().add(getItems().indexOf(moveDown) + 1, separator2);
+						getItems().add(getItems().indexOf(moveDown) + 1, separator3);
 					}
 					
 					remove.setVisible(true);
+				}
+				
+				if (tableView == queryPaneController.getTvRowDims() || tableView == queryPaneController.getTvColDims()) {
+					flip.setVisible(true);
+					getItems().add(getItems().indexOf(flip) + 1, separator2);
 				}
 			};
 		});
