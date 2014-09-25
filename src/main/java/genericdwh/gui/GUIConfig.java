@@ -90,8 +90,7 @@ public class GUIConfig {
 	@Bean
 	public SearchBoxController searchBoxController() {
 		return new SearchBoxController();
-	}
-	
+	}	
 	
 	/* DialogPopup-Controller */
 	

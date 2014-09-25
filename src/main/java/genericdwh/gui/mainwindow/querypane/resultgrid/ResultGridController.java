@@ -116,6 +116,10 @@ public class ResultGridController {
 		return resultGrids.indexOf(newResultGrid);
 	}
 	
+	public void setQuery(String query) {
+		resultGrids.getLast().setQuery(query);
+	}
+	
 	public void reset() {
 		resultGrids.clear();
 	}
@@ -125,6 +129,8 @@ public class ResultGridController {
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
+		
+		dbReader.clearLastQueries();
 		
 		ResultGrid grid = resultGrids.get(gridId);
 		

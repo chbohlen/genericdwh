@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import lombok.Getter;
 import lombok.Setter;
 
 import org.jooq.DSLContext;
@@ -41,11 +42,23 @@ import org.jooq.SelectConditionStep;
 import org.jooq.SelectHavingStep;
 import org.jooq.SelectQuery;
 import org.jooq.Table;
+import org.jooq.conf.ParamType;
 import org.jooq.impl.DSL;
 
 public class MySQLDatabaseReader implements DatabaseReader {
 	
 	@Setter private DSLContext dslContext;
+	
+	@Getter List<String> lastQueries = new ArrayList<>();
+	
+	public void addLastQuery(String query) { 
+		lastQueries.add(query); 
+	}
+	
+	public void clearLastQueries() {
+		lastQueries.clear();
+	}
+	
 		
 	@Override
 	public TreeMap<Long, DimensionCategory> loadDimensionCategories() {
@@ -338,6 +351,8 @@ public class MySQLDatabaseReader implements DatabaseReader {
 												.where(FACTS.RATIO_ID.equal(ratioId)
 													.and(FACTS.REFERENCE_OBJECT_ID.equal(refObjId)));
 		
+		addLastQuery(query.getSQL(ParamType.INLINED));
+		
 		Result<Record> result = query.fetch();	
 		
 		if (result.isEmpty()) {
@@ -361,6 +376,8 @@ public class MySQLDatabaseReader implements DatabaseReader {
 												.where(FACTS.RATIO_ID.equal(ratioId)
 													.and(FACTS.REFERENCE_OBJECT_ID.equal(refObjId)));
 		
+		addLastQuery(query.getSQL(ParamType.INLINED));
+
 		Result<Record> result = query.fetch();
 		
 		if (result.isEmpty()) {
@@ -389,10 +406,15 @@ public class MySQLDatabaseReader implements DatabaseReader {
 												.join(REFERENCE_OBJECTS)
 													.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID))
 												.where(FACTS.RATIO_ID.equal(ratioId))
-													.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
-													.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
-													.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField));
+													.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId));
+		if (filterRefObjIds.length > 0 && filterRefObjIds[0] != -1) {
+			query = query
+						.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
+						.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField));
+		}
 		
+		addLastQuery(query.getSQL(ParamType.INLINED));
+
 		Result<Record> result = query.fetch();
 		
 		if (result.isEmpty()) {
@@ -427,9 +449,14 @@ public class MySQLDatabaseReader implements DatabaseReader {
 												.join(REFERENCE_OBJECT_COMBINATIONS)
 													.on(FACTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
 												.where(FACTS.RATIO_ID.equal(ratioId))
-													.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
-													.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
-													.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField));
+													.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId));
+		if (filterRefObjIds.length > 0 && filterRefObjIds[0] != -1) {
+			query = query
+						.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
+						.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField));
+		}
+		
+		addLastQuery(query.getSQL(ParamType.INLINED));
 		
 		Result<Record> result = query.fetch();		
 		
@@ -473,9 +500,14 @@ public class MySQLDatabaseReader implements DatabaseReader {
 													.on(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID))
 												.where(FACTS.RATIO_ID.equal(ratioId))
 													.and(REFERENCE_OBJECTS.DIMENSION_ID.equal(dimId))
-													.and(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.in(componentField))
-													.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
-													.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField));
+													.and(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.in(componentField));
+		if (filterRefObjIds.length > 0 && filterRefObjIds[0] != -1) {
+			query = query
+						.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
+						.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField));
+		}
+
+		addLastQuery(query.getSQL(ParamType.INLINED));
 		
 		Result<Record> result = query.fetch();
 
@@ -503,14 +535,19 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		
 		Field<Object> filterCombinationField = filterCombinationsQuery.asField();
 		
-		SelectHavingStep<Record> query = dslContext
-											.select()
-											.from(FACTS)
-											.where(FACTS.RATIO_ID.equal(ratioId))
-												.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
-												.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField))
-											.groupBy(FACTS.REFERENCE_OBJECT_ID);
-	
+		SelectConditionStep<Record> tmpQuery = dslContext
+												.select()
+												.from(FACTS)
+												.where(FACTS.RATIO_ID.equal(ratioId));
+		if (filterRefObjIds.length > 0 && filterRefObjIds[0] != -1) {
+			tmpQuery = tmpQuery
+							.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterRefObjIds))
+							.and(FACTS.REFERENCE_OBJECT_ID.notIn(filterCombinationField));
+		}
+		SelectHavingStep<Record> query = tmpQuery.groupBy(FACTS.REFERENCE_OBJECT_ID);
+
+		addLastQuery(query.getSQL(ParamType.INLINED));
+		
 		Result<Record> result = query.fetch();
 
 		if (result.isEmpty()) {

@@ -12,7 +12,11 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-public interface DatabaseReader {	
+public interface DatabaseReader {
+	public void addLastQuery(String query);
+	public List<String> getLastQueries();
+	public void clearLastQueries();
+	
 	public TreeMap<Long, DimensionCategory> loadDimensionCategories();
 	public TreeMap<Long, Dimension> loadDimensions();
 	public List<Entry<Long, Long>> loadDimensionHierachies();

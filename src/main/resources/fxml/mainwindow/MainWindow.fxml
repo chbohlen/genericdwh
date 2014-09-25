@@ -4,7 +4,6 @@
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.HBox?>
 
 <AnchorPane prefHeight="750" prefWidth="1030" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 	<children>
@@ -22,9 +21,15 @@
                 <MenuItem fx:id="menuBarOpenEditor" mnemonicParsing="false" onAction="#menuBarOpenEditor" text="Open Editor" />
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="SQL-Query">
+              <items>
+                <MenuItem fx:id="menuBarToggleSQLQueries" mnemonicParsing="false" onAction="#menuBarToggleSQLQueries" text="Show" />
+              </items>
+            </Menu>
 		  </menus>
 		</MenuBar>
-		<AnchorPane layoutY="25" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+		<TextArea fx:id="taPlaintextQueries" layoutY="35.0" prefHeight="100.0" prefWidth="1020.0" visible="false" wrapText="true" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
+		<AnchorPane layoutY="25.0" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
    			<children>
 	   			<fx:include source="MainWindowSidebar.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="25.0" />
 	   			<fx:include layoutX="230" source="QueryPane.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="230.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />

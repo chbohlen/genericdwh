@@ -25,6 +25,8 @@ import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGrid;
 import genericdwh.gui.mainwindow.querypane.resultgrid.ResultGridController;
 import genericdwh.gui.mainwindow.sidebar.TableCellRightClickHandler;
 import genericdwh.main.Main;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableView;
@@ -36,7 +38,6 @@ import javafx.scene.text.Text;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TreeView;
 import javafx.util.Callback;
 import lombok.Getter;
 
@@ -59,7 +60,8 @@ public class QueryPaneController implements Initializable {
 	@FXML private Button btnExecQuery;
 	@FXML private Button btnClear;
 	
-	@FXML private TreeView<String> test;
+	@Getter private BooleanProperty executedQuery = new SimpleBooleanProperty(false);
+	public void setExecutedQuery(boolean value) { executedQuery.set(value); };
 	
 	private ResultGridController resultGridController;
 	
@@ -213,10 +215,12 @@ public class QueryPaneController implements Initializable {
 		event.consume();
 	}	
 	
-	@FXML public void buttonExecQueryOnClickHandler() {
-		Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.QUERYING, Icons.NOTIFICATION);
-		
+	@FXML public void buttonExecQueryOnClickHandler() {	
 		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
+		
+		mainWindowController.postStatus(StatusMessages.QUERYING, Icons.NOTIFICATION);
+		
+		setExecutedQuery(false);
 		
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
@@ -303,11 +307,13 @@ public class QueryPaneController implements Initializable {
 			}
 		}
 		
-		if (hasResults) {
-			mainWindowController.postStatus(StatusMessages.QUERY_OK, Icons.NOTIFICATION);
-		} else {
+		if (!hasResults) {
 			mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA, Icons.WARNING);
+			return;
 		}
+		
+		mainWindowController.postStatus(StatusMessages.QUERY_OK, Icons.NOTIFICATION);
+		setExecutedQuery(true);
 	}	
 	
 	@FXML public void buttonClearOnClickHandler() {
@@ -315,7 +321,9 @@ public class QueryPaneController implements Initializable {
 	}
 	
 	public void clear() {
-		Main.getContext().getBean(MainWindowController.class).clearStatus();
+		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
+		mainWindowController.clearStatus();
+		mainWindowController.hideSQLQueries();
 
 		tvRatios.getItems().clear();                    
 		tvRowDims.getItems().clear();
@@ -323,6 +331,8 @@ public class QueryPaneController implements Initializable {
 		tvFilters.getItems().clear();
 		
 		resetResultGrids();
+		
+		setExecutedQuery(false);
 	}
 
 	
@@ -379,7 +389,6 @@ public class QueryPaneController implements Initializable {
 				return QueryType.REFERENCE_OBJECT_COMBINATION;
 			}
 		}
-		
 		return null;
 	}
 
@@ -387,6 +396,8 @@ public class QueryPaneController implements Initializable {
 	private boolean handleNoReferenceObjectsOrDimensions(List<DataObject> ratios, List<DataObject> filter) {
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
+		
+		dbReader.clearLastQueries();
 		
 		Long[] filterRefObjIds = refObjManager.readRefObjIds(filter);
 		
@@ -413,7 +424,6 @@ public class QueryPaneController implements Initializable {
 				resultGridController.fillRatio(facts);
 			}
 		}
-		
 		return hasResults;
 	}
 
@@ -421,6 +431,7 @@ public class QueryPaneController implements Initializable {
 			long refObjId) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
+		dbReader.clearLastQueries();
 		
 		boolean hasResults = false;
 						
@@ -437,7 +448,6 @@ public class QueryPaneController implements Initializable {
 				resultGridController.fillReferenceObject(fact);
 			}
 		}
-		
 		return hasResults;
 	}
 	
@@ -445,6 +455,7 @@ public class QueryPaneController implements Initializable {
 			long refObjId) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
+		dbReader.clearLastQueries();
 				
 		boolean hasResults = false;
 								
@@ -461,7 +472,6 @@ public class QueryPaneController implements Initializable {
 				resultGridController.fillReferenceObject(facts);
 			}
 		}
-		
 		return hasResults;
 	}
 		
@@ -469,6 +479,7 @@ public class QueryPaneController implements Initializable {
 			long dimId, Long[] filterRefObjIds) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
+		dbReader.clearLastQueries();
 		
 		boolean hasResults = false;
 				
@@ -485,7 +496,6 @@ public class QueryPaneController implements Initializable {
 				resultGridController.fillDimension(facts);
 			}
 		}
-		
 		return hasResults;
 	}	
 		
@@ -494,6 +504,7 @@ public class QueryPaneController implements Initializable {
 			List<DataObject> combinedDims, List<DataObject> filter) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
+		dbReader.clearLastQueries();
 				
 		boolean hasResults = false;
 		
@@ -512,7 +523,6 @@ public class QueryPaneController implements Initializable {
 				hasResults = true;
 			}
 		}
-		
 		return hasResults;		
 	}
 		
@@ -520,6 +530,7 @@ public class QueryPaneController implements Initializable {
 			long dimId, Long[] filterRefObjIds) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
+		dbReader.clearLastQueries();
 
 		boolean hasResults = false;
 				
@@ -536,7 +547,6 @@ public class QueryPaneController implements Initializable {
 				resultGridController.fillDimension(facts);
 			}
 		}
-		
 		return hasResults;
 	}
 		
@@ -545,6 +555,7 @@ public class QueryPaneController implements Initializable {
 			List<DataObject> combinedDims, List<DataObject> filter) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
+		dbReader.clearLastQueries();
 					
 		boolean hasResults = false;
 		
@@ -563,7 +574,6 @@ public class QueryPaneController implements Initializable {
 				hasResults = true;
 			}
 		}
-		
 		return hasResults;
 	}
 		
@@ -573,6 +583,8 @@ public class QueryPaneController implements Initializable {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
+		
+		dbReader.clearLastQueries();
 						
 		boolean hasResults = false;
 		
@@ -592,7 +604,6 @@ public class QueryPaneController implements Initializable {
 				resultGridController.fillDimension(facts);
 			}
 		}
-		
 		return hasResults;
 	}
 			
@@ -602,6 +613,8 @@ public class QueryPaneController implements Initializable {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
+		
+		dbReader.clearLastQueries();
 		
 		Long[] refObjIds = refObjManager.readRefObjIds(combinedDims);
 		
@@ -622,7 +635,6 @@ public class QueryPaneController implements Initializable {
 				hasResults = true;
 			}
 		}
-		
 		return hasResults;
 	}
 	
@@ -634,13 +646,11 @@ public class QueryPaneController implements Initializable {
 				hierarchies.add((DimensionHierarchy)obj);
 			}
 		}
-		
 		return hierarchies;
 	}
 	
 	public void showExecutionFailure(String message) {
 		executionFailurePopupDialogController.createWindow(message);
-
 	}
 	
 	public void addColDimension(DataObject dim) {
@@ -670,5 +680,4 @@ public class QueryPaneController implements Initializable {
 		}
 		queryPane.requestFocus();
 	}
-
 }

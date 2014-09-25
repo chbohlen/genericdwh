@@ -29,6 +29,7 @@ public class StatusBarController implements Initializable {
 	
 	public void clearStatus() {
 		lStatus.setText("");
+		ivIcon.setImage(null);
 	}
 	
 }

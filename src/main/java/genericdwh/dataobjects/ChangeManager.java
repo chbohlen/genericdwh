@@ -110,11 +110,25 @@ public class ChangeManager {
 				if (((DataObjectHierarchy<DataObject>)hierarchy).getLevelsProperty().get().size() < 2) {
 					return ValidationMessages.HIERARCHY_MIN_2_OBJECTS;
 				}
+				List<DataObject> containedLevels = new ArrayList<DataObject>();
+				for (DataObject lvl : ((DataObjectHierarchy<DataObject>)hierarchy).getLevelsProperty().get()) {
+					if (containedLevels.contains(lvl)) {
+						return ValidationMessages.HIERARCHY_DUPLICATE_LEVEL;
+					}
+					containedLevels.add(lvl);
+				}
 			}
 		} else if (stagedObjectClass == DimensionCombination.class || stagedObjectClass == ReferenceObjectCombination.class) {
 			for (DataObject combination : stagedObjects) {
 				if (((DataObjectCombination<DataObject>)combination).getComponentsProperty().get().size() < 2) {
 					return ValidationMessages.COMBINATION_MIN_2_OBJECTS;
+				}
+				List<DataObject> containedComponents = new ArrayList<DataObject>();
+				for (DataObject comp : ((DataObjectCombination<DataObject>)combination).getComponentsProperty().get()) {
+					if (containedComponents.contains(comp)) {
+						return ValidationMessages.COMBINATION_DUPLICATE_COMPONENT;
+					}
+					containedComponents.add(comp);
 				}
 			}
 		} else if (stagedObjectClass == Fact.class) {

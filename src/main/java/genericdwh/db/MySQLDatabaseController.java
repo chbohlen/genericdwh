@@ -24,7 +24,7 @@ public class MySQLDatabaseController implements DatabaseController {
 
 	@Getter private MySQLDatabaseReader dbReader;
 	@Getter private MySQLDatabaseWriter dbWriter;
-		
+			
 	public MySQLDatabaseController(MySQLDatabaseReader dbReader, MySQLDatabaseWriter dbWriter) {
 		this.dbReader = dbReader;
 		this.dbWriter = dbWriter;

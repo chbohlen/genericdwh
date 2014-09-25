@@ -59,6 +59,8 @@ public class ResultGrid extends GridPane {
 	@Getter @Setter private List<DataObject> combinedDims;
 	@Getter @Setter private QueryType queryType;
 	@Getter @Setter private List<DataObject> filter;
+	
+	@Getter @Setter private String query;
 
 	public ResultGrid() {
 		super();

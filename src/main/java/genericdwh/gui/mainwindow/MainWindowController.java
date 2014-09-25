@@ -5,6 +5,7 @@ import genericdwh.dataobjects.dimension.DimensionManager;
 import genericdwh.dataobjects.ratio.RatioManager;
 import genericdwh.dataobjects.unit.UnitManager;
 import genericdwh.db.DatabaseController;
+import genericdwh.db.DatabaseReader;
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.connectwindow.ConnectWindowController;
 import genericdwh.gui.editor.EditorController;
@@ -16,6 +17,7 @@ import genericdwh.gui.mainwindow.sidebar.MainWindowSidebarController;
 import genericdwh.main.Main;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
@@ -26,6 +28,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -35,6 +38,7 @@ public class MainWindowController implements Initializable{
 		
 	@FXML private MenuItem menuBarDisconnect;
 	@FXML private MenuItem menuBarOpenEditor;
+	@FXML private MenuItem menuBarToggleSQLQueries;
 	
 	@Getter private Stage stage;
 	
@@ -46,7 +50,10 @@ public class MainWindowController implements Initializable{
 	private ConnectWindowController connectWindowController;
 	private EditorController editorController;
 	
-	@ Getter @Setter private DataObject draggedDataObject;
+	@FXML private TextArea taPlaintextQueries;
+	private boolean queriesVisible;
+	
+	@Getter @Setter private DataObject draggedDataObject;
 	
 	public MainWindowController(StatusBarController statusBarController,
 			MainWindowSidebarController sidebarController, QueryPaneController queryPaneController,
@@ -75,6 +82,18 @@ public class MainWindowController implements Initializable{
 				.when(dbController.getIsConnected())
 				.then(false)
 				.otherwise(true));
+		
+		queriesVisible = false;
+		
+		menuBarToggleSQLQueries.disableProperty().bind(Bindings
+				.when(queryPaneController.getExecutedQuery())
+				.then(false)
+				.otherwise(true));
+		
+		menuBarToggleSQLQueries.textProperty().bind(Bindings
+				.when(taPlaintextQueries.visibleProperty())
+				.then("Hide")
+				.otherwise("Show"));
 	}
 
 	
@@ -161,7 +180,7 @@ public class MainWindowController implements Initializable{
 		clearQueryPane();
 		
 		hideSidebars();
-		hideQueryPane();	
+		hideQueryPane();
 		
 		postStatus(StatusMessages.DISCONNECTED, Icons.NOTIFICATION);
 	}
@@ -173,6 +192,27 @@ public class MainWindowController implements Initializable{
 
 	@FXML private void menuBarOpenEditor() {
 		editorController.createWindow();
+	}
+	
+	@FXML public void menuBarToggleSQLQueries() {
+		if (!queriesVisible) {
+			if (taPlaintextQueries.getText().equals("")) {
+				List<String> lastQueries = Main.getContext().getBean(DatabaseReader.class).getLastQueries();
+				String queries = "";
+				for (String query : lastQueries) {
+					queries += query;
+					if (!lastQueries.get(lastQueries.size() - 1).equals(query)) {
+						queries += "\n\n";
+					}
+				}
+				taPlaintextQueries.setText(queries);	
+			}
+			taPlaintextQueries.setVisible(true);
+			taPlaintextQueries.toFront();
+			queriesVisible = true;
+		} else {
+			hideSQLQueries();
+		}
 	}
 	
 	
@@ -202,5 +242,18 @@ public class MainWindowController implements Initializable{
 	public void refresh() {
 		createSidebars();
 		clearQueryPane();
+	}
+	
+	public void enableLastSQLQueryButton() {
+		menuBarToggleSQLQueries.setDisable(false);
+	}
+	
+	public void disableLastSQLQueryButton() {
+		menuBarToggleSQLQueries.setDisable(true);
+	}
+	
+	public void hideSQLQueries() {
+		taPlaintextQueries.setVisible(false);
+		queriesVisible = false;
 	}
 }

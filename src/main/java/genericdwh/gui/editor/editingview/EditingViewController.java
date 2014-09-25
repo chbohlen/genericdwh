@@ -943,11 +943,11 @@ public class EditingViewController implements Initializable {
                 	Dimension newLevel = event.getNewValue();
                 	Dimension oldLevel = event.getOldValue();
                 	
-                	if (!dimHierarchy.getLevelsProperty().get().contains(newLevel)) {
+                	if (newLevel != oldLevel) {
                     	if (dimHierarchy.getLevelsProperty().get().contains(oldLevel)) {
                     		int oldIndex = dimHierarchy.getLevelsProperty().get().indexOf(oldLevel);
-                    		dimHierarchy.getLevelsProperty().get().add(oldIndex, newLevel);
                     		dimHierarchy.getLevelsProperty().get().remove(oldLevel);
+                    		dimHierarchy.getLevelsProperty().get().add(oldIndex, newLevel);
                     	} else {
                     		dimHierarchy.getLevelsProperty().get().add(newLevel);
                     	}
@@ -1108,11 +1108,11 @@ public class EditingViewController implements Initializable {
                 	ReferenceObject newLevel = event.getNewValue();
                 	ReferenceObject oldLevel = event.getOldValue();
                 	
-                	if (!refObjHierarchy.getLevelsProperty().get().contains(newLevel)) {
+                	if (newLevel != oldLevel) {
                     	if (refObjHierarchy.getLevelsProperty().get().contains(oldLevel)) {
                     		int oldIndex = refObjHierarchy.getLevelsProperty().get().indexOf(oldLevel);
-                    		refObjHierarchy.getLevelsProperty().get().add(oldIndex, newLevel);
                     		refObjHierarchy.getLevelsProperty().get().remove(oldLevel);
+                    		refObjHierarchy.getLevelsProperty().get().add(oldIndex, newLevel);
                 		} else {
                     		refObjHierarchy.getLevelsProperty().get().add(newLevel);
                     	}
