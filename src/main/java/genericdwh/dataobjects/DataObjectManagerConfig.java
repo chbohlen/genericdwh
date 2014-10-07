@@ -21,27 +21,27 @@ public class DataObjectManagerConfig {
 	
 	@Bean
 	public DimensionManager dimensionManager() {
-		return new DimensionManager(dbControllerConfig.databaseController());
+		return new DimensionManager(dbControllerConfig.mySQLdatabaseController());
 	}
 
 	@Bean
 	public ReferenceObjectManager referenceObjectManager() {
-		return new ReferenceObjectManager(dbControllerConfig.databaseController());
+		return new ReferenceObjectManager(dbControllerConfig.mySQLdatabaseController());
 	}
 	
 	@Bean
 	public RatioManager ratioManager() {
-		return new RatioManager(dbControllerConfig.databaseController());
+		return new RatioManager(dbControllerConfig.mySQLdatabaseController());
 	}
 	
 	@Bean
 	public UnitManager unitManager() {
-		return new UnitManager(dbControllerConfig.databaseController());
+		return new UnitManager(dbControllerConfig.mySQLdatabaseController());
 	}
 	
 	@Bean
 	public FactManager factManager() {
-		return new FactManager(dbControllerConfig.databaseController());
+		return new FactManager(dbControllerConfig.mySQLdatabaseController());
 	}
 	
 	@Bean

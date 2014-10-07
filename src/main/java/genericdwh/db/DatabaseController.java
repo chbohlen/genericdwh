@@ -10,4 +10,6 @@ public interface DatabaseController {
 	
 	public DatabaseReader getDbReader();
 	public DatabaseWriter getDbWriter();
+	
+	public String toString();
 }

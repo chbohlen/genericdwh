@@ -6,17 +6,17 @@ import org.springframework.context.annotation.*;
 public class DatabaseControllerConfig {
 	
 	@Bean
-	public DatabaseController databaseController() {
-		return new MySQLDatabaseController((MySQLDatabaseReader)databaseReader(), (MySQLDatabaseWriter)databaseWriter());
+	public DatabaseController mySQLdatabaseController() {
+		return new MySQLDatabaseController((MySQLDatabaseReader)mySQLdatabaseReader(), (MySQLDatabaseWriter)mySQLdatabaseWriter());
 	}
 	
 	@Bean
-	public DatabaseReader databaseReader() {
+	public DatabaseReader mySQLdatabaseReader() {
 		return new MySQLDatabaseReader();
 	}
 
 	@Bean
-	public DatabaseWriter databaseWriter() {
+	public DatabaseWriter mySQLdatabaseWriter() {
 		return new MySQLDatabaseWriter();
 	}
 }

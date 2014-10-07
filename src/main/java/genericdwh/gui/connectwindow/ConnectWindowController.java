@@ -1,6 +1,8 @@
 package genericdwh.gui.connectwindow;
 
+import java.net.URL;
 import java.util.Properties;
+import java.util.ResourceBundle;
 
 import genericdwh.configfiles.ConfigFileReader;
 import genericdwh.db.DatabaseController;
@@ -10,18 +12,21 @@ import genericdwh.gui.general.StatusMessages;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.main.Main;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class ConnectWindowController {
+public class ConnectWindowController implements Initializable {
 	
 	@FXML private TextField tfIp;
 	@FXML private TextField tfPort;
+	@FXML private ComboBox<DatabaseController> cbDbType;
 	@FXML private TextField tfDbName;
 	@FXML private TextField tfUserName;
 	@FXML private PasswordField tfPassword;
@@ -29,14 +34,21 @@ public class ConnectWindowController {
 	@FXML private Button btnConnect;
 	@FXML private Button btnCancel;
 	
-	private String lastIp = new String();
-	private String lastPort = new String();
-	private String lastDbName = new String();
-	private String lastUserName = new String();
+	private String lastIp = "";
+	private String lastPort = "";
+	// DB-Type //
+	private String lastDbName = "";
+	private String lastUserName = "";
 	
 	private Stage stage;
 
 	public ConnectWindowController() {
+	}
+	
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		cbDbType.getItems().add((DatabaseController)Main.getContext().getBean("mySQLdatabaseController"));
+		cbDbType.getSelectionModel().select(0);
 	}
 	
 	public void createWindow() {
@@ -65,6 +77,7 @@ public class ConnectWindowController {
 		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
 
 		mainWindowController.postStatus(StatusMessages.CONNECTING, Icons.NOTIFICATION);
+		// DB-Type //
 		boolean connected  = Main.getContext().getBean(DatabaseController.class).connect("localhost", "3306", "genericdwh" , "root", "root");
 //		boolean connected  = Main.getContext().getBean(DatabaseController.class).connect(tfIp.getText(), tfPort.getText(), tfDbName.getText() , tfUserName.getText(), tfPassword.getText());
 		
@@ -81,6 +94,7 @@ public class ConnectWindowController {
 		Properties dbCredentials = new Properties();
 		dbCredentials.setProperty("ip", tfIp.getText());
 		dbCredentials.setProperty("port", tfPort.getText());
+		// DB-Type //
 		dbCredentials.setProperty("dbName", tfDbName.getText());
 		dbCredentials.setProperty("userName", tfUserName.getText());
 		
@@ -96,6 +110,7 @@ public class ConnectWindowController {
 			if (loaded) {
 				lastIp = dbCredentials.getProperty("ip");
 				lastPort = dbCredentials.getProperty("port");
+				// DB-Type //
 				lastDbName = dbCredentials.getProperty("dbName");
 				lastUserName = dbCredentials.getProperty("userName");
 			}
@@ -105,6 +120,7 @@ public class ConnectWindowController {
 		
 		tfIp.setText(lastIp);
 		tfPort.setText(lastPort);
+		// DB-Type //
 		tfDbName.setText(lastDbName);
 		tfUserName.setText(lastUserName);
 		

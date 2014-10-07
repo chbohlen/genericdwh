@@ -31,6 +31,7 @@ public class MySQLDatabaseController implements DatabaseController {
 		this.dbWriter = dbWriter;
 	}
 	
+	@Override
 	public boolean connect(String ip, String port, String dbName, String userName, String password) {
 		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
 		
@@ -65,6 +66,7 @@ public class MySQLDatabaseController implements DatabaseController {
 		return true;
 	}
 	
+	@Override
 	public void disconnect() {
 		try {
 			if (dbConnection != null) {
@@ -74,5 +76,10 @@ public class MySQLDatabaseController implements DatabaseController {
 			e.printStackTrace();
 		}
 		isConnected.set(false);
+	}
+	
+	@Override
+	public String toString() {
+		return "MySQL";
 	}
 }
