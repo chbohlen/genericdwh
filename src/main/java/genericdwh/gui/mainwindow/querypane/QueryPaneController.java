@@ -234,6 +234,7 @@ public class QueryPaneController implements Initializable {
 		
 		if (ratios.isEmpty()) {
 			if (rowDims.isEmpty() && colDims.isEmpty()) {
+				mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA, Icons.WARNING);
 				return;
 			}
 			
