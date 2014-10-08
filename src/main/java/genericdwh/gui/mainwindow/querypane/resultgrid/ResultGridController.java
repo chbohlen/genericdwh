@@ -130,6 +130,11 @@ public class ResultGridController {
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
 		
+		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
+		
+		mainWindowController.postStatus(StatusMessages.QUERYING, Icons.NOTIFICATION);
+		Main.getLogger().info(StatusMessages.QUERYING);
+		
 		dbReader.clearLastQueries();
 		
 		ResultGrid grid = resultGrids.get(gridId);
@@ -187,6 +192,7 @@ public class ResultGridController {
 		ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs = refObjManager.loadRefObjs(colDims, grid.getFilter());
 		if (rowRefObjs.isEmpty() && colRefObjs.isEmpty()) {
 			Main.getContext().getBean(QueryPaneController.class).showExecutionFailure(ExecutionMessages.NO_REFERENCE_OBJECTS);
+			Main.getLogger().error("Query execution failed: " + ExecutionMessages.NO_REFERENCE_OBJECTS);
 			return;
 		}
 		
@@ -216,10 +222,14 @@ public class ResultGridController {
 		}
 		
 		if (facts == null) {
-			Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
+			mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
+			Main.getLogger().info(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS);
 		}
 		
 		fillDimensionWHierarchy(gridId, facts, hierarchyComponentIds);
+		
+		mainWindowController.postStatus(StatusMessages.QUERY_OK, Icons.NOTIFICATION);
+		Main.getLogger().info("Query executed successfully.");
 	}
 	
 	private int insertHierarchyLevel(List<DataObject> dims, DimensionHierarchy hierarchy, Dimension currLevel, Dimension newLevel) {

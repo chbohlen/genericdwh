@@ -43,13 +43,16 @@ public class MySQLDatabaseController implements DatabaseController {
 			int errorCode = e.getErrorCode();
 			if (errorCode == 1045) {
 				mainWindowController.postStatus(StatusMessages.CONNECTION_INVALID_USERNAME_PW, Icons.WARNING);
+				Main.getLogger().error("Database connection failed: " + StatusMessages.CONNECTION_INVALID_USERNAME_PW);
 				return false;
 			}
 			if (errorCode == 1049) {
 				mainWindowController.postStatus(StatusMessages.CONNECTION_INVALID_DATABASE_SCHEMA, Icons.WARNING);
+				Main.getLogger().error("Database connection failed: " + StatusMessages.CONNECTION_INVALID_DATABASE_SCHEMA);
 				return false;
 			}
 			mainWindowController.postStatus(StatusMessages.CONNECTION_FAILED, Icons.WARNING);
+			Main.getLogger().error("Database connection failed: " + StatusMessages.CONNECTION_FAILED);
 			return false;
 		} catch (Exception e) {
 				e.printStackTrace();
@@ -63,6 +66,7 @@ public class MySQLDatabaseController implements DatabaseController {
 		isConnected.set(true);
 		
 		mainWindowController.postStatus(StatusMessages.CONNECTION_OK, Icons.NOTIFICATION);
+		Main.getLogger().info("Database connection successful.");
 		return true;
 	}
 	
@@ -74,8 +78,10 @@ public class MySQLDatabaseController implements DatabaseController {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			Main.getLogger().error("Could not close database connection.");
 		}
 		isConnected.set(false);
+		Main.getLogger().info("Database connection closed.");
 	}
 	
 	@Override

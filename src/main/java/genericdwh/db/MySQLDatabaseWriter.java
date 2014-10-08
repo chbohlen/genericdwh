@@ -26,9 +26,27 @@ import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectCombination;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
 import genericdwh.dataobjects.unit.Unit;
+import genericdwh.db.model.tables.records.DimensionCategoriesRecord;
+import genericdwh.db.model.tables.records.DimensionCombinationsRecord;
+import genericdwh.db.model.tables.records.DimensionHierarchiesRecord;
+import genericdwh.db.model.tables.records.DimensionsRecord;
+import genericdwh.db.model.tables.records.FactUnitsRecord;
+import genericdwh.db.model.tables.records.FactsRecord;
+import genericdwh.db.model.tables.records.RatioCategoriesRecord;
+import genericdwh.db.model.tables.records.RatiosRecord;
+import genericdwh.db.model.tables.records.ReferenceObjectCombinationsRecord;
+import genericdwh.db.model.tables.records.ReferenceObjectHierarchiesRecord;
+import genericdwh.db.model.tables.records.ReferenceObjectsRecord;
+import genericdwh.main.Main;
 import lombok.Setter;
 
 import org.jooq.DSLContext;
+import org.jooq.DeleteConditionStep;
+import org.jooq.InsertValuesStep1;
+import org.jooq.InsertValuesStep2;
+import org.jooq.InsertValuesStep4;
+import org.jooq.UpdateConditionStep;
+import org.jooq.conf.ParamType;
 
 public class MySQLDatabaseWriter implements DatabaseWriter {
 	
@@ -46,10 +64,14 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		
 		for (Dimension dim : creations) {
 			Long catId = dim.getCategoryProperty().get().getId() == 0 ? null : dim.getCategoryProperty().get().getId();
-			dslContext
-				.insertInto(DIMENSIONS, DIMENSIONS.NAME, DIMENSIONS.CATEGORY_ID)
-				.values(dim.getNameProperty().get(), catId)
-				.execute();
+			InsertValuesStep2<DimensionsRecord, String, Long> statement = dslContext
+																			.insertInto(DIMENSIONS, DIMENSIONS.NAME, DIMENSIONS.CATEGORY_ID)
+																			.values(dim.getNameProperty().get(), catId);
+			
+			Main.getLogger().info("Executed SQL: " + "Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
+				
 		}
 		
 		try {
@@ -71,12 +93,15 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		
 		for (Dimension dim : updates) {
 			Long catId = dim.getCategoryProperty().get().getId() == 0 ? null : dim.getCategoryProperty().get().getId();
-			dslContext
-				.update(DIMENSIONS)
-				.set(DIMENSIONS.NAME, dim.getNameProperty().get())
-				.set(DIMENSIONS.CATEGORY_ID, catId)
-				.where(DIMENSIONS.DIMENSION_ID.equal(dim.getId()))
-				.execute();
+			 UpdateConditionStep<DimensionsRecord> statement = dslContext
+																.update(DIMENSIONS)
+																.set(DIMENSIONS.NAME, dim.getNameProperty().get())
+																.set(DIMENSIONS.CATEGORY_ID, catId)
+																.where(DIMENSIONS.DIMENSION_ID.equal(dim.getId()));
+			
+			Main.getLogger().info("Executed SQL: " + "Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -97,10 +122,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (Dimension dim : deletions) {
-			dslContext
-				.delete(DIMENSIONS)
-				.where(DIMENSIONS.DIMENSION_ID.equal(dim.getId()))
-				.execute();
+			DeleteConditionStep<DimensionsRecord> statement = dslContext
+																.delete(DIMENSIONS)
+																.where(DIMENSIONS.DIMENSION_ID.equal(dim.getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -122,10 +150,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (ReferenceObject refObj : creations) {
-			dslContext
-				.insertInto(REFERENCE_OBJECTS, REFERENCE_OBJECTS.NAME, REFERENCE_OBJECTS.DIMENSION_ID)
-				.values(refObj.getNameProperty().get(), refObj.getDimensionProperty().get().getId())
-				.execute();
+			InsertValuesStep2<ReferenceObjectsRecord, String, Long> statement = dslContext
+																				.insertInto(REFERENCE_OBJECTS, REFERENCE_OBJECTS.NAME, REFERENCE_OBJECTS.DIMENSION_ID)
+																				.values(refObj.getNameProperty().get(), refObj.getDimensionProperty().get().getId());
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -146,12 +177,15 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (ReferenceObject refObj : updates) {
-			dslContext
-				.update(REFERENCE_OBJECTS)
-				.set(REFERENCE_OBJECTS.NAME, refObj.getNameProperty().get())
-				.set(REFERENCE_OBJECTS.DIMENSION_ID, refObj.getDimensionProperty().get().getId())
-				.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(refObj.getId()))
-				.execute();
+			UpdateConditionStep<ReferenceObjectsRecord> statement = dslContext
+																	.update(REFERENCE_OBJECTS)
+																	.set(REFERENCE_OBJECTS.NAME, refObj.getNameProperty().get())
+																	.set(REFERENCE_OBJECTS.DIMENSION_ID, refObj.getDimensionProperty().get().getId())
+																	.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(refObj.getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 			}
 		
 		try {
@@ -172,10 +206,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (ReferenceObject refObj : deletions) {
-			dslContext
-				.delete(REFERENCE_OBJECTS)
-				.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(refObj.getId()))
-				.execute();
+			DeleteConditionStep<ReferenceObjectsRecord> statement = dslContext
+																	.delete(REFERENCE_OBJECTS)
+																	.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(refObj.getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -199,10 +236,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		for (DimensionHierarchy hierarchy : creations) {
 			List<Dimension> levels = hierarchy.getLevelsProperty().get();
 			for (int i = 0; i < levels.size() - 1; i++) {
-				dslContext
-					.insertInto(DIMENSION_HIERARCHIES, DIMENSION_HIERARCHIES.PARENT_ID, DIMENSION_HIERARCHIES.CHILD_ID)
-					.values(levels.get(i).getId(), levels.get(i + 1).getId())
-					.execute();
+				InsertValuesStep2<DimensionHierarchiesRecord, Long, Long> statement = dslContext
+																						.insertInto(DIMENSION_HIERARCHIES, DIMENSION_HIERARCHIES.PARENT_ID, DIMENSION_HIERARCHIES.CHILD_ID)
+																						.values(levels.get(i).getId(), levels.get(i + 1).getId());
+				
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				
+				statement.execute();
 			}
 		}
 		
@@ -229,37 +269,49 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 			if (levels.size() <= changedLevels.size()) {
 				int i = 0;
 				for (; i < levels.size() - 1; i++) {
-					dslContext
-						.update(DIMENSION_HIERARCHIES)
-						.set(DIMENSION_HIERARCHIES.PARENT_ID, changedLevels.get(i).getId())
-						.set(DIMENSION_HIERARCHIES.CHILD_ID, changedLevels.get(i + 1).getId())
-						.where(DIMENSION_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
-							.and(DIMENSION_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())))
-						.execute();
+					UpdateConditionStep<DimensionHierarchiesRecord> statement = dslContext
+																				.update(DIMENSION_HIERARCHIES)
+																				.set(DIMENSION_HIERARCHIES.PARENT_ID, changedLevels.get(i).getId())
+																				.set(DIMENSION_HIERARCHIES.CHILD_ID, changedLevels.get(i + 1).getId())
+																				.where(DIMENSION_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
+																					.and(DIMENSION_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
+					
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+					
+					statement.execute();
 				}
 				for (; i < changedLevels.size() - 1; i++) {
-					dslContext
-						.insertInto(DIMENSION_HIERARCHIES, DIMENSION_HIERARCHIES.PARENT_ID, DIMENSION_HIERARCHIES.CHILD_ID)
-						.values(changedLevels.get(i).getId(), changedLevels.get(i + 1).getId())
-						.execute();
+					InsertValuesStep2<DimensionHierarchiesRecord, Long, Long> statement = dslContext
+																							.insertInto(DIMENSION_HIERARCHIES, DIMENSION_HIERARCHIES.PARENT_ID, DIMENSION_HIERARCHIES.CHILD_ID)
+																							.values(changedLevels.get(i).getId(), changedLevels.get(i + 1).getId());
+					
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+					
+					statement.execute();
 				}
 			} else {
 				int i = 0;
 				for (; i < changedLevels.size() - 1; i++) {
-					dslContext
-						.update(DIMENSION_HIERARCHIES)
-						.set(DIMENSION_HIERARCHIES.PARENT_ID, changedLevels.get(i).getId())
-						.set(DIMENSION_HIERARCHIES.CHILD_ID, changedLevels.get(i + 1).getId())
-						.where(DIMENSION_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
-							.and(DIMENSION_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())))
-						.execute();
+					UpdateConditionStep<DimensionHierarchiesRecord> statement = dslContext
+																				.update(DIMENSION_HIERARCHIES)
+																				.set(DIMENSION_HIERARCHIES.PARENT_ID, changedLevels.get(i).getId())
+																				.set(DIMENSION_HIERARCHIES.CHILD_ID, changedLevels.get(i + 1).getId())
+																				.where(DIMENSION_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
+																					.and(DIMENSION_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
+					
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+					
+					statement.execute();
 				}
 				for (; i < levels.size() - 1; i++) {
-					dslContext
-						.delete(DIMENSION_HIERARCHIES)
-						.where(DIMENSION_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
-							.and(DIMENSION_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())))
-						.execute();
+					DeleteConditionStep<DimensionHierarchiesRecord> statement = dslContext
+																				.delete(DIMENSION_HIERARCHIES)
+																				.where(DIMENSION_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
+																					.and(DIMENSION_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
+					
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+					
+					statement.execute();
 				}
 			}
 		}
@@ -284,11 +336,14 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		for (DimensionHierarchy hierarchy : deletions) {
 			List<Dimension> levels = hierarchy.getLevels();
 			for (int i = 0; i < levels.size() - 1; i++) {
-				dslContext
-					.delete(DIMENSION_HIERARCHIES)
-					.where(DIMENSION_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
-						.and(DIMENSION_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())))
-					.execute();
+				DeleteConditionStep<DimensionHierarchiesRecord> statement = dslContext
+																			.delete(DIMENSION_HIERARCHIES)
+																			.where(DIMENSION_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
+																				.and(DIMENSION_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
+				
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				
+				statement.execute();
 			}
 		}
 		
@@ -313,10 +368,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		for (ReferenceObjectHierarchy hierarchy : creations) {
 			List<ReferenceObject> levels = hierarchy.getLevelsProperty().get();
 			for (int i = 0; i < levels.size() - 1; i++) {
-				dslContext
-					.insertInto(REFERENCE_OBJECT_HIERARCHIES, REFERENCE_OBJECT_HIERARCHIES.PARENT_ID, REFERENCE_OBJECT_HIERARCHIES.CHILD_ID)
-					.values(levels.get(i).getId(), levels.get(i + 1).getId())
-					.execute();
+				InsertValuesStep2<ReferenceObjectHierarchiesRecord, Long, Long> statement = dslContext
+																							.insertInto(REFERENCE_OBJECT_HIERARCHIES, REFERENCE_OBJECT_HIERARCHIES.PARENT_ID, REFERENCE_OBJECT_HIERARCHIES.CHILD_ID)
+																							.values(levels.get(i).getId(), levels.get(i + 1).getId());
+				
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				
+				statement.execute();
 			}
 		}
 		
@@ -343,37 +401,49 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 			if (levels.size() <= changedLevels.size()) {
 				int i = 0;
 				for (; i < levels.size() - 1; i++) {
-					dslContext
-						.update(REFERENCE_OBJECT_HIERARCHIES)
-						.set(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID, changedLevels.get(i).getId())
-						.set(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID, changedLevels.get(i + 1).getId())
-						.where(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
-							.and(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())))
-						.execute();
+					UpdateConditionStep<ReferenceObjectHierarchiesRecord> statement = dslContext
+																						.update(REFERENCE_OBJECT_HIERARCHIES)
+																						.set(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID, changedLevels.get(i).getId())
+																						.set(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID, changedLevels.get(i + 1).getId())
+																						.where(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
+																							.and(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
+					
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+					
+					statement.execute();
 				}
 				for (; i < changedLevels.size() - 1; i++) {
-					dslContext
-						.insertInto(REFERENCE_OBJECT_HIERARCHIES, REFERENCE_OBJECT_HIERARCHIES.PARENT_ID, REFERENCE_OBJECT_HIERARCHIES.CHILD_ID)
-						.values(changedLevels.get(i).getId(), changedLevels.get(i + 1).getId())
-						.execute();
+					InsertValuesStep2<ReferenceObjectHierarchiesRecord, Long, Long> statement = dslContext
+																								.insertInto(REFERENCE_OBJECT_HIERARCHIES, REFERENCE_OBJECT_HIERARCHIES.PARENT_ID, REFERENCE_OBJECT_HIERARCHIES.CHILD_ID)
+																								.values(changedLevels.get(i).getId(), changedLevels.get(i + 1).getId());
+					
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+					
+					statement.execute();
 				}
 			} else {
 				int i = 0;
 				for (; i < changedLevels.size() - 1; i++) {
-					dslContext
-						.update(REFERENCE_OBJECT_HIERARCHIES)
-						.set(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID, changedLevels.get(i).getId())
-						.set(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID, changedLevels.get(i + 1).getId())
-						.where(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
-							.and(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())))
-						.execute();
+					UpdateConditionStep<ReferenceObjectHierarchiesRecord> statement = dslContext
+																						.update(REFERENCE_OBJECT_HIERARCHIES)
+																						.set(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID, changedLevels.get(i).getId())
+																						.set(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID, changedLevels.get(i + 1).getId())
+																						.where(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
+																							.and(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
+					
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+					
+					statement.execute();
 				}
 				for (; i < levels.size() - 1; i++) {
-					dslContext
-						.delete(REFERENCE_OBJECT_HIERARCHIES)
-						.where(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
-							.and(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())))
-						.execute();
+					DeleteConditionStep<ReferenceObjectHierarchiesRecord> statement = dslContext
+																						.delete(REFERENCE_OBJECT_HIERARCHIES)
+																						.where(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
+																							.and(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
+					
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+					
+					statement.execute();
 				}
 			}
 		}
@@ -398,11 +468,14 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		for (ReferenceObjectHierarchy hierarchy : deletions) {
 			List<ReferenceObject> levels = hierarchy.getLevels();
 			for (int i = 0; i < levels.size() - 1; i++) {
-				dslContext
-					.delete(REFERENCE_OBJECT_HIERARCHIES)
-					.where(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
-						.and(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())))
-					.execute();
+				DeleteConditionStep<ReferenceObjectHierarchiesRecord> statement = dslContext
+																					.delete(REFERENCE_OBJECT_HIERARCHIES)
+																					.where(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
+																						.and(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
+				
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				
+				statement.execute();
 			}
 		}
 		
@@ -425,10 +498,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (DimensionCombination combination : creations) {
-			dslContext
-				.insertInto(DIMENSIONS, DIMENSIONS.NAME)
-				.values(combination.getNameProperty().get())
-				.execute();
+			InsertValuesStep1<DimensionsRecord, String> statement = dslContext
+																	.insertInto(DIMENSIONS, DIMENSIONS.NAME)
+																	.values(combination.getNameProperty().get());
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 			
 			try {
 				con.commit();
@@ -446,10 +522,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 					
 			List<Dimension> components = combination.getComponentsProperty().get();
 			for (int i = 0; i < components.size(); i++) {
-				dslContext
-					.insertInto(DIMENSION_COMBINATIONS, DIMENSION_COMBINATIONS.AGGREGATE_ID, DIMENSION_COMBINATIONS.COMPONENT_ID)
-					.values(lastID, components.get(i).getId())
-					.execute();
+				InsertValuesStep2<DimensionCombinationsRecord, Long, Long> statement1 = dslContext
+																						.insertInto(DIMENSION_COMBINATIONS, DIMENSION_COMBINATIONS.AGGREGATE_ID, DIMENSION_COMBINATIONS.COMPONENT_ID)
+																						.values(lastID, components.get(i).getId());
+				
+				Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
+				
+				statement1.execute();
 			}
 		}
 		
@@ -471,46 +550,61 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (DimensionCombination combination : updates) {
-			dslContext
-				.update(DIMENSIONS)
-				.set(DIMENSIONS.NAME, combination.getNameProperty().get())
-				.where(DIMENSIONS.DIMENSION_ID.equal(combination.getCombination().getId()))
-				.execute();
+			UpdateConditionStep<DimensionsRecord> statement = dslContext
+																.update(DIMENSIONS)
+																.set(DIMENSIONS.NAME, combination.getNameProperty().get())
+																.where(DIMENSIONS.DIMENSION_ID.equal(combination.getCombination().getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 			
 			List<Dimension> components = combination.getComponents();
 			List<Dimension> changedComponents = combination.getComponentsProperty().get();
 			if (components.size() <= changedComponents.size()) {
 				int i = 0;
 				for (; i < components.size(); i++) {
-					dslContext
-						.update(DIMENSION_COMBINATIONS)
-						.set(DIMENSION_COMBINATIONS.COMPONENT_ID, changedComponents.get(i).getId())
-						.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
-							.and(DIMENSION_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())))
-						.execute();
+					UpdateConditionStep<DimensionCombinationsRecord> statement1 = dslContext
+																					.update(DIMENSION_COMBINATIONS)
+																					.set(DIMENSION_COMBINATIONS.COMPONENT_ID, changedComponents.get(i).getId())
+																					.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
+																						.and(DIMENSION_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())));
+					
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
+					
+					statement1.execute();
 				}
 				for (; i < changedComponents.size(); i++) {
-					dslContext
-						.insertInto(DIMENSION_COMBINATIONS, DIMENSION_COMBINATIONS.AGGREGATE_ID, DIMENSION_COMBINATIONS.COMPONENT_ID)
-						.values(combination.getCombination().getId(), changedComponents.get(i).getId())
-						.execute();
+					InsertValuesStep2<DimensionCombinationsRecord, Long, Long> statement1 = dslContext
+																							.insertInto(DIMENSION_COMBINATIONS, DIMENSION_COMBINATIONS.AGGREGATE_ID, DIMENSION_COMBINATIONS.COMPONENT_ID)
+																							.values(combination.getCombination().getId(), changedComponents.get(i).getId());
+					
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
+					
+					statement1.execute();
 				}
 			} else {
 				int i = 0;
 				for (; i < changedComponents.size(); i++) {
-					dslContext
-						.update(DIMENSION_COMBINATIONS)
-						.set(DIMENSION_COMBINATIONS.COMPONENT_ID, changedComponents.get(i).getId())
-						.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
-							.and(DIMENSION_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())))
-						.execute();
+					UpdateConditionStep<DimensionCombinationsRecord> statement1 = dslContext
+																					.update(DIMENSION_COMBINATIONS)
+																					.set(DIMENSION_COMBINATIONS.COMPONENT_ID, changedComponents.get(i).getId())
+																					.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
+																						.and(DIMENSION_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())));
+					
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
+					
+					statement1.execute();
 				}
 				for (; i < components.size(); i++) {
-					dslContext
-						.delete(DIMENSION_COMBINATIONS)
-						.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
-							.and(DIMENSION_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())))
-						.execute();
+					DeleteConditionStep<DimensionCombinationsRecord> statement1 = dslContext
+																					.delete(DIMENSION_COMBINATIONS)
+																					.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
+																						.and(DIMENSION_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())));
+					
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
+					
+					statement1.execute();
 				}
 			}
 		}
@@ -533,10 +627,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (DimensionCombination combination : deletions) {
-			dslContext
-				.delete(DIMENSION_COMBINATIONS)
-				.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId()))
-				.execute();
+			DeleteConditionStep<DimensionCombinationsRecord> statement = dslContext
+																			.delete(DIMENSION_COMBINATIONS)
+																			.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -558,10 +655,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (ReferenceObjectCombination combination : creations) {
-			dslContext
-				.insertInto(REFERENCE_OBJECTS, REFERENCE_OBJECTS.DIMENSION_ID, REFERENCE_OBJECTS.NAME)
-				.values(combination.getCombination().getDimensionProperty().get().getId(), combination.getNameProperty().get())
-				.execute();
+			InsertValuesStep2<ReferenceObjectsRecord, Long, String> statement = dslContext
+																				.insertInto(REFERENCE_OBJECTS, REFERENCE_OBJECTS.DIMENSION_ID, REFERENCE_OBJECTS.NAME)
+																				.values(combination.getCombination().getDimensionProperty().get().getId(), combination.getNameProperty().get());
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 			
 			try {
 				con.commit();
@@ -579,10 +679,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 					
 			List<ReferenceObject> components = combination.getComponentsProperty().get();
 			for (int i = 0; i < components.size(); i++) {
-				dslContext
-					.insertInto(REFERENCE_OBJECT_COMBINATIONS, REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID, REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID)
-					.values(lastID, components.get(i).getId())
-					.execute();
+				InsertValuesStep2<ReferenceObjectCombinationsRecord, Long, Long> statement1 = dslContext
+																								.insertInto(REFERENCE_OBJECT_COMBINATIONS, REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID, REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID)
+																								.values(lastID, components.get(i).getId());
+				
+				Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
+				
+				statement1.execute();
 			}
 		}
 		
@@ -604,47 +707,62 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (ReferenceObjectCombination combination : updates) {
-			dslContext
-				.update(REFERENCE_OBJECTS)
-				.set(REFERENCE_OBJECTS.DIMENSION_ID, combination.getCombination().getDimensionProperty().get().getId())
-				.set(REFERENCE_OBJECTS.NAME, combination.getNameProperty().get())
-				.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(combination.getCombination().getId()))
-				.execute();
+			UpdateConditionStep<ReferenceObjectsRecord> statement = dslContext
+																	.update(REFERENCE_OBJECTS)
+																	.set(REFERENCE_OBJECTS.DIMENSION_ID, combination.getCombination().getDimensionProperty().get().getId())
+																	.set(REFERENCE_OBJECTS.NAME, combination.getNameProperty().get())
+																	.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(combination.getCombination().getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 			
 			List<ReferenceObject> components = combination.getComponents();
 			List<ReferenceObject> changedComponents = combination.getComponentsProperty().get();
 			if (components.size() <= changedComponents.size()) {
 				int i = 0;
 				for (; i < components.size(); i++) {
-					dslContext
-						.update(REFERENCE_OBJECT_COMBINATIONS)
-						.set(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID, changedComponents.get(i).getId())
-						.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
-							.and(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())))
-						.execute();
+					UpdateConditionStep<ReferenceObjectCombinationsRecord> statement1 = dslContext
+																						.update(REFERENCE_OBJECT_COMBINATIONS)
+																						.set(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID, changedComponents.get(i).getId())
+																						.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
+																							.and(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())));
+				
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
+					
+					statement1.execute();
 				}
 				for (; i < changedComponents.size(); i++) {
-					dslContext
-						.insertInto(REFERENCE_OBJECT_COMBINATIONS, REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID, REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID)
-						.values(combination.getCombination().getId(), changedComponents.get(i).getId())
-						.execute();
+					InsertValuesStep2<ReferenceObjectCombinationsRecord, Long, Long> statement1 = dslContext
+																									.insertInto(REFERENCE_OBJECT_COMBINATIONS, REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID, REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID)
+																									.values(combination.getCombination().getId(), changedComponents.get(i).getId());
+					
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
+					
+					statement1.execute();
 				}
 			} else {
 				int i = 0;
 				for (; i < changedComponents.size(); i++) {
-					dslContext
-						.update(REFERENCE_OBJECT_COMBINATIONS)
-						.set(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID, changedComponents.get(i).getId())
-						.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
-							.and(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())))
-						.execute();
+					UpdateConditionStep<ReferenceObjectCombinationsRecord> statement1 = dslContext
+																						.update(REFERENCE_OBJECT_COMBINATIONS)
+																						.set(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID, changedComponents.get(i).getId())
+																						.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
+																							.and(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())));
+					
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
+					
+					statement1.execute();
 				}
 				for (; i < components.size(); i++) {
-					dslContext
-						.delete(REFERENCE_OBJECT_COMBINATIONS)
-						.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
-							.and(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())))
-						.execute();
+					DeleteConditionStep<ReferenceObjectCombinationsRecord> statement1 = dslContext
+																						.delete(REFERENCE_OBJECT_COMBINATIONS)
+																						.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
+																							.and(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())));
+					
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
+					
+					statement1.execute();
 				}
 			}
 		}
@@ -667,10 +785,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (ReferenceObjectCombination combination : deletions) {
-			dslContext
-				.delete(REFERENCE_OBJECT_COMBINATIONS)
-				.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId()))
-				.execute();
+			DeleteConditionStep<ReferenceObjectCombinationsRecord> statement = dslContext
+																				.delete(REFERENCE_OBJECT_COMBINATIONS)
+																				.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -693,10 +814,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		
 		for (Ratio ratio : creations) {
 			Long catId = ratio.getCategoryProperty().get().getId() == 0 ? null : ratio.getCategoryProperty().get().getId();
-			dslContext
-				.insertInto(RATIOS, RATIOS.NAME, RATIOS.CATEGORY_ID)
-				.values(ratio.getNameProperty().get(), catId)
-				.execute();
+			InsertValuesStep2<RatiosRecord, String, Long> statement = dslContext
+																		.insertInto(RATIOS, RATIOS.NAME, RATIOS.CATEGORY_ID)
+																		.values(ratio.getNameProperty().get(), catId);
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -718,12 +842,15 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		
 		for (Ratio ratio : updates) {
 			Long catId = ratio.getCategoryProperty().get().getId() == 0 ? null : ratio.getCategoryProperty().get().getId();
-			dslContext
-				.update(RATIOS)
-				.set(RATIOS.NAME, ratio.getNameProperty().get())
-				.set(RATIOS.CATEGORY_ID, catId)
-				.where(RATIOS.RATIO_ID.equal(ratio.getId()))
-				.execute();
+			UpdateConditionStep<RatiosRecord> statement = dslContext
+															.update(RATIOS)
+															.set(RATIOS.NAME, ratio.getNameProperty().get())
+															.set(RATIOS.CATEGORY_ID, catId)
+															.where(RATIOS.RATIO_ID.equal(ratio.getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -744,10 +871,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (Ratio ratio : deletions) {
-			dslContext
-				.delete(RATIOS)
-				.where(RATIOS.RATIO_ID.equal(ratio.getId()))
-				.execute();
+			DeleteConditionStep<RatiosRecord> statement = dslContext
+															.delete(RATIOS)
+															.where(RATIOS.RATIO_ID.equal(ratio.getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -770,13 +900,16 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		
 		for (Fact fact : creations) {
 			Long unitId = fact.getUnitProperty().get().getId() == 0 ? null : fact.getUnitProperty().get().getId();
-			dslContext
-				.insertInto(FACTS, FACTS.RATIO_ID, FACTS.REFERENCE_OBJECT_ID, FACTS.VALUE, FACTS.UNIT_ID)
-				.values(fact.getRatioProperty().get().getId(),
-						fact.getReferenceObjectProperty().get().getId(),
-						fact.getValueProperty().get(),
-						unitId)
-				.execute();
+			InsertValuesStep4<FactsRecord, Long, Long, Double, Long> statement = dslContext
+																					.insertInto(FACTS, FACTS.RATIO_ID, FACTS.REFERENCE_OBJECT_ID, FACTS.VALUE, FACTS.UNIT_ID)
+																					.values(fact.getRatioProperty().get().getId(),
+																							fact.getReferenceObjectProperty().get().getId(),
+																							fact.getValueProperty().get(),
+																							unitId);
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -798,15 +931,18 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		
 		for (Fact fact : updates) {
 			Long unitId = fact.getUnitProperty().get().getId() == 0 ? null : fact.getUnitProperty().get().getId();
-			dslContext
-				.update(FACTS)
-				.set(FACTS.RATIO_ID, fact.getRatioProperty().get().getId())
-				.set(FACTS.REFERENCE_OBJECT_ID, fact.getReferenceObjectProperty().get().getId())
-				.set(FACTS.VALUE, fact.getValueProperty().get())
-				.set(FACTS.UNIT_ID, unitId)
-				.where(FACTS.RATIO_ID.equal(fact.getRatioProperty().get().getId())
-					.and(FACTS.REFERENCE_OBJECT_ID.equal(fact.getReferenceObjectProperty().get().getId())))
-				.execute();
+			UpdateConditionStep<FactsRecord> statement = dslContext
+															.update(FACTS)
+															.set(FACTS.RATIO_ID, fact.getRatioProperty().get().getId())
+															.set(FACTS.REFERENCE_OBJECT_ID, fact.getReferenceObjectProperty().get().getId())
+															.set(FACTS.VALUE, fact.getValueProperty().get())
+															.set(FACTS.UNIT_ID, unitId)
+															.where(FACTS.RATIO_ID.equal(fact.getRatioProperty().get().getId())
+																.and(FACTS.REFERENCE_OBJECT_ID.equal(fact.getReferenceObjectProperty().get().getId())));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -827,11 +963,14 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (Fact fact : deletions) {
-			dslContext
-				.delete(FACTS)
-				.where(FACTS.RATIO_ID.equal(fact.getRatioProperty().get().getId())
-					.and(FACTS.REFERENCE_OBJECT_ID.equal(fact.getReferenceObjectProperty().get().getId())))
-				.execute();
+			DeleteConditionStep<FactsRecord> statement = dslContext
+															.delete(FACTS)
+															.where(FACTS.RATIO_ID.equal(fact.getRatioProperty().get().getId())
+																.and(FACTS.REFERENCE_OBJECT_ID.equal(fact.getReferenceObjectProperty().get().getId())));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -853,10 +992,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (DimensionCategory cat : creations) {
-			dslContext
-				.insertInto(DIMENSION_CATEGORIES, DIMENSION_CATEGORIES.NAME)
-				.values(cat.getNameProperty().get())
-				.execute();
+			InsertValuesStep1<DimensionCategoriesRecord, String> statement = dslContext
+																				.insertInto(DIMENSION_CATEGORIES, DIMENSION_CATEGORIES.NAME)
+																				.values(cat.getNameProperty().get());
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -877,11 +1019,14 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (DimensionCategory cat : updates) {
-			dslContext
-				.update(DIMENSION_CATEGORIES)
-				.set(DIMENSION_CATEGORIES.NAME, cat.getNameProperty().get())
-				.where(DIMENSION_CATEGORIES.CATEGORY_ID.equal(cat.getId()))
-				.execute();
+			UpdateConditionStep<DimensionCategoriesRecord> statement = dslContext
+																		.update(DIMENSION_CATEGORIES)
+																		.set(DIMENSION_CATEGORIES.NAME, cat.getNameProperty().get())
+																		.where(DIMENSION_CATEGORIES.CATEGORY_ID.equal(cat.getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -902,10 +1047,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (DimensionCategory cat : deletions) {
-			dslContext
-				.delete(DIMENSION_CATEGORIES)
-				.where(DIMENSION_CATEGORIES.CATEGORY_ID.equal(cat.getId()))
-				.execute();
+			DeleteConditionStep<DimensionCategoriesRecord> statement = dslContext
+																		.delete(DIMENSION_CATEGORIES)
+																		.where(DIMENSION_CATEGORIES.CATEGORY_ID.equal(cat.getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -927,10 +1075,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (RatioCategory cat : creations) {
-			dslContext
-				.insertInto(RATIO_CATEGORIES, RATIO_CATEGORIES.NAME)
-				.values(cat.getNameProperty().get())
-				.execute();
+			InsertValuesStep1<RatioCategoriesRecord, String> statement = dslContext
+																			.insertInto(RATIO_CATEGORIES, RATIO_CATEGORIES.NAME)
+																			.values(cat.getNameProperty().get());
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -951,11 +1102,14 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (RatioCategory cat : updates) {
-			dslContext
-				.update(RATIO_CATEGORIES)
-				.set(RATIO_CATEGORIES.NAME, cat.getNameProperty().get())
-				.where(RATIO_CATEGORIES.CATEGORY_ID.equal(cat.getId()))
-				.execute();
+			UpdateConditionStep<RatioCategoriesRecord> statement = dslContext
+																	.update(RATIO_CATEGORIES)
+																	.set(RATIO_CATEGORIES.NAME, cat.getNameProperty().get())
+																	.where(RATIO_CATEGORIES.CATEGORY_ID.equal(cat.getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -976,10 +1130,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (RatioCategory cat : deletions) {
-			dslContext
-				.delete(RATIO_CATEGORIES)
-				.where(RATIO_CATEGORIES.CATEGORY_ID.equal(cat.getId()))
-				.execute();
+			DeleteConditionStep<RatioCategoriesRecord> statement = dslContext
+																	.delete(RATIO_CATEGORIES)
+																	.where(RATIO_CATEGORIES.CATEGORY_ID.equal(cat.getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -1001,10 +1158,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (Unit unit : creations) {
-			dslContext
-				.insertInto(FACT_UNITS, FACT_UNITS.UNIT_NAME, FACT_UNITS.UNIT_SYMBOL)
-				.values(unit.getNameProperty().get(), unit.getSymbolProperty().get())
-				.execute();
+			InsertValuesStep2<FactUnitsRecord, String, String> statement = dslContext
+																			.insertInto(FACT_UNITS, FACT_UNITS.UNIT_NAME, FACT_UNITS.UNIT_SYMBOL)
+																			.values(unit.getNameProperty().get(), unit.getSymbolProperty().get());
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -1025,12 +1185,15 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (Unit unit : updates) {
-			dslContext
-				.update(FACT_UNITS)
-				.set(FACT_UNITS.UNIT_NAME, unit.getNameProperty().get())
-				.set(FACT_UNITS.UNIT_SYMBOL, unit.getSymbolProperty().get())
-				.where(RATIO_CATEGORIES.CATEGORY_ID.equal(unit.getId()))
-				.execute();
+			UpdateConditionStep<FactUnitsRecord> statement = dslContext
+																.update(FACT_UNITS)
+																.set(FACT_UNITS.UNIT_NAME, unit.getNameProperty().get())
+																.set(FACT_UNITS.UNIT_SYMBOL, unit.getSymbolProperty().get())
+																.where(RATIO_CATEGORIES.CATEGORY_ID.equal(unit.getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {
@@ -1052,10 +1215,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (Unit unit : deletions) {
-			dslContext
-				.delete(FACT_UNITS)
-				.where(FACT_UNITS.UNIT_ID.equal(unit.getId()))
-				.execute();
+			DeleteConditionStep<FactUnitsRecord> statement = dslContext
+																.delete(FACT_UNITS)
+																.where(FACT_UNITS.UNIT_ID.equal(unit.getId()));
+			
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			statement.execute();
 		}
 		
 		try {

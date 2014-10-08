@@ -219,6 +219,7 @@ public class QueryPaneController implements Initializable {
 		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
 		
 		mainWindowController.postStatus(StatusMessages.QUERYING, Icons.NOTIFICATION);
+		Main.getLogger().info(StatusMessages.QUERYING);
 		
 		setExecutedQuery(false);
 		
@@ -235,6 +236,7 @@ public class QueryPaneController implements Initializable {
 		if (ratios.isEmpty()) {
 			if (rowDims.isEmpty() && colDims.isEmpty()) {
 				mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA, Icons.WARNING);
+				Main.getLogger().info(StatusMessages.QUERY_NO_DATA);
 				return;
 			}
 			
@@ -253,6 +255,7 @@ public class QueryPaneController implements Initializable {
 			List<TreeMap<Long, ReferenceObject>> colRefObjs = refObjManager.loadRefObjs(colDims, filter);
 			if (rowRefObjs.isEmpty() && colRefObjs.isEmpty()) {
 				showExecutionFailure(ExecutionMessages.NO_REFERENCE_OBJECTS);
+				Main.getLogger().error("Query execution failed: " + ExecutionMessages.NO_REFERENCE_OBJECTS);
 				return;
 			}
 			
@@ -277,6 +280,7 @@ public class QueryPaneController implements Initializable {
 					hasResults = handleSingleDimensionWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter);
 					if (!hasResults) {
 						mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
+						Main.getLogger().info(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS);
 						setExecutedQuery(true);
 						return;
 					}
@@ -290,6 +294,7 @@ public class QueryPaneController implements Initializable {
 					hasResults = handleDimensionCombinationWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter);
 					if (!hasResults) {
 						mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
+						Main.getLogger().info(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS);
 						setExecutedQuery(true);
 						return;
 					}
@@ -303,6 +308,7 @@ public class QueryPaneController implements Initializable {
 					hasResults = handleMixedWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter);
 					if (!hasResults) {
 						mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
+						Main.getLogger().info(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS);
 						setExecutedQuery(true);
 						return;
 					}
@@ -313,10 +319,12 @@ public class QueryPaneController implements Initializable {
 		
 		if (!hasResults) {
 			mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA, Icons.WARNING);
+			Main.getLogger().info(StatusMessages.QUERY_NO_DATA);
 			return;
 		}
 		
 		mainWindowController.postStatus(StatusMessages.QUERY_OK, Icons.NOTIFICATION);
+		Main.getLogger().info("Query executed successfully.");
 		setExecutedQuery(true);
 	}	
 	

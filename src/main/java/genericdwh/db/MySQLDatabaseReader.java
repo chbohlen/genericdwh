@@ -22,6 +22,7 @@ import genericdwh.dataobjects.unit.Unit;
 import genericdwh.db.jooqutils.EntryLongLongRecordMapper;
 import genericdwh.db.model.tables.DimensionCombinations;
 import genericdwh.db.model.tables.ReferenceObjectCombinations;
+import genericdwh.main.Main;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -350,6 +351,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 													.and(FACTS.REFERENCE_OBJECT_ID.equal(refObjId)));
 		
 		addLastQuery(query.getSQL(ParamType.INLINED));
+		Main.getLogger().info("Executed SQL: " + query.getSQL(ParamType.INLINED));
 		
 		Result<Record> result = query.fetch();	
 		
@@ -375,6 +377,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 													.and(FACTS.REFERENCE_OBJECT_ID.equal(refObjId)));
 		
 		addLastQuery(query.getSQL(ParamType.INLINED));
+		Main.getLogger().info("Executed SQL: " + query.getSQL(ParamType.INLINED));
 
 		Result<Record> result = query.fetch();
 		
@@ -412,6 +415,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		}
 		
 		addLastQuery(query.getSQL(ParamType.INLINED));
+		Main.getLogger().info("Executed SQL: " + query.getSQL(ParamType.INLINED));
 
 		Result<Record> result = query.fetch();
 		
@@ -455,6 +459,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		}
 		
 		addLastQuery(query.getSQL(ParamType.INLINED));
+		Main.getLogger().info("Executed SQL: " + query.getSQL(ParamType.INLINED));
 		
 		Result<Record> result = query.fetch();		
 		
@@ -506,6 +511,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		}
 
 		addLastQuery(query.getSQL(ParamType.INLINED));
+		Main.getLogger().info("Executed SQL: " + query.getSQL(ParamType.INLINED));
 		
 		Result<Record> result = query.fetch();
 
@@ -545,6 +551,7 @@ public class MySQLDatabaseReader implements DatabaseReader {
 		SelectHavingStep<Record> query = tmpQuery.groupBy(FACTS.REFERENCE_OBJECT_ID);
 
 		addLastQuery(query.getSQL(ParamType.INLINED));
+		Main.getLogger().info("Executed SQL: " + query.getSQL(ParamType.INLINED));
 		
 		Result<Record> result = query.fetch();
 

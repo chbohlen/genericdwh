@@ -1,5 +1,7 @@
 package genericdwh.configfiles;
 
+import genericdwh.main.Main;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,6 +26,7 @@ public class ConfigFileReader {
 			props.load(is);
 		} catch (Exception e) {
 			e.printStackTrace();
+			Main.getLogger().error("Could not load config file.");
 		} finally {
 			if (is != null) {
 				try {
@@ -33,6 +36,7 @@ public class ConfigFileReader {
 				}
 			}
 		}
+		Main.getLogger().info("Config file loaded.");
 		return props;
 	}
 	
@@ -48,6 +52,7 @@ public class ConfigFileReader {
 			props.store(os, comment);
 		} catch (Exception e) {
 			e.printStackTrace();
+			Main.getLogger().error("Could not save config file.");
 		} finally {
 			if (os != null) {
 				try {
@@ -57,5 +62,6 @@ public class ConfigFileReader {
 				}
 			}
 		}
+		Main.getLogger().info("Config file saved.");
 	}
 }

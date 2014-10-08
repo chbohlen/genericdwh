@@ -2,9 +2,17 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.thesis</groupId>
   <artifactId>genericdwh</artifactId>
-  <version>0.0.5-SNAPSHOT</version>
+  <version>0.0.6-SNAPSHOT</version>
   <name>Generic DWH</name>
   <build>
+    <resources>
+      <resource>
+        <directory>C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\resources</directory>
+      </resource>
+      <resource>
+        <directory>C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\resources\log4j2</directory>
+      </resource>
+    </resources>
   	<plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
