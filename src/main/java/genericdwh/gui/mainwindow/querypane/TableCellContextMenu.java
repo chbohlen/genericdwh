@@ -47,7 +47,7 @@ public class TableCellContextMenu extends ContextMenu {
             public void handle(ActionEvent event) {
 				DataObject obj = tableCell.getDataObj();
 				tableView.getItems().remove(obj);
-				queryPaneController.getTvFilters().getItems().add(obj);
+				queryPaneController.getTvFilter().getItems().add(obj);
 
             }
         });
@@ -146,14 +146,14 @@ public class TableCellContextMenu extends ContextMenu {
 						if (tableView != queryPaneController.getTvRowDims()) {
 							changeToRowDimension.setVisible(true);
 						}
-						if (tableView != queryPaneController.getTvFilters() 
+						if (tableView != queryPaneController.getTvFilter() 
 								&& tableView.getSelectionModel().getSelectedItem() instanceof ReferenceObject) {			
 							changeToFilter.setVisible(true);
 						}
 						getItems().add(getItems().indexOf(changeToFilter) + 1, separator1);
 					}
 					
-					if (tableView != queryPaneController.getTvFilters() && tableView.getItems().size() > 1) {
+					if (tableView != queryPaneController.getTvFilter() && tableView.getItems().size() > 1) {
 						moveUp.setVisible(true);
 						moveDown.setVisible(true);
 						getItems().add(getItems().indexOf(moveDown) + 1, separator3);

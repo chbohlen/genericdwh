@@ -141,6 +141,14 @@ public class ResultGridController {
 		
 		List<DataObject> rowDims = grid.getRowDims();
 		List<DataObject> colDims = grid.getColDims();
+		List<DataObject> filter = grid.getFilter();
+		Ratio ratio = grid.getRatio();
+		
+		Main.getLogger().info("Query parameters " 
+				+ "- Column Dimensions: " + colDims.toString()
+				+ ", Row Dimensions: " + rowDims.toString()
+				+ ", Filtered Reference Objects: " + filter.toString()
+				+ ", Ratios: " + "[" + ratio.toString() + "]");
 				
 		int currIndex = hierarchy.getLevels().indexOf(currLevel);
 		Dimension newLevel;
@@ -188,8 +196,8 @@ public class ResultGridController {
 			}
 		}
 		
-		ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs = refObjManager.loadRefObjs(rowDims, grid.getFilter());
-		ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs = refObjManager.loadRefObjs(colDims, grid.getFilter());
+		ArrayList<TreeMap<Long, ReferenceObject>> rowRefObjs = refObjManager.loadRefObjs(rowDims, filter);
+		ArrayList<TreeMap<Long, ReferenceObject>> colRefObjs = refObjManager.loadRefObjs(colDims, filter);
 		if (rowRefObjs.isEmpty() && colRefObjs.isEmpty()) {
 			Main.getContext().getBean(QueryPaneController.class).showExecutionFailure(ExecutionMessages.NO_REFERENCE_OBJECTS);
 			Main.getLogger().error("Query execution failed: " + ExecutionMessages.NO_REFERENCE_OBJECTS);
@@ -198,22 +206,22 @@ public class ResultGridController {
 		
 		grid.reinitializeWHierarchiesWTotals(rowRefObjs, colRefObjs, hierarchy, newLevel);
 		
-		Long[] filterRefObjIds = refObjManager.readRefObjIds(grid.getFilter());
+		Long[] filterRefObjIds = refObjManager.readRefObjIds(filter);
 		long dimId = dimManager.findDimAggregateId(combinedDims);
 		
 		List<ResultObject> facts = null;
 		switch (grid.getQueryType()) {
 			case SINGLE_DIMENSION_W_HIERARCHY: {
-				facts = dbReader.loadFactsForSingleDim(grid.getRatio().getId(), dimId, filterRefObjIds);
+				facts = dbReader.loadFactsForSingleDim(ratio.getId(), dimId, filterRefObjIds);
 				break;
 			}
 			case DIMENSION_COMBINATION_W_HIERARCHY: {
-				facts = dbReader.loadFactsForDimCombination(grid.getRatio().getId(), dimId, filterRefObjIds);
+				facts = dbReader.loadFactsForDimCombination(ratio.getId(), dimId, filterRefObjIds);
 				break;
 			}
 			case MIXED_W_HIERARCHY: {
 				Long[] refObjIds = refObjManager.readRefObjIds(combinedDims);
-				facts = dbReader.loadFactsForDimCombinationAndRefObjs(grid.getRatio().getId(), dimId, refObjIds, filterRefObjIds);
+				facts = dbReader.loadFactsForDimCombinationAndRefObjs(ratio.getId(), dimId, refObjIds, filterRefObjIds);
 				break;
 			}
 			default: {

@@ -25,6 +25,10 @@ public class MySQLDatabaseController implements DatabaseController {
 
 	@Getter private MySQLDatabaseReader dbReader;
 	@Getter private MySQLDatabaseWriter dbWriter;
+	
+	private String ip;
+	private String port;
+	private String dbName;
 			
 	public MySQLDatabaseController(MySQLDatabaseReader dbReader, MySQLDatabaseWriter dbWriter) {
 		this.dbReader = dbReader;
@@ -35,6 +39,10 @@ public class MySQLDatabaseController implements DatabaseController {
 	public boolean connect(String ip, String port, String dbName, String userName, String password) {
 		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
 		
+		this.ip = ip;
+		this.port = port;
+		this.dbName = dbName;
+		
 		String dbDriver = com.mysql.jdbc.Driver.class.getName();
 		try {
 			Class.forName(dbDriver);
@@ -43,16 +51,16 @@ public class MySQLDatabaseController implements DatabaseController {
 			int errorCode = e.getErrorCode();
 			if (errorCode == 1045) {
 				mainWindowController.postStatus(StatusMessages.CONNECTION_INVALID_USERNAME_PW, Icons.WARNING);
-				Main.getLogger().error("Database connection failed: " + StatusMessages.CONNECTION_INVALID_USERNAME_PW);
+				Main.getLogger().error("Database connection failed (" + ip + ":" + port + "/" + dbName + ") :" + StatusMessages.CONNECTION_INVALID_USERNAME_PW);
 				return false;
 			}
 			if (errorCode == 1049) {
 				mainWindowController.postStatus(StatusMessages.CONNECTION_INVALID_DATABASE_SCHEMA, Icons.WARNING);
-				Main.getLogger().error("Database connection failed: " + StatusMessages.CONNECTION_INVALID_DATABASE_SCHEMA);
+				Main.getLogger().error("Database connection failed (" + ip + ":" + port + "/" + dbName + ") :" + StatusMessages.CONNECTION_INVALID_DATABASE_SCHEMA);
 				return false;
 			}
 			mainWindowController.postStatus(StatusMessages.CONNECTION_FAILED, Icons.WARNING);
-			Main.getLogger().error("Database connection failed: " + StatusMessages.CONNECTION_FAILED);
+			Main.getLogger().error("Database connection failed (" + ip + ":" + port + "/" + dbName + ") :" + StatusMessages.CONNECTION_FAILED);
 			return false;
 		} catch (Exception e) {
 				e.printStackTrace();
@@ -66,7 +74,7 @@ public class MySQLDatabaseController implements DatabaseController {
 		isConnected.set(true);
 		
 		mainWindowController.postStatus(StatusMessages.CONNECTION_OK, Icons.NOTIFICATION);
-		Main.getLogger().info("Database connection successful.");
+		Main.getLogger().info("Database connection successful (" + ip + ":" + port + "/" + dbName + ").");
 		return true;
 	}
 	
@@ -78,10 +86,10 @@ public class MySQLDatabaseController implements DatabaseController {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			Main.getLogger().error("Could not close database connection.");
+			Main.getLogger().error("Could not close database connection (" + ip + ":" + port + "/" + dbName + ").");
 		}
 		isConnected.set(false);
-		Main.getLogger().info("Database connection closed.");
+		Main.getLogger().info("Database connection closed (" + ip + ":" + port + "/" + dbName + ").");
 	}
 	
 	@Override

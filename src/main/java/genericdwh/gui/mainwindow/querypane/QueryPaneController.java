@@ -49,7 +49,7 @@ public class QueryPaneController implements Initializable {
 	
 	@Getter @FXML private TableView<DataObject> tvColDims;
 	@Getter @FXML private TableView<DataObject> tvRowDims;
-	@Getter @FXML private TableView<DataObject> tvFilters;
+	@Getter @FXML private TableView<DataObject> tvFilter;
 	@Getter @FXML private TableView<DataObject> tvRatios;
 
 	@FXML private TableColumn<DataObject, DataObject> tcColDims;
@@ -89,12 +89,12 @@ public class QueryPaneController implements Initializable {
 		
 		tvColDims.getStyleClass().add("no-horizontal-scrollbar");
 		tvRowDims.getStyleClass().add("no-horizontal-scrollbar");
-		tvFilters.getStyleClass().add("no-horizontal-scrollbar");
+		tvFilter.getStyleClass().add("no-horizontal-scrollbar");
 		tvRatios.getStyleClass().add("no-horizontal-scrollbar");
 		
 		tvColDims.setPlaceholder(new Text(""));
 		tvRowDims.setPlaceholder(new Text(""));
-		tvFilters.setPlaceholder(new Text(""));
+		tvFilter.setPlaceholder(new Text(""));
 		tvRatios.setPlaceholder(new Text(""));
 		
 		tcColDims.setCellFactory(new Callback<TableColumn<DataObject, DataObject>, TableCell<DataObject, DataObject>>() {
@@ -122,8 +122,8 @@ public class QueryPaneController implements Initializable {
             public TableCell<DataObject, DataObject> call(TableColumn<DataObject, DataObject> param) {
             	DataObjectTableCell tableCell =  new DataObjectTableCell();
             	
-            	tableCell.setOnMouseClicked(new TableCellRightClickHandler(tvFilters));
-            	tableCell.setContextMenu(new TableCellContextMenu(tvFilters, tableCell));
+            	tableCell.setOnMouseClicked(new TableCellRightClickHandler(tvFilter));
+            	tableCell.setContextMenu(new TableCellContextMenu(tvFilter, tableCell));
 
             	return tableCell;            
             }
@@ -189,7 +189,7 @@ public class QueryPaneController implements Initializable {
 			Object gestureSource = event.getGestureSource();
 			if ((source != tvRatios && draggedDataObject instanceof Ratio)
 				|| (source == tvRatios && !(draggedDataObject instanceof Ratio))
-				|| (source == tvFilters && !(draggedDataObject instanceof ReferenceObject))) {
+				|| (source == tvFilter && !(draggedDataObject instanceof ReferenceObject))) {
 				event.consume();
 				return;
 			}
@@ -198,7 +198,7 @@ public class QueryPaneController implements Initializable {
 					&& (tvRatios.getItems().contains(draggedDataObject)
 						|| tvRowDims.getItems().contains(draggedDataObject)
 						|| tvColDims.getItems().contains(draggedDataObject)
-						|| tvFilters.getItems().contains(draggedDataObject))) {
+						|| tvFilter.getItems().contains(draggedDataObject))) {
 				
 				event.consume();
 				return;
@@ -231,7 +231,13 @@ public class QueryPaneController implements Initializable {
 		List<DataObject> ratios = tvRatios.getItems();
 		List<DataObject> rowDims = tvRowDims.getItems();
 		List<DataObject> colDims = tvColDims.getItems();
-		List<DataObject> filter = tvFilters.getItems();
+		List<DataObject> filter = tvFilter.getItems();
+		
+		Main.getLogger().info("Query parameters " 
+				+ "- Column Dimensions: " + colDims.toString()
+				+ ", Row Dimensions: " + rowDims.toString()
+				+ ", Filtered Reference Objects: " + filter.toString()
+				+ ", Ratios: " + ratios.toString());
 		
 		if (ratios.isEmpty()) {
 			if (rowDims.isEmpty() && colDims.isEmpty()) {
@@ -242,7 +248,7 @@ public class QueryPaneController implements Initializable {
 			
 			ratios = new ArrayList<>(Main.getContext().getBean(RatioManager.class).getRatios().values());
 		}
-				
+		
 		boolean hasResults = false;
 		if (rowDims.isEmpty() && colDims.isEmpty()) {
 			hasResults = handleNoReferenceObjectsOrDimensions(ratios, filter);
@@ -340,7 +346,7 @@ public class QueryPaneController implements Initializable {
 		tvRatios.getItems().clear();                    
 		tvRowDims.getItems().clear();
 		tvColDims.getItems().clear();
-		tvFilters.getItems().clear();
+		tvFilter.getItems().clear();
 		
 		resetResultGrids();
 		
@@ -680,8 +686,8 @@ public class QueryPaneController implements Initializable {
 	}
 	
 	public void addFilter(DataObject dim) {
-		if (!tvFilters.getItems().contains(dim)) {
-			tvFilters.getItems().add(dim);
+		if (!tvFilter.getItems().contains(dim)) {
+			tvFilter.getItems().add(dim);
 		}
 		queryPane.requestFocus();
 	}

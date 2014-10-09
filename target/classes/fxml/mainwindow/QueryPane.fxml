@@ -23,7 +23,7 @@
             <TableColumn fx:id="tcRatios" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Ratio" />
          </columns>
       </TableView>
-      <TableView fx:id="tvFilters" layoutY="450.0" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="150.0" prefWidth="200.0">
+      <TableView fx:id="tvFilter" layoutY="450.0" onDragDropped="#onDragDroppedHandler" onDragOver="#onDragOverHandler" prefHeight="150.0" prefWidth="200.0">
          <columns>
             <TableColumn fx:id="tcFilters" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Filter" />
          </columns>

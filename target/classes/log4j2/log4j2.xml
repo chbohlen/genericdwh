@@ -4,7 +4,7 @@
     <Console name="CONSOLE" target="SYSTEM_OUT">
       <PatternLayout pattern="%d %-5p - %m%n"/>
     </Console>
-    <File name="FILE" fileName="genericdwh.log" append="false">
+    <File name="FILE" fileName="genericdwh_${date:yyyy-MM-dd_HH-mm-ss}.log">
       <PatternLayout pattern="%d %-5p - %m%n"/>
     </File>  
   </Appenders>
