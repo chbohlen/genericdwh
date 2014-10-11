@@ -51,16 +51,16 @@ public class MySQLDatabaseController implements DatabaseController {
 			int errorCode = e.getErrorCode();
 			if (errorCode == 1045) {
 				mainWindowController.postStatus(StatusMessages.CONNECTION_INVALID_USERNAME_PW, Icons.WARNING);
-				Main.getLogger().error("Database connection failed (" + ip + ":" + port + "/" + dbName + ") :" + StatusMessages.CONNECTION_INVALID_USERNAME_PW);
+				Main.getLogger().error("Database connection failed (" + ip + ":" + port + "/" + dbName + "): " + StatusMessages.CONNECTION_INVALID_USERNAME_PW);
 				return false;
 			}
 			if (errorCode == 1049) {
 				mainWindowController.postStatus(StatusMessages.CONNECTION_INVALID_DATABASE_SCHEMA, Icons.WARNING);
-				Main.getLogger().error("Database connection failed (" + ip + ":" + port + "/" + dbName + ") :" + StatusMessages.CONNECTION_INVALID_DATABASE_SCHEMA);
+				Main.getLogger().error("Database connection failed (" + ip + ":" + port + "/" + dbName + "): " + StatusMessages.CONNECTION_INVALID_DATABASE_SCHEMA);
 				return false;
 			}
 			mainWindowController.postStatus(StatusMessages.CONNECTION_FAILED, Icons.WARNING);
-			Main.getLogger().error("Database connection failed (" + ip + ":" + port + "/" + dbName + ") :" + StatusMessages.CONNECTION_FAILED);
+			Main.getLogger().error("Database connection failed (" + ip + ":" + port + "/" + dbName + "): " + StatusMessages.CONNECTION_FAILED);
 			return false;
 		} catch (Exception e) {
 				e.printStackTrace();
