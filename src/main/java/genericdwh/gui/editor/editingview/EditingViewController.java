@@ -87,9 +87,9 @@ public class EditingViewController implements Initializable {
 		RATIO_CATEGORIES(RatioCategory.class),
 		UNITS(Unit.class);
 		
-		private Class<? extends DataObject> objectClass;
+		@Getter private Class<? extends DataObject> objectClass;
 		private EditingViewType(Class<? extends DataObject> clazz) {
-			objectClass = clazz;
+			this.objectClass = clazz;
 		}
 	}
 
@@ -1200,7 +1200,7 @@ public class EditingViewController implements Initializable {
 	private TreeTableColumn<DataObject, Dimension> createRefObjCombinationDimCol() {
 		DimensionManager dimManager = Main.getContext().getBean(DimensionManager.class);
 		
-		TreeTableColumn<DataObject, Dimension> colDim = new TreeTableColumn<>("Combination Dimensions");
+		TreeTableColumn<DataObject, Dimension> colDim = new TreeTableColumn<>("Combination Dimension");
 		colDim.setPrefWidth(235);
 		
 		colDim.setCellFactory(new Callback<TreeTableColumn<DataObject, Dimension>,TreeTableCell<DataObject, Dimension>>() {
@@ -1490,7 +1490,7 @@ public class EditingViewController implements Initializable {
 		
 		
 	public void createObject() {
-		DataObject newObj = Main.getContext().getBean(EditorController.class).createObject(currEditingViewType.objectClass);
+		DataObject newObj = Main.getContext().getBean(EditorController.class).createObject(currEditingViewType.getObjectClass());
 		newObj.initProperties();
 		DataObjectTreeItem tiNewObj = new DataObjectTreeItem(newObj);
 		editingView.getRoot().getChildren().add(tiNewObj);

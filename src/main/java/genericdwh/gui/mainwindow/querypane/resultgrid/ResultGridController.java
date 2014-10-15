@@ -16,6 +16,7 @@ import genericdwh.gui.general.Icons;
 import genericdwh.gui.general.StatusMessages;
 import genericdwh.gui.mainwindow.MainWindowController;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController;
+import genericdwh.gui.mainwindow.querypane.QueryPaneController.AggregationType;
 import genericdwh.gui.mainwindow.querypane.QueryPaneController.QueryType;
 import genericdwh.main.Main;
 
@@ -39,12 +40,15 @@ public class ResultGridController {
 		resultGrids.getLast().initializeDefault(ratio, rowRefObjs, colRefObjs);
 	}
 	
-	public void initializeGridWTotals(Ratio ratio, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs) {
-		resultGrids.getLast().initializeWTotals(ratio, rowRefObjs, colRefObjs);
+	public void initializeGridWAggregations(Ratio ratio, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs,
+			AggregationType aggregationType) {
+		
+		resultGrids.getLast().initializeWAggregations(ratio, rowRefObjs, colRefObjs, aggregationType);
 	}
 	
-	public void initializeGridWHierarchiesWTotals(Ratio ratio, List<DataObject> rowDims, List<DataObject> colDims,
-			List<DataObject> combinedDims, List<DataObject> filter, List<DimensionHierarchy> hierarchies, QueryType queryType) {
+	public void initializeGridWHierarchiesWAggregations(Ratio ratio, List<DataObject> rowDims, List<DataObject> colDims,
+			List<DataObject> combinedDims, List<DataObject> filter, List<DimensionHierarchy> hierarchies, QueryType queryType,
+			AggregationType aggregationType) {
 		
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
 		
@@ -55,7 +59,7 @@ public class ResultGridController {
 		grid.setQueryType(queryType);
 		grid.setFilter(filter);
 		
-		grid.initializeWHierarchiesWTotals(ratio, refObjManager.loadRefObjs(rowDims, filter), refObjManager.loadRefObjs(colDims, filter), filter, hierarchies);
+		grid.initializeWHierarchiesWAggregations(ratio, refObjManager.loadRefObjs(rowDims, filter), refObjManager.loadRefObjs(colDims, filter), filter, hierarchies, aggregationType);
 	}
 
 	
@@ -79,7 +83,8 @@ public class ResultGridController {
 		for (ResultObject currFact : facts) {
 			resultGrids.getLast().postResult(currFact.getId(), currFact.getComponentIds(), currFact.getValue());
 		}
-		resultGrids.getLast().calculateAndPostTotals();
+		
+		resultGrids.getLast().calculateAndPostAggregations();
 	}
 	
 	public void fillDimensionWHierarchy(int gridId, List<ResultObject> facts, Long[] hierarchyComponentIds) {
@@ -95,7 +100,7 @@ public class ResultGridController {
 			Long[] componentIds = ObjectArrays.concat(hierarchyComponentIds, currFact.getComponentIds(), Long.class);
 			grid.postResult(currFact.getId(), componentIds, currFact.getValue());
 		}
-		grid.calculateAndPostTotals();
+		grid.calculateAndPostAggregations();
 	}
 	
 	public void fillRatio(List<ResultObject> facts) {
@@ -204,7 +209,7 @@ public class ResultGridController {
 			return;
 		}
 		
-		grid.reinitializeWHierarchiesWTotals(rowRefObjs, colRefObjs, hierarchy, newLevel);
+		grid.reinitializeWHierarchiesWAggregations(rowRefObjs, colRefObjs, hierarchy, newLevel);
 		
 		Long[] filterRefObjIds = refObjManager.readRefObjIds(filter);
 		long dimId = dimManager.findDimAggregateId(combinedDims);
@@ -229,15 +234,15 @@ public class ResultGridController {
 			}
 		}
 		
+		fillDimensionWHierarchy(gridId, facts, hierarchyComponentIds);
+		
 		if (facts == null) {
 			mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
 			Main.getLogger().info(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS);
+		} else {
+			mainWindowController.postStatus(StatusMessages.QUERY_OK, Icons.NOTIFICATION);
+			Main.getLogger().info("Query executed successfully.");
 		}
-		
-		fillDimensionWHierarchy(gridId, facts, hierarchyComponentIds);
-		
-		mainWindowController.postStatus(StatusMessages.QUERY_OK, Icons.NOTIFICATION);
-		Main.getLogger().info("Query executed successfully.");
 	}
 	
 	private int insertHierarchyLevel(List<DataObject> dims, DimensionHierarchy hierarchy, Dimension currLevel, Dimension newLevel) {

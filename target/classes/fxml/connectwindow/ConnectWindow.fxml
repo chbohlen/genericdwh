@@ -30,7 +30,7 @@
    	      <Label alignment="CENTER" prefHeight="20.0" prefWidth="60.0" text="Password:" GridPane.columnIndex="1" GridPane.rowIndex="6" />
    	      <TextField fx:id="tfIp" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="165.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
    	      <TextField fx:id="tfPort" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="165.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-   	      <ComboBox fx:id="cbDbType" disable="true" nodeOrientation="RIGHT_TO_LEFT" prefHeight="25.0" prefWidth="165.0" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+   	      <ComboBox fx:id="cbDbType" nodeOrientation="RIGHT_TO_LEFT" prefHeight="25.0" prefWidth="165.0" GridPane.columnIndex="2" GridPane.rowIndex="3" />
    	      <TextField fx:id="tfDbName" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="165.0" GridPane.columnIndex="2" GridPane.rowIndex="4" />
    	      <TextField fx:id="tfUserName" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="165.0" GridPane.columnIndex="2" GridPane.rowIndex="5" />
    	      <PasswordField fx:id="tfPassword" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="165.0" GridPane.columnIndex="2" GridPane.rowIndex="6" />

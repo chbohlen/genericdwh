@@ -23,8 +23,8 @@ public class ResultGridCell extends BorderPane {
 	
 	@Getter @Setter private int colSpan = 1;
 	@Getter @Setter private int rowSpan = 1;
-	
-	@Getter private boolean hasChanged = false;
+		
+	@Getter private boolean data = false;
 	
 	private Label label;
 	private Button button;
@@ -108,8 +108,10 @@ public class ResultGridCell extends BorderPane {
 		if (value == null) {
 			value = (double)0;
 			setText("no data");
+			data = false;
 		} else {
 			setText(value.toString() + symbol);
+			data = true;
 		}		
 	}		
 	

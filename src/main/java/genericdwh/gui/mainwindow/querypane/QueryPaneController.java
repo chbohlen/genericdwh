@@ -36,8 +36,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.ToggleGroup;
 import javafx.util.Callback;
 import lombok.Getter;
 
@@ -60,6 +62,10 @@ public class QueryPaneController implements Initializable {
 	@FXML private Button btnExecQuery;
 	@FXML private Button btnClear;
 	
+	@FXML private RadioButton rbTotals;
+	@FXML private RadioButton rbMeans;
+	@FXML private ToggleGroup tgAggregation;
+	
 	@Getter private BooleanProperty executedQuery = new SimpleBooleanProperty(false);
 	public void setExecutedQuery(boolean value) { executedQuery.set(value); };
 	
@@ -76,6 +82,16 @@ public class QueryPaneController implements Initializable {
 		DIMENSION_COMBINATION_W_HIERARCHY,
 		SINGLE_REFERENCE_OBJECT,
 		REFERENCE_OBJECT_COMBINATION;
+	}
+	
+	public enum AggregationType {
+		TOTALS("Totals"),
+		MEANS("Means");
+		
+		@Getter private String name;
+		private AggregationType(String name) {
+			this.name = name;
+		}
 	}
 
 	
@@ -215,7 +231,7 @@ public class QueryPaneController implements Initializable {
 		event.consume();
 	}	
 	
-	@FXML public void buttonExecQueryOnClickHandler() {	
+	@FXML public void buttonExecuteQueryOnClickHandler() {	
 		MainWindowController mainWindowController = Main.getContext().getBean(MainWindowController.class);
 		
 		mainWindowController.postStatus(StatusMessages.QUERYING, Icons.NOTIFICATION);
@@ -265,6 +281,8 @@ public class QueryPaneController implements Initializable {
 				return;
 			}
 			
+			AggregationType aggregationType = determineAggregationType((RadioButton)tgAggregation.getSelectedToggle());
+			
 			long refObjId = refObjManager.findRefObjAggregateId(combinedDims);
 			long dimId = dimManager.findDimAggregateId(combinedDims);
 			Long[] filterRefObjIds = refObjManager.readRefObjIds(filter);
@@ -279,11 +297,11 @@ public class QueryPaneController implements Initializable {
 					break;
 				}
 				case SINGLE_DIMENSION: {
-					hasResults = handleSingleDimension(ratios, rowRefObjs, colRefObjs, dimId, filterRefObjIds);
+					hasResults = handleSingleDimension(ratios, rowRefObjs, colRefObjs, dimId, filterRefObjIds, aggregationType);
 					break;
 				}
 				case SINGLE_DIMENSION_W_HIERARCHY: {
-					hasResults = handleSingleDimensionWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter);
+					hasResults = handleSingleDimensionWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter, aggregationType);
 					if (!hasResults) {
 						mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
 						Main.getLogger().info(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS);
@@ -293,11 +311,11 @@ public class QueryPaneController implements Initializable {
 					break;
 				}
 				case DIMENSION_COMBINATION: {
-					hasResults = handleDimensionCombination(ratios, rowRefObjs, colRefObjs, dimId, filterRefObjIds);
+					hasResults = handleDimensionCombination(ratios, rowRefObjs, colRefObjs, dimId, filterRefObjIds, aggregationType);
 					break;
 				}
 				case DIMENSION_COMBINATION_W_HIERARCHY: {
-					hasResults = handleDimensionCombinationWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter);
+					hasResults = handleDimensionCombinationWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter, aggregationType);
 					if (!hasResults) {
 						mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
 						Main.getLogger().info(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS);
@@ -307,11 +325,11 @@ public class QueryPaneController implements Initializable {
 					break;
 				}
 				case MIXED: {
-					hasResults = handleMixed(ratios, rowRefObjs, colRefObjs, dimId, filterRefObjIds, combinedDims);
+					hasResults = handleMixed(ratios, rowRefObjs, colRefObjs, dimId, filterRefObjIds, combinedDims, aggregationType);
 					break;
 				}
 				case MIXED_W_HIERARCHY: {
-					hasResults = handleMixedWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter);
+					hasResults = handleMixedWHierarchy(ratios, rowDims, colDims, dimId, filterRefObjIds, combinedDims, filter, aggregationType);
 					if (!hasResults) {
 						mainWindowController.postStatus(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS, Icons.WARNING);
 						Main.getLogger().info(StatusMessages.QUERY_NO_DATA_ON_CURRENT_LEVELS);
@@ -409,7 +427,16 @@ public class QueryPaneController implements Initializable {
 		}
 		return null;
 	}
-
+	
+	private AggregationType determineAggregationType(RadioButton selectedRadioButton) {
+		if (selectedRadioButton == rbTotals) {
+			return AggregationType.TOTALS;
+		} else if (selectedRadioButton == rbMeans) {
+			return AggregationType.MEANS;
+		}
+		
+		return null;
+	}
 	
 	private boolean handleNoReferenceObjectsOrDimensions(List<DataObject> ratios, List<DataObject> filter) {
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
@@ -494,7 +521,8 @@ public class QueryPaneController implements Initializable {
 	}
 		
 	private boolean handleSingleDimension(List<DataObject> ratios, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs,
-			long dimId, Long[] filterRefObjIds) {
+			long dimId, Long[] filterRefObjIds,
+			AggregationType aggregationType) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		dbReader.clearLastQueries();
@@ -510,7 +538,7 @@ public class QueryPaneController implements Initializable {
 			if (facts != null) {
 				hasResults = true;
 				
-				resultGridController.initializeGridWTotals((Ratio)ratio, rowRefObjs, colRefObjs);
+				resultGridController.initializeGridWAggregations((Ratio)ratio, rowRefObjs, colRefObjs, aggregationType);
 				resultGridController.fillDimension(facts);
 			}
 		}
@@ -519,7 +547,8 @@ public class QueryPaneController implements Initializable {
 		
 	private boolean handleSingleDimensionWHierarchy(List<DataObject> ratios, List<DataObject> rowDims, List<DataObject> colDims,
 			long dimId, Long[] filterRefObjIds,
-			List<DataObject> combinedDims, List<DataObject> filter) {
+			List<DataObject> combinedDims, List<DataObject> filter,
+			AggregationType aggregationType) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		dbReader.clearLastQueries();
@@ -531,8 +560,8 @@ public class QueryPaneController implements Initializable {
 			resultGridContainer.getChildren().add(newResultGrid);
 			newResultGrid.setGridId(resultGridController.addResultGrid(newResultGrid));
 			
-			resultGridController.initializeGridWHierarchiesWTotals((Ratio)ratio, new ArrayList<>(rowDims), new ArrayList<>(colDims), new ArrayList<>(combinedDims),
-					filter, getHierarchies(combinedDims), QueryType.SINGLE_DIMENSION_W_HIERARCHY);
+			resultGridController.initializeGridWHierarchiesWAggregations((Ratio)ratio, new ArrayList<>(rowDims), new ArrayList<>(colDims), new ArrayList<>(combinedDims),
+					filter, getHierarchies(combinedDims), QueryType.SINGLE_DIMENSION_W_HIERARCHY, aggregationType);
 						
 			List<ResultObject> facts = dbReader.loadFactsForSingleDim(ratio.getId(), dimId, filterRefObjIds);	
 			resultGridController.fillDimension(facts);
@@ -545,7 +574,8 @@ public class QueryPaneController implements Initializable {
 	}
 		
 	private boolean handleDimensionCombination(List<DataObject> ratios, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs,
-			long dimId, Long[] filterRefObjIds) {
+			long dimId, Long[] filterRefObjIds,
+			AggregationType aggregationType) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		dbReader.clearLastQueries();
@@ -561,7 +591,7 @@ public class QueryPaneController implements Initializable {
 			if (facts != null) {
 				hasResults = true;
 				
-				resultGridController.initializeGridWTotals((Ratio)ratio, rowRefObjs, colRefObjs);
+				resultGridController.initializeGridWAggregations((Ratio)ratio, rowRefObjs, colRefObjs, aggregationType);
 				resultGridController.fillDimension(facts);
 			}
 		}
@@ -570,7 +600,8 @@ public class QueryPaneController implements Initializable {
 		
 	private boolean handleDimensionCombinationWHierarchy(List<DataObject> ratios, List<DataObject> rowDims, List<DataObject> colDims,
 			long dimId, Long[] filterRefObjIds,
-			List<DataObject> combinedDims, List<DataObject> filter) {
+			List<DataObject> combinedDims, List<DataObject> filter,
+			AggregationType aggregationType) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		dbReader.clearLastQueries();
@@ -582,8 +613,8 @@ public class QueryPaneController implements Initializable {
 			resultGridContainer.getChildren().add(newResultGrid);
 			newResultGrid.setGridId(resultGridController.addResultGrid(newResultGrid));
 			
-			resultGridController.initializeGridWHierarchiesWTotals((Ratio)ratio, new ArrayList<>(rowDims), new ArrayList<>(colDims), new ArrayList<>(combinedDims),
-					filter,  getHierarchies(combinedDims), QueryType.DIMENSION_COMBINATION_W_HIERARCHY);
+			resultGridController.initializeGridWHierarchiesWAggregations((Ratio)ratio, new ArrayList<>(rowDims), new ArrayList<>(colDims), new ArrayList<>(combinedDims),
+					filter,  getHierarchies(combinedDims), QueryType.DIMENSION_COMBINATION_W_HIERARCHY, aggregationType);
 			
 			List<ResultObject> facts = dbReader.loadFactsForDimCombination(ratio.getId(), dimId, filterRefObjIds);
 			resultGridController.fillDimension(facts);
@@ -597,7 +628,8 @@ public class QueryPaneController implements Initializable {
 		
 	private boolean handleMixed(List<DataObject> ratios, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs,
 			long dimId, Long[] filterRefObjIds,
-			List<DataObject> combinedDims) {
+			List<DataObject> combinedDims,
+			AggregationType aggregationType) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
@@ -618,7 +650,7 @@ public class QueryPaneController implements Initializable {
 			if (facts != null) {
 				hasResults = true;
 				
-				resultGridController.initializeGridWTotals((Ratio)ratio, rowRefObjs, colRefObjs);
+				resultGridController.initializeGridWAggregations((Ratio)ratio, rowRefObjs, colRefObjs, aggregationType);
 				resultGridController.fillDimension(facts);
 			}
 		}
@@ -627,7 +659,8 @@ public class QueryPaneController implements Initializable {
 			
 	private boolean handleMixedWHierarchy(List<DataObject> ratios, List<DataObject> rowDims, List<DataObject> colDims,
 			long dimId, Long[] filterRefObjIds,
-			List<DataObject> combinedDims, List<DataObject> filter) {
+			List<DataObject> combinedDims, List<DataObject> filter,
+			AggregationType aggregationType) {
 		
 		DatabaseReader dbReader = Main.getContext().getBean(DatabaseReader.class);
 		ReferenceObjectManager refObjManager = Main.getContext().getBean(ReferenceObjectManager.class);
@@ -643,8 +676,8 @@ public class QueryPaneController implements Initializable {
 			resultGridContainer.getChildren().add(newResultGrid);
 			newResultGrid.setGridId(resultGridController.addResultGrid(newResultGrid));
 			
-			resultGridController.initializeGridWHierarchiesWTotals((Ratio)ratio, new ArrayList<>(rowDims), new ArrayList<>(colDims),
-					new ArrayList<>(combinedDims), filter, getHierarchies(combinedDims), QueryType.MIXED_W_HIERARCHY);
+			resultGridController.initializeGridWHierarchiesWAggregations((Ratio)ratio, new ArrayList<>(rowDims), new ArrayList<>(colDims),
+					new ArrayList<>(combinedDims), filter, getHierarchies(combinedDims), QueryType.MIXED_W_HIERARCHY, aggregationType);
 			
 			List<ResultObject> facts = dbReader.loadFactsForDimCombinationAndRefObjs(ratio.getId(), dimId, refObjIds, filterRefObjIds);
 			resultGridController.fillDimension(facts);

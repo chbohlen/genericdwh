@@ -1,0 +1,17 @@
+2014-10-16 00:31:07,801 INFO  - Application started.
+2014-10-16 00:31:09,930 INFO  - Config file loaded.
+2014-10-16 00:31:10,229 INFO  - Database connection successful (localhost:3306/genericdwh).
+2014-10-16 00:31:10,230 INFO  - Config file saved.
+2014-10-16 00:31:18,121 INFO  - Executing Query ...
+2014-10-16 00:31:18,121 INFO  - Query parameters - Column Dimensions: [Jahre], Row Dimensions: [Länder, Angestellte], Filtered Reference Objects: [], Ratios: [Umsätze]
+2014-10-16 00:31:18,148 INFO  - Executed SQL: select `facts`.`ratio_id`, `facts`.`reference_object_id`, `facts`.`value`, `facts`.`unit_id`, `reference_objects`.`reference_object_id`, `reference_objects`.`dimension_id`, `reference_objects`.`name`, `reference_object_combinations`.`aggregate_id`, `reference_object_combinations`.`component_id` from `facts` join `reference_objects` on `facts`.`reference_object_id` = `reference_objects`.`reference_object_id` join `reference_object_combinations` on `facts`.`reference_object_id` = `reference_object_combinations`.`aggregate_id` where (`facts`.`ratio_id` = 2 and `reference_objects`.`dimension_id` = 7)
+2014-10-16 00:31:18,174 INFO  - Query executed successfully.
+2014-10-16 00:31:27,472 INFO  - Executing Query ...
+2014-10-16 00:31:27,472 INFO  - Query parameters - Column Dimensions: [Jahre], Row Dimensions: [Länder, Angestellte], Filtered Reference Objects: [], Ratios: [Umsätze]
+2014-10-16 00:31:27,486 INFO  - Executed SQL: select `facts`.`ratio_id`, `facts`.`reference_object_id`, `facts`.`value`, `facts`.`unit_id`, `reference_objects`.`reference_object_id`, `reference_objects`.`dimension_id`, `reference_objects`.`name`, `reference_object_combinations`.`aggregate_id`, `reference_object_combinations`.`component_id` from `facts` join `reference_objects` on `facts`.`reference_object_id` = `reference_objects`.`reference_object_id` join `reference_object_combinations` on `facts`.`reference_object_id` = `reference_object_combinations`.`aggregate_id` where (`facts`.`ratio_id` = 2 and `reference_objects`.`dimension_id` = 7)
+2014-10-16 00:31:27,493 INFO  - Query executed successfully.
+2014-10-16 00:31:29,169 INFO  - Executing Query ...
+2014-10-16 00:31:29,170 INFO  - Query parameters - Column Dimensions: [Jahre], Row Dimensions: [Länder, Angestellte], Filtered Reference Objects: [], Ratios: [Umsätze]
+2014-10-16 00:31:29,182 INFO  - Executed SQL: select `facts`.`ratio_id`, `facts`.`reference_object_id`, `facts`.`value`, `facts`.`unit_id`, `reference_objects`.`reference_object_id`, `reference_objects`.`dimension_id`, `reference_objects`.`name`, `reference_object_combinations`.`aggregate_id`, `reference_object_combinations`.`component_id` from `facts` join `reference_objects` on `facts`.`reference_object_id` = `reference_objects`.`reference_object_id` join `reference_object_combinations` on `facts`.`reference_object_id` = `reference_object_combinations`.`aggregate_id` where (`facts`.`ratio_id` = 2 and `reference_objects`.`dimension_id` = 7)
+2014-10-16 00:31:29,189 INFO  - Query executed successfully.
+2014-10-16 00:31:32,275 INFO  - Application exited.
