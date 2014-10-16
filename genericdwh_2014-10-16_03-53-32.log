@@ -1,9 +1,0 @@
-2014-10-16 03:53:32,519 INFO  - Application started.
-2014-10-16 03:53:35,609 INFO  - Config file loaded.
-2014-10-16 03:53:36,534 INFO  - Database connection successful (localhost:3306/genericdwh).
-2014-10-16 03:53:36,535 INFO  - Config file saved.
-2014-10-16 03:57:52,860 INFO  - Executing Query ...
-2014-10-16 03:57:52,860 INFO  - Query parameters - Column Dimensions: [Jahre-Monate-Tage], Row Dimensions: [Länder, Angestellte], Filtered Reference Objects: [], Ratios: [Umsätze]
-2014-10-16 03:57:52,936 INFO  - Executed SQL: select `facts`.`ratio_id`, `facts`.`reference_object_id`, `facts`.`value`, `facts`.`unit_id`, `reference_objects`.`reference_object_id`, `reference_objects`.`dimension_id`, `reference_objects`.`name`, `reference_object_combinations`.`aggregate_id`, `reference_object_combinations`.`component_id` from `facts` join `reference_objects` on `facts`.`reference_object_id` = `reference_objects`.`reference_object_id` join `reference_object_combinations` on `facts`.`reference_object_id` = `reference_object_combinations`.`aggregate_id` where (`facts`.`ratio_id` = 2 and `reference_objects`.`dimension_id` = 7)
-2014-10-16 03:57:52,951 INFO  - Query executed successfully.
-2014-10-16 04:34:24,212 INFO  - Application exited.

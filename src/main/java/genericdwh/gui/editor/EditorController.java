@@ -1,7 +1,10 @@
 package genericdwh.gui.editor;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.ResourceBundle;
 
 import genericdwh.dataobjects.ChangeManager;
@@ -38,6 +41,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
