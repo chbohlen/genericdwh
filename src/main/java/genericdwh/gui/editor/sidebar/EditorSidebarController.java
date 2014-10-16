@@ -84,24 +84,32 @@ public class EditorSidebarController implements Initializable {
 		tiRatios.addChild(tiRatiosByCat);
 		
 		
-		HeaderItem tiFacts = new HeaderItem("Facts", 13, true, true, new ImageView(Icons.UNGROUPED));
+		HeaderItem tiRatioRelations = new HeaderItem("Ratio Relations", 13, true, true, new ImageView(Icons.UNGROUPED));
+		tiRatioRelations.setExpanded(false);
+		tiRoot.addChild(tiRatioRelations);
+		
+		HeaderItem tiRatioRelationsByCat = new HeaderItem("By Category", 14, true, true, new ImageView(Icons.GROUPED));
+		tiRatioRelations.addChild(tiRatioRelationsByCat);
+		
+		
+		HeaderItem tiFacts = new HeaderItem("Facts", 15, true, true, new ImageView(Icons.UNGROUPED));
 		tiFacts.setExpanded(false);
 		tiRoot.addChild(tiFacts);
 		
-		HeaderItem tiFactsByRatio = new HeaderItem("By Ratio", 14, true, true, new ImageView(Icons.GROUPED));
+		HeaderItem tiFactsByRatio = new HeaderItem("By Ratio", 16, true, true, new ImageView(Icons.GROUPED));
 		tiFacts.addChild(tiFactsByRatio);
 		
-		HeaderItem tiFactsByReferenceObject = new HeaderItem("By Reference Object", 15, true, true, new ImageView(Icons.GROUPED));
+		HeaderItem tiFactsByReferenceObject = new HeaderItem("By Reference Object", 17, true, true, new ImageView(Icons.GROUPED));
 		tiFacts.addChild(tiFactsByReferenceObject);
 		
 		
-		HeaderItem tiDimCats = new HeaderItem("Dimension Categories", 16, true, true, new ImageView(Icons.UNGROUPED));
+		HeaderItem tiDimCats = new HeaderItem("Dimension Categories", 18, true, true, new ImageView(Icons.UNGROUPED));
 		tiRoot.addChild(tiDimCats);
 		
-		HeaderItem tiRefObjCats = new HeaderItem("Ratio Categories", 17, true, true, new ImageView(Icons.UNGROUPED));
+		HeaderItem tiRefObjCats = new HeaderItem("Ratio Categories", 19, true, true, new ImageView(Icons.UNGROUPED));
 		tiRoot.addChild(tiRefObjCats);
 		
-		HeaderItem tiUnits = new HeaderItem ("Units", 18, true, true, new ImageView(Icons.UNGROUPED));
+		HeaderItem tiUnits = new HeaderItem ("Units", 20, true, true, new ImageView(Icons.UNGROUPED));
 		tiRoot.addChild(tiUnits);
 	}
 

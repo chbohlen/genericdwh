@@ -24,18 +24,18 @@ public class Ratio extends DataObject {
 		this.categoryId = categoryId;
 	}
 	
-	public void addDependency(Ratio newChildren) {
-		dependencies.add(newChildren);
+	public void addDependency(Ratio newDependency) {
+		dependencies.add(newDependency);
+	}
+	
+	public void clearDependecies() {
+		dependencies.clear();
 	}
 	
 	public boolean isRelation() {
 		return !dependencies.isEmpty();
 	}
-	
-	public int getDependencyCount() {
-		return dependencies.size();
-	}
-	
+
 	@Override
 	public void initProperties() {
 		super.initProperties();

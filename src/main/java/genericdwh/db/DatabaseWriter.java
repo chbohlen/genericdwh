@@ -9,6 +9,7 @@ import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.fact.Fact;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
+import genericdwh.dataobjects.ratio.RatioRelation;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectCombination;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
@@ -43,6 +44,10 @@ public interface DatabaseWriter {
 	public void createRatios(List<Ratio> creations);
 	public void updateRatios(List<Ratio> updates);
 	public void deleteRatios(List<Ratio> deletions);
+	
+	public void createRatioRelations(List<RatioRelation> creations);
+	public void updateRatioRelations(List<RatioRelation> updates);
+	public void deleteRatioRelations(List<RatioRelation> deletions);
 	
 	public void createFacts(List<Fact> creations);
 	public void updateFacts(List<Fact> updates);

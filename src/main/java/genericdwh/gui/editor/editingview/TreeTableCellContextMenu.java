@@ -73,7 +73,7 @@ public class TreeTableCellContextMenu extends ContextMenu {
             }
         });
 		
-		MenuItem createHierarchy = new MenuItem("Create Hierarchy");
+		MenuItem createHierarchy = new MenuItem("Create Hierarchy/Relation");
 		createHierarchy.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {
@@ -81,7 +81,7 @@ public class TreeTableCellContextMenu extends ContextMenu {
             }
         });
 		
-		MenuItem deleteHierarchy = new MenuItem("Delete Hierarchy");
+		MenuItem deleteHierarchy = new MenuItem("Delete Hierarchy/Relation");
 		deleteHierarchy.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {
@@ -105,7 +105,7 @@ public class TreeTableCellContextMenu extends ContextMenu {
             }
         });
 		
-		MenuItem addChild = new MenuItem("Add Child");
+		MenuItem addChild = new MenuItem("Add Child/Dependency");
 		addChild.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {
@@ -113,7 +113,7 @@ public class TreeTableCellContextMenu extends ContextMenu {
             }
         });
 		
-		MenuItem removeChild = new MenuItem("Remove Child");
+		MenuItem removeChild = new MenuItem("Remove Child/Dependency");
 		removeChild.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {
@@ -174,13 +174,15 @@ public class TreeTableCellContextMenu extends ContextMenu {
 				if (currEditingViewType == EditingViewType.DIMENSION_HIERARCHIES
 						|| currEditingViewType == EditingViewType.DIMENSION_HIERARCHIES_BY_CATEGORY
 						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES
-						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES_BY_CATEGORY) {
+						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES_BY_CATEGORY
+						|| currEditingViewType == EditingViewType.RATIO_RELATIONS
+						|| currEditingViewType == EditingViewType.RATIO_RELATIONS_BY_CATEGORY) {
 					
 					createObject.setVisible(false);
 					deleteObject.setVisible(false);
 					createHierarchy.setVisible(true);
-					deleteHierarchy.setVisible(true);
 					if (!treeTableRow.isEmpty()) {
+						deleteHierarchy.setVisible(true);
 						getItems().add(getItems().indexOf(deleteHierarchy) + 1, separator2);
 						addChild.setVisible(true);
 						if (!(treeTableRow.getTreeItem().getValue() instanceof DataObjectHierarchy)) {
@@ -226,14 +228,18 @@ public class TreeTableCellContextMenu extends ContextMenu {
 						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES
 						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES_BY_CATEGORY
 						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_COMBINATIONS
-						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_COMBINATIONS_BY_DIMENSION) {
+						|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_COMBINATIONS_BY_DIMENSION
+						|| currEditingViewType == EditingViewType.RATIO_RELATIONS
+						|| currEditingViewType == EditingViewType.RATIO_RELATIONS_BY_CATEGORY) {
 					
 					if (!getItems().contains(separator1)) {
 						int index;
 						if (currEditingViewType == EditingViewType.DIMENSION_HIERARCHIES
 								|| currEditingViewType == EditingViewType.DIMENSION_HIERARCHIES_BY_CATEGORY
 								|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES
-								|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES_BY_CATEGORY) {
+								|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES_BY_CATEGORY
+								|| currEditingViewType == EditingViewType.RATIO_RELATIONS
+								|| currEditingViewType == EditingViewType.RATIO_RELATIONS_BY_CATEGORY) {
 							
 							index = getItems().indexOf(removeChild);
 						} else if (currEditingViewType == EditingViewType.DIMENSION_COMBINATIONS

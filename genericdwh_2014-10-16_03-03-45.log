@@ -1,0 +1,9 @@
+2014-10-16 03:03:45,927 INFO  - Application started.
+2014-10-16 03:03:47,866 INFO  - Config file loaded.
+2014-10-16 03:03:48,713 INFO  - Database connection successful (localhost:3306/genericdwh).
+2014-10-16 03:03:48,714 INFO  - Config file saved.
+2014-10-16 03:03:57,316 INFO  - Validation successful.
+2014-10-16 03:03:57,319 INFO  - Ratio Relation deleted.
+2014-10-16 03:03:57,320 INFO  - Executed SQL: delete from `ratio_relations` where (`ratio_relations`.`dependent_id` = 2 and `ratio_relations`.`dependency_id` = 3)
+2014-10-16 03:03:57,322 INFO  - Changes saved.
+2014-10-16 03:04:00,691 INFO  - Application exited.

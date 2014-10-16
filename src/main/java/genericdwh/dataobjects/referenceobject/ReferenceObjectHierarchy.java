@@ -3,6 +3,8 @@ package genericdwh.dataobjects.referenceobject;
 import java.util.LinkedList;
 
 import genericdwh.dataobjects.DataObjectHierarchy;
+import genericdwh.dataobjects.dimension.DimensionManager;
+import genericdwh.main.Main;
 
 public class ReferenceObjectHierarchy extends DataObjectHierarchy<ReferenceObject> {
 	
@@ -31,5 +33,11 @@ public class ReferenceObjectHierarchy extends DataObjectHierarchy<ReferenceObjec
 	@Override
 	public ReferenceObjectHierarchy clone() {
 		return new ReferenceObjectHierarchy(levels);
+	}
+	
+	@Override
+	public void initProperties() {
+		super.initProperties();
+		setCategoryProperty(Main.getContext().getBean(DimensionManager.class).getCategories().get(categoryId));
 	}
 }

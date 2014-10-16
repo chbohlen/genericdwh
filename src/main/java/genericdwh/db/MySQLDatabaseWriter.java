@@ -9,6 +9,7 @@ import static genericdwh.db.model.tables.ReferenceObjects.REFERENCE_OBJECTS;
 import static genericdwh.db.model.tables.ReferenceObjectCombinations.REFERENCE_OBJECT_COMBINATIONS;
 import static genericdwh.db.model.tables.ReferenceObjectHierarchies.REFERENCE_OBJECT_HIERARCHIES;
 import static genericdwh.db.model.tables.Ratios.RATIOS;
+import static genericdwh.db.model.tables.RatioRelations.RATIO_RELATIONS;
 import static genericdwh.db.model.tables.FactUnits.FACT_UNITS;
 import static genericdwh.db.model.tables.Facts.FACTS;
 
@@ -22,6 +23,7 @@ import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.fact.Fact;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
+import genericdwh.dataobjects.ratio.RatioRelation;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectCombination;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
@@ -33,6 +35,7 @@ import genericdwh.db.model.tables.records.DimensionsRecord;
 import genericdwh.db.model.tables.records.FactUnitsRecord;
 import genericdwh.db.model.tables.records.FactsRecord;
 import genericdwh.db.model.tables.records.RatioCategoriesRecord;
+import genericdwh.db.model.tables.records.RatioRelationsRecord;
 import genericdwh.db.model.tables.records.RatiosRecord;
 import genericdwh.db.model.tables.records.ReferenceObjectCombinationsRecord;
 import genericdwh.db.model.tables.records.ReferenceObjectHierarchiesRecord;
@@ -68,10 +71,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																			.insertInto(DIMENSIONS, DIMENSIONS.NAME, DIMENSIONS.CATEGORY_ID)
 																			.values(dim.getNameProperty().get(), catId);
 			
-			Main.getLogger().info("Executed SQL: " + "Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
-				
+			
+			Main.getLogger().info("Dimension created.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -93,15 +96,16 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		
 		for (Dimension dim : updates) {
 			Long catId = dim.getCategoryProperty().get().getId() == 0 ? null : dim.getCategoryProperty().get().getId();
-			 UpdateConditionStep<DimensionsRecord> statement = dslContext
+			UpdateConditionStep<DimensionsRecord> statement = dslContext
 																.update(DIMENSIONS)
 																.set(DIMENSIONS.NAME, dim.getNameProperty().get())
 																.set(DIMENSIONS.CATEGORY_ID, catId)
 																.where(DIMENSIONS.DIMENSION_ID.equal(dim.getId()));
 			
-			Main.getLogger().info("Executed SQL: " + "Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Dimension updated.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -126,9 +130,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																.delete(DIMENSIONS)
 																.where(DIMENSIONS.DIMENSION_ID.equal(dim.getId()));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Dimension deleted.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -154,9 +159,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																				.insertInto(REFERENCE_OBJECTS, REFERENCE_OBJECTS.NAME, REFERENCE_OBJECTS.DIMENSION_ID)
 																				.values(refObj.getNameProperty().get(), refObj.getDimensionProperty().get().getId());
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Reference Object created.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -183,9 +189,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																	.set(REFERENCE_OBJECTS.DIMENSION_ID, refObj.getDimensionProperty().get().getId())
 																	.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(refObj.getId()));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Reference Object updated.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 			}
 		
 		try {
@@ -210,9 +217,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																	.delete(REFERENCE_OBJECTS)
 																	.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(refObj.getId()));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Reference Object deleted.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -240,9 +248,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																						.insertInto(DIMENSION_HIERARCHIES, DIMENSION_HIERARCHIES.PARENT_ID, DIMENSION_HIERARCHIES.CHILD_ID)
 																						.values(levels.get(i).getId(), levels.get(i + 1).getId());
 				
-				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-				
 				statement.execute();
+				
+				Main.getLogger().info("Dimension Hierarchy created.");
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 			}
 		}
 		
@@ -276,18 +285,20 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																				.where(DIMENSION_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
 																					.and(DIMENSION_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
 					
-					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-					
 					statement.execute();
+					
+					Main.getLogger().info("Dimension Hierarchy updated.");
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 				}
 				for (; i < changedLevels.size() - 1; i++) {
 					InsertValuesStep2<DimensionHierarchiesRecord, Long, Long> statement = dslContext
 																							.insertInto(DIMENSION_HIERARCHIES, DIMENSION_HIERARCHIES.PARENT_ID, DIMENSION_HIERARCHIES.CHILD_ID)
 																							.values(changedLevels.get(i).getId(), changedLevels.get(i + 1).getId());
 					
-					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-					
 					statement.execute();
+					
+					Main.getLogger().info("Dimension Hierarchy updated.");
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 				}
 			} else {
 				int i = 0;
@@ -299,9 +310,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																				.where(DIMENSION_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
 																					.and(DIMENSION_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
 					
-					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-					
 					statement.execute();
+					
+					Main.getLogger().info("Dimension Hierarchy updated.");
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 				}
 				for (; i < levels.size() - 1; i++) {
 					DeleteConditionStep<DimensionHierarchiesRecord> statement = dslContext
@@ -309,9 +321,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																				.where(DIMENSION_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
 																					.and(DIMENSION_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
 					
-					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-					
 					statement.execute();
+					
+					Main.getLogger().info("Dimension Hierarchy updated.");
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 				}
 			}
 		}
@@ -341,9 +354,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																			.where(DIMENSION_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
 																				.and(DIMENSION_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
 				
-				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-				
 				statement.execute();
+				
+				Main.getLogger().info("Dimension Hierarchy deleted.");
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 			}
 		}
 		
@@ -372,9 +386,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																							.insertInto(REFERENCE_OBJECT_HIERARCHIES, REFERENCE_OBJECT_HIERARCHIES.PARENT_ID, REFERENCE_OBJECT_HIERARCHIES.CHILD_ID)
 																							.values(levels.get(i).getId(), levels.get(i + 1).getId());
 				
-				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-				
 				statement.execute();
+				
+				Main.getLogger().info("Reference Object Hierarchy created.");
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 			}
 		}
 		
@@ -408,18 +423,20 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																						.where(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
 																							.and(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
 					
-					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-					
 					statement.execute();
+					
+					Main.getLogger().info("Reference Object Hierarchy updated.");
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 				}
 				for (; i < changedLevels.size() - 1; i++) {
 					InsertValuesStep2<ReferenceObjectHierarchiesRecord, Long, Long> statement = dslContext
 																								.insertInto(REFERENCE_OBJECT_HIERARCHIES, REFERENCE_OBJECT_HIERARCHIES.PARENT_ID, REFERENCE_OBJECT_HIERARCHIES.CHILD_ID)
 																								.values(changedLevels.get(i).getId(), changedLevels.get(i + 1).getId());
 					
-					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-					
 					statement.execute();
+					
+					Main.getLogger().info("Reference Object Hierarchy updated.");
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 				}
 			} else {
 				int i = 0;
@@ -431,9 +448,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																						.where(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
 																							.and(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
 					
-					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-					
 					statement.execute();
+					
+					Main.getLogger().info("Reference Object Hierarchy updated.");
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 				}
 				for (; i < levels.size() - 1; i++) {
 					DeleteConditionStep<ReferenceObjectHierarchiesRecord> statement = dslContext
@@ -441,9 +459,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																						.where(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
 																							.and(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
 					
-					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-					
 					statement.execute();
+					
+					Main.getLogger().info("Reference Object Hierarchy updated.");
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 				}
 			}
 		}
@@ -473,9 +492,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																					.where(REFERENCE_OBJECT_HIERARCHIES.PARENT_ID.equal(levels.get(i).getId())
 																						.and(REFERENCE_OBJECT_HIERARCHIES.CHILD_ID.equal(levels.get(i + 1).getId())));
 				
-				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-				
 				statement.execute();
+				
+				Main.getLogger().info("Reference Object Hierarchy deleted.");
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 			}
 		}
 		
@@ -502,9 +522,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																	.insertInto(DIMENSIONS, DIMENSIONS.NAME)
 																	.values(combination.getNameProperty().get());
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Dimension created.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 			
 			try {
 				con.commit();
@@ -526,9 +547,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																						.insertInto(DIMENSION_COMBINATIONS, DIMENSION_COMBINATIONS.AGGREGATE_ID, DIMENSION_COMBINATIONS.COMPONENT_ID)
 																						.values(lastID, components.get(i).getId());
 				
-				Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
-				
 				statement1.execute();
+				
+				Main.getLogger().info("Dimension Combination created.");
+				Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 			}
 		}
 		
@@ -555,9 +577,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																.set(DIMENSIONS.NAME, combination.getNameProperty().get())
 																.where(DIMENSIONS.DIMENSION_ID.equal(combination.getCombination().getId()));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Dimension updated.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 			
 			List<Dimension> components = combination.getComponents();
 			List<Dimension> changedComponents = combination.getComponentsProperty().get();
@@ -570,18 +593,20 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																					.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
 																						.and(DIMENSION_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())));
 					
-					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
-					
 					statement1.execute();
+					
+					Main.getLogger().info("Dimension Combination updated.");
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 				}
 				for (; i < changedComponents.size(); i++) {
 					InsertValuesStep2<DimensionCombinationsRecord, Long, Long> statement1 = dslContext
 																							.insertInto(DIMENSION_COMBINATIONS, DIMENSION_COMBINATIONS.AGGREGATE_ID, DIMENSION_COMBINATIONS.COMPONENT_ID)
 																							.values(combination.getCombination().getId(), changedComponents.get(i).getId());
 					
-					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
-					
 					statement1.execute();
+					
+					Main.getLogger().info("Dimension Combination updated.");
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 				}
 			} else {
 				int i = 0;
@@ -592,9 +617,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																					.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
 																						.and(DIMENSION_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())));
 					
-					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
-					
 					statement1.execute();
+					
+					Main.getLogger().info("Dimension Combination updated.");
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 				}
 				for (; i < components.size(); i++) {
 					DeleteConditionStep<DimensionCombinationsRecord> statement1 = dslContext
@@ -602,9 +628,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																					.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
 																						.and(DIMENSION_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())));
 					
-					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
-					
 					statement1.execute();
+					
+					Main.getLogger().info("Dimension Combination updated.");
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 				}
 			}
 		}
@@ -627,13 +654,23 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (DimensionCombination combination : deletions) {
-			DeleteConditionStep<DimensionCombinationsRecord> statement = dslContext
+			DeleteConditionStep<DimensionsRecord> statement = dslContext
+																.delete(DIMENSIONS)
+																.where(DIMENSIONS.DIMENSION_ID.equal(combination.getCombination().getId()));
+			
+			statement.execute();
+			
+			Main.getLogger().info("Dimension deleted.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			DeleteConditionStep<DimensionCombinationsRecord> statement1 = dslContext
 																			.delete(DIMENSION_COMBINATIONS)
 																			.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId()));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			statement1.execute();
 			
-			statement.execute();
+			Main.getLogger().info("Dimension Combination deleted.");
+			Main.getLogger().info("Executed SQL: " + statement1.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -659,9 +696,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																				.insertInto(REFERENCE_OBJECTS, REFERENCE_OBJECTS.DIMENSION_ID, REFERENCE_OBJECTS.NAME)
 																				.values(combination.getCombination().getDimensionProperty().get().getId(), combination.getNameProperty().get());
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Reference Object created.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 			
 			try {
 				con.commit();
@@ -683,9 +721,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																								.insertInto(REFERENCE_OBJECT_COMBINATIONS, REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID, REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID)
 																								.values(lastID, components.get(i).getId());
 				
-				Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
-				
 				statement1.execute();
+				
+				Main.getLogger().info("Reference Object Combination created.");
+				Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 			}
 		}
 		
@@ -713,9 +752,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																	.set(REFERENCE_OBJECTS.NAME, combination.getNameProperty().get())
 																	.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(combination.getCombination().getId()));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Reference Object updated.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 			
 			List<ReferenceObject> components = combination.getComponents();
 			List<ReferenceObject> changedComponents = combination.getComponentsProperty().get();
@@ -727,19 +767,21 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																						.set(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID, changedComponents.get(i).getId())
 																						.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
 																							.and(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())));
-				
-					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 					
 					statement1.execute();
+					
+					Main.getLogger().info("Reference Object Combination updated.");
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 				}
 				for (; i < changedComponents.size(); i++) {
 					InsertValuesStep2<ReferenceObjectCombinationsRecord, Long, Long> statement1 = dslContext
 																									.insertInto(REFERENCE_OBJECT_COMBINATIONS, REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID, REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID)
 																									.values(combination.getCombination().getId(), changedComponents.get(i).getId());
 					
-					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
-					
 					statement1.execute();
+					
+					Main.getLogger().info("Reference Object Combination updated.");
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 				}
 			} else {
 				int i = 0;
@@ -750,9 +792,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																						.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
 																							.and(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())));
 					
-					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
-					
 					statement1.execute();
+					
+					Main.getLogger().info("Reference Object Combination updated.");
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 				}
 				for (; i < components.size(); i++) {
 					DeleteConditionStep<ReferenceObjectCombinationsRecord> statement1 = dslContext
@@ -760,9 +803,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																						.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
 																							.and(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())));
 					
-					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
-					
 					statement1.execute();
+					
+					Main.getLogger().info("Reference Object Combination updated.");
+					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 				}
 			}
 		}
@@ -785,13 +829,23 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		}
 		
 		for (ReferenceObjectCombination combination : deletions) {
-			DeleteConditionStep<ReferenceObjectCombinationsRecord> statement = dslContext
+			DeleteConditionStep<ReferenceObjectsRecord> statement = dslContext
+																		.delete(REFERENCE_OBJECTS)
+																		.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(combination.getCombination().getId()));
+			
+			statement.execute();
+			
+			Main.getLogger().info("Reference Object deleted.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			
+			DeleteConditionStep<ReferenceObjectCombinationsRecord> statement1 = dslContext
 																				.delete(REFERENCE_OBJECT_COMBINATIONS)
 																				.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId()));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			statement1.execute();
 			
-			statement.execute();
+			Main.getLogger().info("Reference Object Copmbination deleted.");
+			Main.getLogger().info("Executed SQL: " + statement1.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -818,9 +872,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																		.insertInto(RATIOS, RATIOS.NAME, RATIOS.CATEGORY_ID)
 																		.values(ratio.getNameProperty().get(), catId);
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Ratio created.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -848,9 +903,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 															.set(RATIOS.CATEGORY_ID, catId)
 															.where(RATIOS.RATIO_ID.equal(ratio.getId()));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Ratio updated.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -875,9 +931,148 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 															.delete(RATIOS)
 															.where(RATIOS.RATIO_ID.equal(ratio.getId()));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Ratio deleted.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+		}
+		
+		try {
+			con.setAutoCommit(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	@Override
+	public void createRatioRelations(List<RatioRelation> creations) {
+		Connection con = null;
+		try {
+			con = dslContext.configuration().connectionProvider().acquire();
+			con.setAutoCommit(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		for (RatioRelation relation : creations) {
+			List<Ratio> levels = relation.getLevelsProperty().get();
+			for (int i = 0; i < levels.size() - 1; i++) {
+				InsertValuesStep2<RatioRelationsRecord, Long, Long> statement = dslContext
+																				.insertInto(RATIO_RELATIONS, RATIO_RELATIONS.DEPENDENT_ID, RATIO_RELATIONS.DEPENDENCY_ID)
+																				.values(levels.get(i).getId(), levels.get(i + 1).getId());
+				
+				statement.execute();
+				
+				Main.getLogger().info("Ratio Relation created.");
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			}
+		}
+		
+		try {
+			con.setAutoCommit(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void updateRatioRelations(List<RatioRelation> updates) {
+		Connection con = null;
+		try {
+			con = dslContext.configuration().connectionProvider().acquire();
+			con.setAutoCommit(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		for (RatioRelation relation : updates) {
+			List<Ratio> levels = relation.getLevels();
+			List<Ratio> changedLevels = relation.getLevelsProperty().get();
+			if (levels.size() <= changedLevels.size()) {
+				int i = 0;
+				for (; i < levels.size() - 1; i++) {
+					UpdateConditionStep<RatioRelationsRecord> statement = dslContext
+																			.update(RATIO_RELATIONS)
+																			.set(RATIO_RELATIONS.DEPENDENT_ID, changedLevels.get(i).getId())
+																			.set(RATIO_RELATIONS.DEPENDENCY_ID, changedLevels.get(i + 1).getId())
+																			.where(RATIO_RELATIONS.DEPENDENT_ID.equal(levels.get(i).getId())
+																				.and(RATIO_RELATIONS.DEPENDENCY_ID.equal(levels.get(i + 1).getId())));
+					
+					statement.execute();
+					
+					Main.getLogger().info("Ratio Relation updated.");
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				}
+				for (; i < changedLevels.size() - 1; i++) {
+					InsertValuesStep2<RatioRelationsRecord, Long, Long> statement = dslContext
+																					.insertInto(RATIO_RELATIONS, RATIO_RELATIONS.DEPENDENT_ID, RATIO_RELATIONS.DEPENDENCY_ID)
+																					.values(changedLevels.get(i).getId(), changedLevels.get(i + 1).getId());
+					
+					statement.execute();
+					
+					Main.getLogger().info("Ratio Relation updated.");
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				}
+			} else {
+				int i = 0;
+				for (; i < changedLevels.size() - 1; i++) {
+					UpdateConditionStep<RatioRelationsRecord> statement = dslContext
+																				.update(RATIO_RELATIONS)
+																				.set(RATIO_RELATIONS.DEPENDENT_ID, changedLevels.get(i).getId())
+																				.set(RATIO_RELATIONS.DEPENDENCY_ID, changedLevels.get(i + 1).getId())
+																				.where(RATIO_RELATIONS.DEPENDENT_ID.equal(levels.get(i).getId())
+																					.and(RATIO_RELATIONS.DEPENDENCY_ID.equal(levels.get(i + 1).getId())));
+					
+					statement.execute();
+					
+					Main.getLogger().info("Ratio Relation updated.");
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				}
+				for (; i < levels.size() - 1; i++) {
+					DeleteConditionStep<RatioRelationsRecord> statement = dslContext
+																				.delete(RATIO_RELATIONS)
+																				.where(RATIO_RELATIONS.DEPENDENT_ID.equal(levels.get(i).getId())
+																					.and(RATIO_RELATIONS.DEPENDENCY_ID.equal(levels.get(i + 1).getId())));
+					
+					statement.execute();
+					
+					Main.getLogger().info("Ratio Relation updated.");
+					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				}
+			}
+		}
+		
+		try {
+			con.setAutoCommit(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void deleteRatioRelations(List<RatioRelation> deletions) {
+		Connection con = null;
+		try {
+			con = dslContext.configuration().connectionProvider().acquire();
+			con.setAutoCommit(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		for (RatioRelation relation : deletions) {
+			List<Ratio> levels = relation.getLevels();
+			for (int i = 0; i < levels.size() - 1; i++) {
+				DeleteConditionStep<RatioRelationsRecord> statement = dslContext
+																			.delete(RATIO_RELATIONS)
+																			.where(RATIO_RELATIONS.DEPENDENT_ID.equal(levels.get(i).getId())
+																				.and(RATIO_RELATIONS.DEPENDENCY_ID.equal(levels.get(i + 1).getId())));
+				
+				statement.execute();
+				
+				Main.getLogger().info("Ratio Relation deleted.");
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+			}
 		}
 		
 		try {
@@ -907,9 +1102,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																							fact.getValueProperty().get(),
 																							unitId);
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Fact created.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -940,9 +1136,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 															.where(FACTS.RATIO_ID.equal(fact.getRatioProperty().get().getId())
 																.and(FACTS.REFERENCE_OBJECT_ID.equal(fact.getReferenceObjectProperty().get().getId())));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Fact updated.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -968,9 +1165,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 															.where(FACTS.RATIO_ID.equal(fact.getRatioProperty().get().getId())
 																.and(FACTS.REFERENCE_OBJECT_ID.equal(fact.getReferenceObjectProperty().get().getId())));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Fact deleted.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -996,9 +1194,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																				.insertInto(DIMENSION_CATEGORIES, DIMENSION_CATEGORIES.NAME)
 																				.values(cat.getNameProperty().get());
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Dimension Category created.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -1023,10 +1222,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																		.update(DIMENSION_CATEGORIES)
 																		.set(DIMENSION_CATEGORIES.NAME, cat.getNameProperty().get())
 																		.where(DIMENSION_CATEGORIES.CATEGORY_ID.equal(cat.getId()));
-			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
+
 			statement.execute();
+			
+			Main.getLogger().info("Dimension Category updated.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -1051,9 +1251,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																		.delete(DIMENSION_CATEGORIES)
 																		.where(DIMENSION_CATEGORIES.CATEGORY_ID.equal(cat.getId()));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Dimension Category deleted.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -1079,9 +1280,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																			.insertInto(RATIO_CATEGORIES, RATIO_CATEGORIES.NAME)
 																			.values(cat.getNameProperty().get());
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Ratio Category created.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -1107,9 +1309,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																	.set(RATIO_CATEGORIES.NAME, cat.getNameProperty().get())
 																	.where(RATIO_CATEGORIES.CATEGORY_ID.equal(cat.getId()));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Ratio Category updated.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+
 		}
 		
 		try {
@@ -1134,9 +1338,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																	.delete(RATIO_CATEGORIES)
 																	.where(RATIO_CATEGORIES.CATEGORY_ID.equal(cat.getId()));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Ratio Category deleted.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+
 		}
 		
 		try {
@@ -1162,9 +1368,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																			.insertInto(FACT_UNITS, FACT_UNITS.UNIT_NAME, FACT_UNITS.UNIT_SYMBOL)
 																			.values(unit.getNameProperty().get(), unit.getSymbolProperty().get());
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Unit created.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -1191,9 +1398,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																.set(FACT_UNITS.UNIT_SYMBOL, unit.getSymbolProperty().get())
 																.where(RATIO_CATEGORIES.CATEGORY_ID.equal(unit.getId()));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Unit updated.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {
@@ -1219,9 +1427,10 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																.delete(FACT_UNITS)
 																.where(FACT_UNITS.UNIT_ID.equal(unit.getId()));
 			
-			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-			
 			statement.execute();
+			
+			Main.getLogger().info("Unit deleted.");
+			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 		}
 		
 		try {

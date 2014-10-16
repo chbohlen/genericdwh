@@ -1,9 +1,5 @@
 package genericdwh.dataobjects;
 
-import genericdwh.dataobjects.dimension.DimensionCategory;
-import genericdwh.dataobjects.dimension.DimensionManager;
-import genericdwh.main.Main;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,7 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 public abstract class DataObjectHierarchy<T extends DataObject> extends DataObject {
-
+	
 	@Getter @Setter protected long categoryId;
 	
 	@Getter protected LinkedList<T> levels = new LinkedList<>();
@@ -59,13 +55,12 @@ public abstract class DataObjectHierarchy<T extends DataObject> extends DataObje
 	@Override
 	public void initProperties() {
 		super.initProperties();
-		setCategoryProperty(Main.getContext().getBean(DimensionManager.class).getCategories().get(categoryId));
 		getLevelsProperty().get().clear();
 		getLevelsProperty().get().addAll(levels);
 	};
-		
-	@Getter private ObjectProperty<DimensionCategory> categoryProperty = new SimpleObjectProperty<>();
-	public void setCategoryProperty(DimensionCategory cat) { categoryProperty.set(cat); }
+	
+	@Getter private ObjectProperty<DataObjectCategory> categoryProperty = new SimpleObjectProperty<>();
+	public void setCategoryProperty(DataObjectCategory cat) { categoryProperty.set(cat); }
 	
 	@Getter private ObjectProperty<List<T>> levelsProperty = new SimpleObjectProperty<>(new ArrayList<>());
 }

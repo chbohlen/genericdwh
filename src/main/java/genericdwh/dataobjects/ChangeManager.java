@@ -10,6 +10,7 @@ import genericdwh.dataobjects.fact.FactManager;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.ratio.RatioManager;
+import genericdwh.dataobjects.ratio.RatioRelation;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectCombination;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
@@ -73,6 +74,8 @@ public class ChangeManager {
 			refObjManager.saveCombinations(stagedObjects);
 		} else if (stagedObjectClass == Ratio.class) {
 			ratioManager.saveRatios(stagedObjects);
+		} else if (stagedObjectClass == RatioRelation.class) {
+			ratioManager.saveRelations(stagedObjects);
 		} else if (stagedObjectClass == Fact.class) {
 			factManager.saveFacts(stagedObjects);
 		} else if (stagedObjectClass == DimensionCategory.class) {
@@ -109,17 +112,17 @@ public class ChangeManager {
 					return ValidationMessages.REFERENCE_OBJECT_NO_DIMENSION;
 				}
 			}
-		} else if (stagedObjectClass == DimensionHierarchy.class || stagedObjectClass == ReferenceObjectHierarchy.class) {
+		} else if (stagedObjectClass == DimensionHierarchy.class || stagedObjectClass == ReferenceObjectHierarchy.class || stagedObjectClass == RatioRelation.class) {
 			for (DataObject hierarchy : stagedObjects) {
 				if (((DataObjectHierarchy<DataObject>)hierarchy).getLevelsProperty().get().size() < 2) {
-					Main.getLogger().info("Validation failed: " + ValidationMessages.HIERARCHY_MIN_2_OBJECTS);
-					return ValidationMessages.HIERARCHY_MIN_2_OBJECTS;
+					Main.getLogger().info("Validation failed: " + ValidationMessages.HIERARCHY_RELATION__MIN_2_OBJECTS);
+					return ValidationMessages.HIERARCHY_RELATION__MIN_2_OBJECTS;
 				}
 				List<DataObject> containedLevels = new ArrayList<DataObject>();
 				for (DataObject lvl : ((DataObjectHierarchy<DataObject>)hierarchy).getLevelsProperty().get()) {
 					if (containedLevels.contains(lvl)) {
-						Main.getLogger().info("Validation failed: " + ValidationMessages.HIERARCHY_DUPLICATE_LEVEL);
-						return ValidationMessages.HIERARCHY_DUPLICATE_LEVEL;
+						Main.getLogger().info("Validation failed: " + ValidationMessages.HIERARCHY_RELATION__DUPLICATE_LEVEL);
+						return ValidationMessages.HIERARCHY_RELATION__DUPLICATE_LEVEL;
 					}
 					containedLevels.add(lvl);
 				}

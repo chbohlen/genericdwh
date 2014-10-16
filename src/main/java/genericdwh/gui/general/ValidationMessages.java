@@ -4,9 +4,9 @@ public class ValidationMessages {
 	/* Reference Objects */
 	public static final String REFERENCE_OBJECT_NO_DIMENSION = "Reference Objects must have a Dimension!";
 	
-	/* Hierarchies */
-	public static final String HIERARCHY_MIN_2_OBJECTS = "Hierarchies need at least 2 levels!";
-	public static final String HIERARCHY_DUPLICATE_LEVEL = "A Hierarchy cannot contain duplicate levels!";
+	/* Hierarchies and Relations */
+	public static final String HIERARCHY_RELATION__MIN_2_OBJECTS = "Hierarchies or Relations need at least 2 levels!";
+	public static final String HIERARCHY_RELATION__DUPLICATE_LEVEL = "A Hierarchy or Relation cannot contain duplicate levels!";
 
 	/* Combinations */
 	public static final String COMBINATION_MIN_2_OBJECTS = "Combinations need at least 2 components!";

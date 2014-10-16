@@ -1,6 +1,7 @@
 package genericdwh.dataobjects.ratio;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.Map.Entry;
@@ -14,6 +15,7 @@ public class RatioManager extends DataObjectManager {
 	
 	@Getter private TreeMap<Long, RatioCategory> categories;
 	@Getter private TreeMap<Long, Ratio> ratios;
+	@Getter private List<RatioRelation> relations;
 
 	public RatioManager(DatabaseController dbController) {
 		super(dbController);
@@ -22,17 +24,52 @@ public class RatioManager extends DataObjectManager {
 	
 	public void loadRatios() {
 		ratios = dbReader.loadRatios();
-		
-		List<Entry<Long, Long>> ratioHierarchies = dbReader.loadRatioRelations();
-		for (Entry<Long, Long> hierarchy : ratioHierarchies) {
-			ratios.get(hierarchy.getKey()).addDependency(ratios.get(hierarchy.getValue()));
+	}
+	
+	public void loadRelations() {
+		for (Ratio ratio : ratios.values()) {
+			ratio.clearDependecies();
 		}
+		
+		List<Entry<Long, Long>> ratioRelations = dbReader.loadRatioRelations();
+		for (Entry<Long, Long> relation : ratioRelations) {
+			ratios.get(relation.getKey()).addDependency(ratios.get(relation.getValue()));
+		}
+		
+		relations = generateRelations();
 	}
 
 	public void loadCategories() {
 		categories = dbReader.loadRatioCategories();
 	}
 	
+	private List<RatioRelation> generateRelations() {
+		ArrayList<RatioRelation> newRelations = new ArrayList<>();
+		
+		for (Ratio currRatio : ratios.values()) {
+			if (currRatio.isRelation()) {
+				LinkedList<RatioRelation> tmpNewRelations = new LinkedList<>();
+				tmpNewRelations.add(new RatioRelation(currRatio));
+				
+				do {
+					RatioRelation currNewRelation = tmpNewRelations.pop();
+					
+					Ratio lastLevel = currNewRelation.getLevels().getLast();
+					if (lastLevel.isRelation()) {
+						for (Ratio dependency : lastLevel.getDependencies()) {
+							RatioRelation currNewRelationClone = (RatioRelation)currNewRelation.clone();
+							currNewRelationClone.addLevel(dependency);
+							tmpNewRelations.add(currNewRelationClone);
+						}
+					} else {
+						newRelations.add(currNewRelation);
+					}
+				} while (!tmpNewRelations.isEmpty());
+			}
+		}
+		
+		return newRelations;
+	}
 	
 	public Ratio getRatio(long id) {
 		return ratios.get(id);
@@ -50,7 +87,12 @@ public class RatioManager extends DataObjectManager {
 			ratio.initProperties();
 		}
 	}
-
+	
+	public void initRelations() {
+		for (RatioRelation ratioRelation : relations) {
+			ratioRelation.initProperties();
+		}
+	}
 	
 	public void saveRatios(List<DataObject> stagedObjects) {
 		List<Ratio> deletions = new ArrayList<>();
@@ -77,6 +119,33 @@ public class RatioManager extends DataObjectManager {
 		dbWriter.updateRatios(updates);
 		
 		loadRatios();
+	}
+
+	public void saveRelations(List<DataObject> stagedObjects) {
+		List<RatioRelation> deletions = new ArrayList<>();
+		List<RatioRelation> creations = new ArrayList<>();
+		List<RatioRelation> updates = new ArrayList<>();
+		
+		for (DataObject obj : stagedObjects) {
+			RatioRelation relation = (RatioRelation)obj;
+			if (relation.isMarkedForDeletion()) {
+				if (!relation.isMarkedForCreation()) {
+					deletions.add(relation);
+				}
+			} else {
+				if (relation.isMarkedForCreation()) {
+					creations.add(relation);
+				} else {
+					updates.add(relation);
+				}
+			}
+		}
+		
+		dbWriter.deleteRatioRelations(deletions);
+		dbWriter.createRatioRelations(creations);
+		dbWriter.updateRatioRelations(updates);
+		
+		loadRelations();
 	}
 
 	public void saveCategories(List<DataObject> stagedObjects) {

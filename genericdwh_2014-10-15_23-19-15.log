@@ -1,5 +1,0 @@
-2014-10-15 23:19:15,408 INFO  - Application started.
-2014-10-15 23:19:18,273 INFO  - Config file loaded.
-2014-10-15 23:19:19,148 INFO  - Database connection successful (localhost:3306/genericdwh).
-2014-10-15 23:19:19,149 INFO  - Config file saved.
-2014-10-15 23:19:20,515 INFO  - Executing Query ...

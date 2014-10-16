@@ -138,6 +138,7 @@ public class MainWindowController implements Initializable{
 		RatioManager ratioManager = Main.getContext().getBean(RatioManager.class);
 		ratioManager.loadCategories();
 		ratioManager.loadRatios();
+		ratioManager.loadRelations();
 		
 		Main.getContext().getBean(UnitManager.class).loadUnits();
 					

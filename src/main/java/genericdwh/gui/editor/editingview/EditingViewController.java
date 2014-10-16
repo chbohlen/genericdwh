@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import genericdwh.dataobjects.DataObject;
+import genericdwh.dataobjects.DataObjectCategory;
 import genericdwh.dataobjects.DataObjectCombination;
 import genericdwh.dataobjects.DataObjectHierarchy;
 import genericdwh.dataobjects.dimension.Dimension;
@@ -17,6 +18,7 @@ import genericdwh.dataobjects.fact.Fact;
 import genericdwh.dataobjects.fact.FactManager;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
+import genericdwh.dataobjects.ratio.RatioRelation;
 import genericdwh.dataobjects.ratio.RatioManager;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectCombination;
@@ -80,6 +82,8 @@ public class EditingViewController implements Initializable {
 		REFERENCE_OBJECT_COMBINATIONS_BY_DIMENSION(ReferenceObjectCombination.class),
 		RATIOS(Ratio.class),
 		RATIOS_BY_CATEGORY(Ratio.class),
+		RATIO_RELATIONS(RatioRelation.class),
+		RATIO_RELATIONS_BY_CATEGORY(RatioRelation.class),
 		FACTS(Fact.class),
 		FACTS_BY_RATIO(Fact.class),
 		FACTS_BY_REFERENCE_OBJECT(Fact.class),
@@ -451,6 +455,62 @@ public class EditingViewController implements Initializable {
 				
 				break;
 			}
+			case RATIO_RELATIONS: {
+				setupRatioRelationsTable();
+				
+				ratioManager.initCategories();
+				ratioManager.initRatios();
+				ratioManager.initRelations();
+				
+				for (RatioRelation ratioRelation : ratioManager.getRelations()) {
+					DataObjectTreeItem tiRatioRelation = new DataObjectTreeItem(ratioRelation);
+					tiRoot.addChild(tiRatioRelation);
+					
+					DataObjectTreeItem currLevel = tiRatioRelation;
+					for (Ratio level : ratioRelation.getLevels()) {
+						DataObjectTreeItem tiLevel = new DataObjectTreeItem(level);
+						currLevel.addChild(tiLevel);
+						currLevel = tiLevel;
+					}
+				}
+							
+				break;
+			}
+			case RATIO_RELATIONS_BY_CATEGORY: {
+				setupRatioRelationsTable();
+				
+				ratioManager.initCategories();
+				ratioManager.initRatios();
+				ratioManager.initRelations();
+				
+				tiHeaderMap = new TreeMap<>();
+				for (RatioCategory cat : ratioManager.getCategories().values()) {
+					HeaderItem tiCat = new HeaderItem(cat.getName(), cat.getId(), true, true);
+					tiHeaderMap.put(cat.getId(), tiCat);
+				}
+				HeaderItem tiNoCat = new HeaderItem("Uncategorized", 0, true, true);
+				tiHeaderMap.put((long)0, tiNoCat);
+				
+				for (RatioRelation ratioRelation : ratioManager.getRelations()) {
+					DataObjectTreeItem tiRatioRelation = new DataObjectTreeItem(ratioRelation);
+					tiHeaderMap.get(ratioRelation.getCategoryId()).addChild(tiRatioRelation);
+					
+					DataObjectTreeItem currLevel = tiRatioRelation;
+					for (Ratio level : ratioRelation.getLevels()) {
+						DataObjectTreeItem tiLevel = new DataObjectTreeItem(level);
+						currLevel.addChild(tiLevel);
+						currLevel = tiLevel;
+					}
+				}
+				
+				for (DataObjectTreeItem tiCat : tiHeaderMap.values()) {
+					if (tiCat.hasChildren()) {
+						tiRoot.addChild(tiCat);
+					}
+				}
+					
+				break;
+			}
 			case FACTS: {
 				setupFactsTable();
 				
@@ -612,7 +672,8 @@ public class EditingViewController implements Initializable {
 		colCategory.setCellValueFactory(new Callback<CellDataFeatures<DataObject, DimensionCategory>, ObservableValue<DimensionCategory>>() {
 			public ObservableValue<DimensionCategory> call(CellDataFeatures<DataObject, DimensionCategory> param) {
 				if (param.getValue().getValue() instanceof DimensionHierarchy && !(param.getValue() instanceof HeaderItem)) {
-					return ((DimensionHierarchy)param.getValue().getValue()).getCategoryProperty();
+					DataObjectCategory dataObjectCategory = ((DimensionHierarchy)param.getValue().getValue()).getCategoryProperty().get();
+					return new SimpleObjectProperty<DimensionCategory>((DimensionCategory)dataObjectCategory);
 				} else {
 					return new SimpleObjectProperty<DimensionCategory>(null);
 				}
@@ -690,7 +751,8 @@ public class EditingViewController implements Initializable {
 		colCategory.setCellValueFactory(new Callback<CellDataFeatures<DataObject, DimensionCategory>, ObservableValue<DimensionCategory>>() {
 			public ObservableValue<DimensionCategory> call(CellDataFeatures<DataObject, DimensionCategory> param) {
 				if (param.getValue().getValue() instanceof ReferenceObjectHierarchy && !(param.getValue() instanceof HeaderItem)) {
-					return ((ReferenceObjectHierarchy)param.getValue().getValue()).getCategoryProperty();
+					DataObjectCategory dataObjectCategory = ((ReferenceObjectHierarchy)param.getValue().getValue()).getCategoryProperty().get();
+					return new SimpleObjectProperty<DimensionCategory>((DimensionCategory)dataObjectCategory);
 				} else {
 					return new SimpleObjectProperty<DimensionCategory>(null);
 				}
@@ -750,6 +812,42 @@ public class EditingViewController implements Initializable {
 				return ((Ratio)param.getValue().getValue()).getCategoryProperty();
 		    }
 		});		
+	}
+	
+	private void setupRatioRelationsTable() {
+		TreeTableColumn<DataObject, String> colName = createNameCol();
+		colName.setCellValueFactory(new Callback<CellDataFeatures<DataObject, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<DataObject, String> param) {
+				if (param.getValue().getValue() instanceof RatioRelation || param.getValue() instanceof HeaderItem) {
+					return param.getValue().getValue().getNameProperty();
+				} else {
+					return new SimpleStringProperty("Relation Level");
+				}
+			}
+		});
+		
+		TreeTableColumn<DataObject, Ratio> colLevel = createRatioLevelCol();
+		colLevel.setCellValueFactory(new Callback<CellDataFeatures<DataObject, Ratio>, ObservableValue<Ratio>>() {
+			public ObservableValue<Ratio> call(CellDataFeatures<DataObject, Ratio> param) {
+				if (param.getValue().getValue() instanceof RatioRelation || param.getValue() instanceof HeaderItem) {
+					return new SimpleObjectProperty<Ratio>(null);
+				} else {
+					return new SimpleObjectProperty<Ratio>((Ratio)param.getValue().getValue());
+				}
+			}
+		});
+		
+		TreeTableColumn<DataObject, RatioCategory> colCategory = createRatioCategoryCol();
+		colCategory.setCellValueFactory(new Callback<CellDataFeatures<DataObject, RatioCategory>, ObservableValue<RatioCategory>>() {
+			public ObservableValue<RatioCategory> call(CellDataFeatures<DataObject, RatioCategory> param) {
+				if (param.getValue().getValue() instanceof RatioRelation && !(param.getValue() instanceof HeaderItem)) {
+					DataObjectCategory dataObjectCategory = ((RatioRelation)param.getValue().getValue()).getCategoryProperty().get();
+					return new SimpleObjectProperty<RatioCategory>((RatioCategory)dataObjectCategory);
+				} else {
+					return new SimpleObjectProperty<RatioCategory>(null);
+				}
+		    }
+		});
 	}
 	
 	private void setupFactsTable() {
@@ -1293,6 +1391,68 @@ public class EditingViewController implements Initializable {
 		return colCategory;
 	}
 	
+	private TreeTableColumn<DataObject, Ratio> createRatioLevelCol() {
+		RatioManager ratioManager = Main.getContext().getBean(RatioManager.class);
+
+		TreeTableColumn<DataObject, Ratio> colLevel = new TreeTableColumn<>("Level Ratio");
+		colLevel.setPrefWidth(235);
+		
+		colLevel.setCellFactory(new Callback<TreeTableColumn<DataObject, Ratio>,TreeTableCell<DataObject, Ratio>>() {
+			@Override
+			public TreeTableCell<DataObject, Ratio> call(TreeTableColumn<DataObject, Ratio> param) {
+				ObservableList<Ratio> ratios = FXCollections.observableArrayList();
+				for (Ratio ratio : ratioManager.getRatios().values()) {
+					ratios.add(ratio);
+				}
+				return new DataObjectCBTreeTableCell<Ratio>(ratios);
+			}
+		});
+		
+		colLevel.setOnEditCommit(new EventHandler<CellEditEvent<DataObject, Ratio>>() {
+            @Override
+            public void handle(CellEditEvent<DataObject, Ratio> event) {
+                if (event.getEventType() == TreeTableColumn.editCommitEvent()) {
+                	TreeItem<DataObject> tiRatioRelation = getHierarchyTreeItem(event.getRowValue());
+                	RatioRelation ratioRelation = (RatioRelation)tiRatioRelation.getValue();
+                	Ratio newLevel = event.getNewValue();
+                	Ratio oldLevel = event.getOldValue();
+                	
+                	if (newLevel != oldLevel) {
+                    	if (ratioRelation.getLevelsProperty().get().contains(oldLevel)) {
+                    		int oldIndex = ratioRelation.getLevelsProperty().get().indexOf(oldLevel);
+                    		ratioRelation.getLevelsProperty().get().remove(oldLevel);
+                    		ratioRelation.getLevelsProperty().get().add(oldIndex, newLevel);
+                    	} else {
+                    		ratioRelation.getLevelsProperty().get().add(newLevel);
+                    	}
+                    	
+                    	if (ratioRelation.getLevelsProperty().get().indexOf(newLevel) == 0) {
+                    		ratioRelation.setCategoryProperty(newLevel.getCategoryProperty().get());
+                    	}
+                    	
+                    	ratioRelation.setNameProperty(ratioRelation.generateName(ratioRelation.getLevelsProperty().get()));
+                    	
+                    	event.getRowValue().setValue(newLevel);
+                    	
+                    	if (currEditingViewType == EditingViewType.RATIO_RELATIONS_BY_CATEGORY && newLevel.getCategoryId() != oldLevel.getCategoryId()) {
+                    		changeParent(tiRatioRelation, newLevel.getCategoryId());
+                    	}
+                    	
+                    	Main.getContext().getBean(EditorController.class).stageUpdate(ratioRelation);
+                    	hasUnsavedChanges.set(true);
+                    	editingView.requestFocus();
+                	}
+                	
+                	focus(event.getRowValue());
+                }
+            }
+        });
+		
+		editingView.getColumns().add(colLevel);
+		
+		return colLevel;
+	}
+	
 	private TreeTableColumn<DataObject, Ratio> createRatioCol() {
 		RatioManager ratioManager = Main.getContext().getBean(RatioManager.class);
 
@@ -1528,6 +1688,10 @@ public class EditingViewController implements Initializable {
 				|| currEditingViewType == EditingViewType.REFERENCE_OBJECT_HIERARCHIES_BY_CATEGORY) {
 			
 			newChild = Main.getContext().getBean(EditorController.class).createObject(ReferenceObject.class);
+		} else if (currEditingViewType == EditingViewType.RATIO_RELATIONS
+					|| currEditingViewType == EditingViewType.RATIO_RELATIONS_BY_CATEGORY) {
+				
+				newChild = Main.getContext().getBean(EditorController.class).createObject(Ratio.class);
 		}
 		newChild.initProperties();
 		

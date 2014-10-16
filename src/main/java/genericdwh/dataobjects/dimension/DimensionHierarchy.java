@@ -3,9 +3,10 @@ package genericdwh.dataobjects.dimension;
 import java.util.LinkedList;
 
 import genericdwh.dataobjects.DataObjectHierarchy;
+import genericdwh.main.Main;
 
 public class DimensionHierarchy extends DataObjectHierarchy<Dimension> {
-	
+		
 	public DimensionHierarchy() {
 		super();
 	}
@@ -31,5 +32,11 @@ public class DimensionHierarchy extends DataObjectHierarchy<Dimension> {
 	@Override
 	public DimensionHierarchy clone() {
 		return new DimensionHierarchy(levels);
+	}
+	
+	@Override
+	public void initProperties() {
+		super.initProperties();
+		setCategoryProperty(Main.getContext().getBean(DimensionManager.class).getCategories().get(categoryId));
 	}
 }

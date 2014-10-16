@@ -12,6 +12,7 @@ import genericdwh.dataobjects.dimension.DimensionHierarchy;
 import genericdwh.dataobjects.fact.Fact;
 import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
+import genericdwh.dataobjects.ratio.RatioRelation;
 import genericdwh.dataobjects.referenceobject.ReferenceObject;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectHierarchy;
 import genericdwh.dataobjects.unit.Unit;
@@ -246,9 +247,9 @@ public class EditorController implements Initializable{
 		
 		DataObject newObj = null;
 		try {
-			if (clazz == DimensionHierarchy.class || clazz == ReferenceObjectHierarchy.class) {
+			if (clazz == DimensionHierarchy.class || clazz == ReferenceObjectHierarchy.class || clazz == RatioRelation.class) {
 				newObj = (DataObject)clazz.newInstance();
-				newObj.setName("New Hierarchy");
+				newObj.setName("New Hierarchy/Relation");
 			} else {
 				newObj = (DataObject)constructors[0].newInstance(params);
 			}
