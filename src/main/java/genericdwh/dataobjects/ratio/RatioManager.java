@@ -44,7 +44,7 @@ public class RatioManager extends DataObjectManager {
 	}
 	
 	private List<RatioRelation> generateRelations() {
-		ArrayList<RatioRelation> newRelations = new ArrayList<>();
+		List<RatioRelation> newRelations = new ArrayList<>();
 		
 		for (Ratio currRatio : ratios.values()) {
 			if (currRatio.isRelation()) {

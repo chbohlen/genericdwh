@@ -66,6 +66,8 @@ C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\db\model\ta
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\gui\general\sidebar\HeaderItem.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\configfiles\ConfigFileReader.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\db\model\tables\records\RatiosRecord.java
+C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\dataobjects\ratio\RatioRelation.java
+C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\dataobjects\DataObjectCategory.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\db\model\tables\records\RatioRelationsRecord.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\gui\mainwindow\querypane\TableCellContextMenu.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\gui\mainwindow\sidebar\LazyLoadOnExpandListener.java

@@ -297,7 +297,7 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 					
 					statement.execute();
 					
-					Main.getLogger().info("Dimension Hierarchy updated.");
+					Main.getLogger().info("Dimension Hierarchy created.");
 					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 				}
 			} else {
@@ -323,7 +323,7 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 					
 					statement.execute();
 					
-					Main.getLogger().info("Dimension Hierarchy updated.");
+					Main.getLogger().info("Dimension Hierarchy deleted.");
 					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 				}
 			}
@@ -435,7 +435,7 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 					
 					statement.execute();
 					
-					Main.getLogger().info("Reference Object Hierarchy updated.");
+					Main.getLogger().info("Reference Object Hierarchy created.");
 					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 				}
 			} else {
@@ -461,7 +461,7 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 					
 					statement.execute();
 					
-					Main.getLogger().info("Reference Object Hierarchy updated.");
+					Main.getLogger().info("Reference Object Hierarchy deleted.");
 					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 				}
 			}
@@ -605,7 +605,7 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 					
 					statement1.execute();
 					
-					Main.getLogger().info("Dimension Combination updated.");
+					Main.getLogger().info("Dimension Combination created.");
 					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 				}
 			} else {
@@ -630,7 +630,7 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 					
 					statement1.execute();
 					
-					Main.getLogger().info("Dimension Combination updated.");
+					Main.getLogger().info("Dimension Combination deleted.");
 					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 				}
 			}
@@ -780,7 +780,7 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 					
 					statement1.execute();
 					
-					Main.getLogger().info("Reference Object Combination updated.");
+					Main.getLogger().info("Reference Object Combination created.");
 					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 				}
 			} else {
@@ -805,7 +805,7 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 					
 					statement1.execute();
 					
-					Main.getLogger().info("Reference Object Combination updated.");
+					Main.getLogger().info("Reference Object Combination deleted.");
 					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
 				}
 			}
@@ -1011,7 +1011,7 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 					
 					statement.execute();
 					
-					Main.getLogger().info("Ratio Relation updated.");
+					Main.getLogger().info("Ratio Relation created.");
 					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 				}
 			} else {
@@ -1037,7 +1037,7 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 					
 					statement.execute();
 					
-					Main.getLogger().info("Ratio Relation updated.");
+					Main.getLogger().info("Ratio Relation deleted.");
 					Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
 				}
 			}

@@ -176,6 +176,7 @@ genericdwh\gui\mainwindow\sidebar\DataObjectTreeCellContextMenu$8.class
 genericdwh\db\model\Keys$ForeignKeys0.class
 genericdwh\gui\editor\editingview\EditingViewController$9.class
 genericdwh\gui\GUIConfig.class
+genericdwh\gui\mainwindow\querypane\resultgrid\ResultGrid$1.class
 genericdwh\gui\editor\editingview\searchbox\SearchBoxController$2.class
 genericdwh\db\model\tables\records\DimensionCategoriesRecord.class
 genericdwh\db\model\Keys$UniqueKeys0.class
@@ -195,6 +196,7 @@ genericdwh\gui\mainwindow\sidebar\MainWindowSidebarController.class
 genericdwh\gui\editor\editingview\EditingViewController$23.class
 genericdwh\gui\editor\editingview\TreeTableCellContextMenu$4.class
 genericdwh\gui\editor\editingview\EditingViewController$18.class
+genericdwh\gui\editor\editingview\EditingViewController$60.class
 genericdwh\configfiles\ConfigFileReader.class
 genericdwh\gui\mainwindow\querypane\resultgrid\ResultGridCellContextMenu$2.class
 genericdwh\configfiles\ConfigFileReaderConfig.class

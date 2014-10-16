@@ -14,6 +14,7 @@ import genericdwh.dataobjects.ratio.Ratio;
 import genericdwh.dataobjects.ratio.RatioCategory;
 import genericdwh.dataobjects.referenceobject.ReferenceObjectManager;
 import genericdwh.gui.general.Icons;
+import genericdwh.gui.general.sidebar.DataObjectTreeItem;
 import genericdwh.gui.general.sidebar.HeaderItem;
 import genericdwh.gui.general.sidebar.TreeCellRightClickHandler;
 import genericdwh.main.Main;
@@ -143,25 +144,39 @@ public class MainWindowSidebarController implements Initializable {
 		HeaderItem tiRoot = new HeaderItem("Ratios", 1, true, false, new ImageView(Icons.FOLDER));
 		tiRoot.setExpanded(true);
 		
-		TreeMap<Long, LazyLoadDataObjectTreeItem> categoryTreeItemMap = new TreeMap<>();
+		TreeMap<Long, DataObjectTreeItem> categoryTreeItemMap = new TreeMap<>();
 		for (RatioCategory currCat : ratioCategories.values()) {
-			LazyLoadDataObjectTreeItem tiNewCategory = new LazyLoadDataObjectTreeItem(currCat, new ImageView(Icons.FOLDER));
+			DataObjectTreeItem tiNewCategory = new DataObjectTreeItem(currCat, new ImageView(Icons.FOLDER));
 			tiRoot.addChild(tiNewCategory);
 			
 			categoryTreeItemMap.put(currCat.getId(), tiNewCategory);
 		}
 		
 		for (Ratio currRatio : ratios.values()) {
-			LazyLoadDataObjectTreeItem tiNewRatio = new LazyLoadDataObjectTreeItem(currRatio, new ImageView(Icons.RATIO));
-			LazyLoadDataObjectTreeItem tiCat = categoryTreeItemMap.get(currRatio.getCategoryId());
+			DataObjectTreeItem tiNewRatio = new DataObjectTreeItem(currRatio, new ImageView(Icons.RATIO));
+			DataObjectTreeItem tiCat = categoryTreeItemMap.get(currRatio.getCategoryId());
 			if (tiCat != null) {
 				tiCat.addChild(tiNewRatio);
 			}
-			
-			if (currRatio.isRelation()) {
+
+			if (currRatio.isRelation()) {	
+				LinkedList<DataObjectTreeItem> queue = new LinkedList<>();
 				for (Ratio dependency : currRatio.getDependencies()) {
-					LazyLoadDataObjectTreeItem tiNewDependency = new LazyLoadDataObjectTreeItem(dependency, new ImageView(Icons.RATIO));
+					DataObjectTreeItem tiNewDependency = new DataObjectTreeItem(dependency, new ImageView(Icons.RATIO));
 					tiNewRatio.addChild(tiNewDependency);
+					queue.add(tiNewDependency);
+				}
+
+				while(!queue.isEmpty()) {
+					DataObjectTreeItem tiCurrDependency = queue.pop();
+					Ratio currDependency = (Ratio)tiCurrDependency.getValue();
+					if (currDependency.isRelation()) {
+						for (Ratio dependency : currDependency.getDependencies()) {
+							DataObjectTreeItem tiNewDependency = new DataObjectTreeItem(dependency, new ImageView(Icons.RATIO));
+							tiCurrDependency.addChild(tiNewDependency);
+							queue.add(tiNewDependency);
+						}
+					}
 				}
 			}
 		}
