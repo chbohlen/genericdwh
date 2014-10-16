@@ -250,10 +250,10 @@ public class QueryPaneController implements Initializable {
 		List<DataObject> filter = tvFilter.getItems();
 		
 		Main.getLogger().info("Query parameters " 
-				+ "- Column Dimensions: " + colDims.toString()
-				+ ", Row Dimensions: " + rowDims.toString()
-				+ ", Filtered Reference Objects: " + filter.toString()
-				+ ", Ratios: " + ratios.toString());
+								+ "- Column Dimensions: " + colDims.toString()
+								+ ", Row Dimensions: " + rowDims.toString()
+								+ ", Filtered Reference Objects: " + filter.toString()
+								+ ", Ratios: " + ratios.toString());
 		
 		if (ratios.isEmpty()) {
 			if (rowDims.isEmpty() && colDims.isEmpty()) {

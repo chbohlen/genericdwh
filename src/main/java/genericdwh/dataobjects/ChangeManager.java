@@ -59,35 +59,44 @@ public class ChangeManager {
 		obj.setMarkedForDeletion(true);
 	}
 	
-	public void saveChanges() {
+	public boolean saveChanges() {
+		boolean changesSaved = false;
 		if (stagedObjectClass == Dimension.class) {
-			dimManager.saveDimensions(stagedObjects);
+			changesSaved = dimManager.saveDimensions(stagedObjects);
 		} else if (stagedObjectClass == DimensionHierarchy.class) {
-			dimManager.saveHierarchies(stagedObjects);
+			changesSaved = dimManager.saveHierarchies(stagedObjects);
 		}  else if (stagedObjectClass == DimensionCombination.class) {
-			dimManager.saveCombinations(stagedObjects);
+			changesSaved = dimManager.saveCombinations(stagedObjects);
 		} else if (stagedObjectClass == ReferenceObject.class) {
-			refObjManager.saveReferenceObjects(stagedObjects);
+			changesSaved = refObjManager.saveReferenceObjects(stagedObjects);
 		} else if (stagedObjectClass == ReferenceObjectHierarchy.class) {
-			refObjManager.saveHierarchies(stagedObjects);
+			changesSaved = refObjManager.saveHierarchies(stagedObjects);
 		}  else if (stagedObjectClass == ReferenceObjectCombination.class) {
-			refObjManager.saveCombinations(stagedObjects);
+			changesSaved = refObjManager.saveCombinations(stagedObjects);
 		} else if (stagedObjectClass == Ratio.class) {
-			ratioManager.saveRatios(stagedObjects);
+			changesSaved = ratioManager.saveRatios(stagedObjects);
 		} else if (stagedObjectClass == RatioRelation.class) {
-			ratioManager.saveRelations(stagedObjects);
+			changesSaved = ratioManager.saveRelations(stagedObjects);
 		} else if (stagedObjectClass == Fact.class) {
-			factManager.saveFacts(stagedObjects);
+			changesSaved = factManager.saveFacts(stagedObjects);
 		} else if (stagedObjectClass == DimensionCategory.class) {
-			dimManager.saveCategories(stagedObjects);
+			changesSaved = dimManager.saveCategories(stagedObjects);
 		} else if (stagedObjectClass == RatioCategory.class) {
-			ratioManager.saveCategories(stagedObjects);
+			changesSaved = ratioManager.saveCategories(stagedObjects);
 		} else if (stagedObjectClass == Unit.class) {
-			unitManager.saveUnits(stagedObjects);
+			changesSaved = unitManager.saveUnits(stagedObjects);
 		}
 		
+		
 		stagedObjects.clear();
+		
+		if (!changesSaved) {
+			Main.getLogger().info("Not all changes saved. Check log for further information.");
+			return false;
+		}
+
 		Main.getLogger().info("Changes saved.");
+		return true;
 	}
 		
 	public void discardChanges() {

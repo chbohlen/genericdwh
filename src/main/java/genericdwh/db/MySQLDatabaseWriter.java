@@ -50,13 +50,14 @@ import org.jooq.InsertValuesStep2;
 import org.jooq.InsertValuesStep4;
 import org.jooq.UpdateConditionStep;
 import org.jooq.conf.ParamType;
+import org.jooq.exception.DataAccessException;
 
 public class MySQLDatabaseWriter implements DatabaseWriter {
 	
 	@Setter private DSLContext dslContext;
 	
 	@Override
-	public void createDimensions(List<Dimension> creations) {
+	public boolean createDimensions(List<Dimension> creations) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -82,10 +83,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 	
 	@Override
-	public void updateDimensions(List<Dimension> updates) {	
+	public boolean updateDimensions(List<Dimension> updates) {	
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -113,10 +115,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 	
 	@Override
-	public void deleteDimensions(List<Dimension> deletions) {
+	public boolean deleteDimensions(List<Dimension> deletions) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -130,7 +133,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																.delete(DIMENSIONS)
 																.where(DIMENSIONS.DIMENSION_ID.equal(dim.getId()));
 			
-			statement.execute();
+			try {
+				statement.execute();
+			} catch (DataAccessException e) {
+				Main.getLogger().info("Could not delete Dimension. Dimension possibly still referenced elsewhere.");
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				return false;
+			}
 			
 			Main.getLogger().info("Dimension deleted.");
 			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
@@ -141,11 +150,12 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 	
 	
 	@Override
-	public void createReferenceObjects(List<ReferenceObject> creations) {
+	public boolean createReferenceObjects(List<ReferenceObject> creations) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -170,10 +180,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 	
 	@Override
-	public void updateReferenceObjects(List<ReferenceObject> updates) {
+	public boolean updateReferenceObjects(List<ReferenceObject> updates) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -200,10 +211,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void deleteReferenceObjects(List<ReferenceObject> deletions) {
+	public boolean deleteReferenceObjects(List<ReferenceObject> deletions) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -217,7 +229,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																	.delete(REFERENCE_OBJECTS)
 																	.where(REFERENCE_OBJECTS.REFERENCE_OBJECT_ID.equal(refObj.getId()));
 			
-			statement.execute();
+			try {
+				statement.execute();
+			} catch (DataAccessException e) {
+				Main.getLogger().info("Could not delete Reference Object. Reference Object possibly still referenced elsewhere.");
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				return false;
+			}
 			
 			Main.getLogger().info("Reference Object deleted.");
 			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
@@ -228,11 +246,12 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	
 	@Override
-	public void createDimensionHierarchies(List<DimensionHierarchy> creations) {
+	public boolean createDimensionHierarchies(List<DimensionHierarchy> creations) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -260,10 +279,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void updateDimensionHierarchies(List<DimensionHierarchy> updates) {
+	public boolean updateDimensionHierarchies(List<DimensionHierarchy> updates) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -334,10 +354,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void deleteDimensionHierarchies(List<DimensionHierarchy> deletions) {
+	public boolean deleteDimensionHierarchies(List<DimensionHierarchy> deletions) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -366,11 +387,12 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 	
 	
 	@Override
-	public void createReferenceObjectHierarchies(List<ReferenceObjectHierarchy> creations) {
+	public boolean createReferenceObjectHierarchies(List<ReferenceObjectHierarchy> creations) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -398,10 +420,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void updateReferenceObjectHierarchies(List<ReferenceObjectHierarchy> updates) {
+	public boolean updateReferenceObjectHierarchies(List<ReferenceObjectHierarchy> updates) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -472,10 +495,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void deleteReferenceObjectHierarchies(List<ReferenceObjectHierarchy> deletions) {
+	public boolean deleteReferenceObjectHierarchies(List<ReferenceObjectHierarchy> deletions) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -504,11 +528,12 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	
 	@Override
-	public void createDimensionCombinations(List<DimensionCombination> creations) {
+	public boolean createDimensionCombinations(List<DimensionCombination> creations) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -559,10 +584,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void updateDimensionCombinations(List<DimensionCombination> updates) {
+	public boolean updateDimensionCombinations(List<DimensionCombination> updates) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -628,7 +654,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																					.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
 																						.and(DIMENSION_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())));
 					
-					statement1.execute();
+					try {
+						statement1.execute();
+					} catch (DataAccessException e) {
+						Main.getLogger().info("Could not delete Dimension Combination. Dimension Combination possibly still referenced elsewhere.");
+						Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+						return false;
+					}
 					
 					Main.getLogger().info("Dimension Combination deleted.");
 					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
@@ -641,10 +673,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void deleteDimensionCombinations(List<DimensionCombination> deletions) {
+	public boolean deleteDimensionCombinations(List<DimensionCombination> deletions) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -667,7 +700,18 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																			.delete(DIMENSION_COMBINATIONS)
 																			.where(DIMENSION_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId()));
 			
-			statement1.execute();
+			try {
+				statement1.execute();
+			} catch (DataAccessException dae) {
+				Main.getLogger().info("Could not delete Dimension Combination. Dimension Combination possibly still referenced elsewhere.");
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				try {
+					con.rollback();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return false;
+			}
 			
 			Main.getLogger().info("Dimension Combination deleted.");
 			Main.getLogger().info("Executed SQL: " + statement1.getSQL(ParamType.INLINED));
@@ -678,11 +722,12 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 	
 	
 	@Override
-	public void createReferenceObjectCombinations(List<ReferenceObjectCombination> creations) {
+	public boolean createReferenceObjectCombinations(List<ReferenceObjectCombination> creations) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -733,10 +778,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void updateReferenceObjectCombinations(List<ReferenceObjectCombination> updates) {
+	public boolean updateReferenceObjectCombinations(List<ReferenceObjectCombination> updates) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -803,7 +849,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																						.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId())
 																							.and(REFERENCE_OBJECT_COMBINATIONS.COMPONENT_ID.equal(components.get(i).getId())));
 					
-					statement1.execute();
+					try {
+						statement1.execute();
+					} catch (DataAccessException e) {
+						Main.getLogger().info("Could not delete Reference Object Combination. Reference Object Combination possibly still referenced elsewhere.");
+						Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+						return false;
+					}
 					
 					Main.getLogger().info("Reference Object Combination deleted.");
 					Main.getLogger().info(statement1.getSQL(ParamType.INLINED));
@@ -816,10 +868,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void deleteReferenceObjectCombinations(List<ReferenceObjectCombination> deletions) {
+	public boolean deleteReferenceObjectCombinations(List<ReferenceObjectCombination> deletions) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -842,7 +895,18 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																				.delete(REFERENCE_OBJECT_COMBINATIONS)
 																				.where(REFERENCE_OBJECT_COMBINATIONS.AGGREGATE_ID.equal(combination.getCombination().getId()));
 			
-			statement1.execute();
+			try {
+				statement1.execute();
+			} catch (DataAccessException dae) {
+				Main.getLogger().info("Could not delete Reference Object Combination. Reference Object Combination possibly still referenced elsewhere.");
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				try {
+					con.rollback();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return false;
+			}
 			
 			Main.getLogger().info("Reference Object Copmbination deleted.");
 			Main.getLogger().info("Executed SQL: " + statement1.getSQL(ParamType.INLINED));
@@ -853,11 +917,12 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 	
 	
 	@Override
-	public void createRatios(List<Ratio> creations) {
+	public boolean createRatios(List<Ratio> creations) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -883,10 +948,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void updateRatios(List<Ratio> updates) {
+	public boolean updateRatios(List<Ratio> updates) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -914,10 +980,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void deleteRatios(List<Ratio> deletions) {
+	public boolean deleteRatios(List<Ratio> deletions) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -931,7 +998,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 															.delete(RATIOS)
 															.where(RATIOS.RATIO_ID.equal(ratio.getId()));
 			
-			statement.execute();
+			try {
+				statement.execute();
+			} catch (DataAccessException e) {
+				Main.getLogger().info("Could not delete Ratio. Ratio possibly still referenced elsewhere.");
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				return false;
+			}
 			
 			Main.getLogger().info("Ratio deleted.");
 			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
@@ -942,11 +1015,12 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 	
 	
 	@Override
-	public void createRatioRelations(List<RatioRelation> creations) {
+	public boolean createRatioRelations(List<RatioRelation> creations) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -974,10 +1048,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void updateRatioRelations(List<RatioRelation> updates) {
+	public boolean updateRatioRelations(List<RatioRelation> updates) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -1048,10 +1123,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void deleteRatioRelations(List<RatioRelation> deletions) {
+	public boolean deleteRatioRelations(List<RatioRelation> deletions) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -1080,11 +1156,12 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 	
 
 	@Override
-	public void createFacts(List<Fact> creations) {
+	public boolean createFacts(List<Fact> creations) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -1113,10 +1190,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void updateFacts(List<Fact> updates) {
+	public boolean updateFacts(List<Fact> updates) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -1147,10 +1225,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void deleteFacts(List<Fact> deletions) {
+	public boolean deleteFacts(List<Fact> deletions) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -1176,11 +1255,12 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	
 	@Override
-	public void createDimensionCategories(List<DimensionCategory> creations) {
+	public boolean createDimensionCategories(List<DimensionCategory> creations) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -1205,10 +1285,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void updateDimensionCategories(List<DimensionCategory> updates) {
+	public boolean updateDimensionCategories(List<DimensionCategory> updates) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -1234,10 +1315,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void deleteDimensionCategories(List<DimensionCategory> deletions) {
+	public boolean deleteDimensionCategories(List<DimensionCategory> deletions) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -1251,7 +1333,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																		.delete(DIMENSION_CATEGORIES)
 																		.where(DIMENSION_CATEGORIES.CATEGORY_ID.equal(cat.getId()));
 			
-			statement.execute();
+			try {
+				statement.execute();
+			} catch (DataAccessException e) {
+				Main.getLogger().info("Could not delete Dimension Category. Dimension Category possibly still referenced elsewhere.");
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				return false;
+			}
 			
 			Main.getLogger().info("Dimension Category deleted.");
 			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
@@ -1262,11 +1350,12 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	
 	@Override
-	public void createRatioCategories(List<RatioCategory> creations) {
+	public boolean createRatioCategories(List<RatioCategory> creations) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -1291,10 +1380,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void updateRatioCategories(List<RatioCategory> updates) {
+	public boolean updateRatioCategories(List<RatioCategory> updates) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -1321,10 +1411,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void deleteRatioCategories(List<RatioCategory> deletions) {
+	public boolean deleteRatioCategories(List<RatioCategory> deletions) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -1338,11 +1429,16 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																	.delete(RATIO_CATEGORIES)
 																	.where(RATIO_CATEGORIES.CATEGORY_ID.equal(cat.getId()));
 			
-			statement.execute();
+			try {
+				statement.execute();
+			} catch (DataAccessException e) {
+				Main.getLogger().info("Could not delete Ratio Category. Ratio Category possibly still referenced elsewhere.");
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				return false;
+			}
 			
 			Main.getLogger().info("Ratio Category deleted.");
 			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
-
 		}
 		
 		try {
@@ -1350,11 +1446,12 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	
 	@Override
-	public void createUnits(List<Unit> creations) {
+	public boolean createUnits(List<Unit> creations) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -1379,10 +1476,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 	
 	@Override
-	public void updateUnits(List<Unit> updates) {
+	public boolean updateUnits(List<Unit> updates) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -1409,11 +1507,11 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+		return true;
 	}
 	
 	@Override
-	public void deleteUnits(List<Unit> deletions) {
+	public boolean deleteUnits(List<Unit> deletions) {
 		Connection con = null;
 		try {
 			con = dslContext.configuration().connectionProvider().acquire();
@@ -1427,7 +1525,13 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 																.delete(FACT_UNITS)
 																.where(FACT_UNITS.UNIT_ID.equal(unit.getId()));
 			
-			statement.execute();
+			try {
+				statement.execute();
+			} catch (DataAccessException e) {
+				Main.getLogger().info("Could not delete Unit. Unit possibly still referenced elsewhere.");
+				Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
+				return false;
+			}
 			
 			Main.getLogger().info("Unit deleted.");
 			Main.getLogger().info("Executed SQL: " + statement.getSQL(ParamType.INLINED));
@@ -1438,5 +1542,6 @@ public class MySQLDatabaseWriter implements DatabaseWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 }

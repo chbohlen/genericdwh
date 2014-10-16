@@ -41,7 +41,7 @@ public class FactManager extends DataObjectManager {
 	}
 
 	
-	public void saveFacts(List<DataObject> stagedObjects) {
+	public boolean saveFacts(List<DataObject> stagedObjects) {
 		List<Fact> deletions = new ArrayList<>();
 		List<Fact> creations = new ArrayList<>();
 		List<Fact> updates = new ArrayList<>();
@@ -61,10 +61,13 @@ public class FactManager extends DataObjectManager {
 			}
 		}
 		
-		dbWriter.deleteFacts(deletions);
-		dbWriter.createFacts(creations);
-		dbWriter.updateFacts(updates);
+		boolean allChangesSaved = true;
+		if (!dbWriter.deleteFacts(deletions) || !dbWriter.createFacts(creations) || !dbWriter.updateFacts(updates)) {
+			allChangesSaved = false;
+		}
 		
 		loadFacts();
+		
+		return allChangesSaved;	
 	}
 }

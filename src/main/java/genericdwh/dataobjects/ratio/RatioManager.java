@@ -94,7 +94,7 @@ public class RatioManager extends DataObjectManager {
 		}
 	}
 	
-	public void saveRatios(List<DataObject> stagedObjects) {
+	public boolean saveRatios(List<DataObject> stagedObjects) {
 		List<Ratio> deletions = new ArrayList<>();
 		List<Ratio> creations = new ArrayList<>();
 		List<Ratio> updates = new ArrayList<>();
@@ -114,14 +114,17 @@ public class RatioManager extends DataObjectManager {
 			}
 		}
 		
-		dbWriter.deleteRatios(deletions);
-		dbWriter.createRatios(creations);
-		dbWriter.updateRatios(updates);
+		boolean allChangesSaved = true;
+		if (!dbWriter.deleteRatios(deletions) || !dbWriter.createRatios(creations) || !dbWriter.updateRatios(updates)) {
+			allChangesSaved = false;
+		}
 		
 		loadRatios();
+		
+		return allChangesSaved;	
 	}
 
-	public void saveRelations(List<DataObject> stagedObjects) {
+	public boolean saveRelations(List<DataObject> stagedObjects) {
 		List<RatioRelation> deletions = new ArrayList<>();
 		List<RatioRelation> creations = new ArrayList<>();
 		List<RatioRelation> updates = new ArrayList<>();
@@ -141,14 +144,17 @@ public class RatioManager extends DataObjectManager {
 			}
 		}
 		
-		dbWriter.deleteRatioRelations(deletions);
-		dbWriter.createRatioRelations(creations);
-		dbWriter.updateRatioRelations(updates);
+		boolean allChangesSaved = true;
+		if (!dbWriter.deleteRatioRelations(deletions) || !dbWriter.createRatioRelations(creations) || !dbWriter.updateRatioRelations(updates)) {
+			allChangesSaved = false;
+		}
 		
 		loadRelations();
+		
+		return allChangesSaved;	
 	}
 
-	public void saveCategories(List<DataObject> stagedObjects) {
+	public boolean saveCategories(List<DataObject> stagedObjects) {
 		List<RatioCategory> deletions = new ArrayList<>();
 		List<RatioCategory> creations = new ArrayList<>();
 		List<RatioCategory> updates = new ArrayList<>();
@@ -167,11 +173,14 @@ public class RatioManager extends DataObjectManager {
 				}
 			}
 		}
-		
-		dbWriter.deleteRatioCategories(deletions);
-		dbWriter.createRatioCategories(creations);
-		dbWriter.updateRatioCategories(updates);
+
+		boolean allChangesSaved = true;
+		if (!dbWriter.deleteRatioCategories(deletions) || !dbWriter.createRatioCategories(creations) || !dbWriter.updateRatioCategories(updates)) {
+			allChangesSaved = false;
+		}
 		
 		loadCategories();
+		
+		return allChangesSaved;	
 	}
 }

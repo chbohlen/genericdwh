@@ -16,6 +16,7 @@ public class StatusMessages {
 	
 	public static final String CHANGES_DISCARDED = "Changes discarded.";
 	public static final String CHANGES_SAVED = "Changes saved.";
+	public static final String CHANGES_NOT_SAVED = "Not all changes saved. Check log for further information.";
 	
 	public static final String VALIDATION_FAILED = "Validation failed. Could not save changes.";
 }

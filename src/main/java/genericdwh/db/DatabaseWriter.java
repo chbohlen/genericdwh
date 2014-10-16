@@ -17,51 +17,51 @@ import genericdwh.dataobjects.unit.Unit;
 
 public interface DatabaseWriter {
 	
-	public void createDimensions(List<Dimension> creations);
-	public void updateDimensions(List<Dimension> updates);
-	public void deleteDimensions(List<Dimension> deletions);
+	public boolean createDimensions(List<Dimension> creations);
+	public boolean updateDimensions(List<Dimension> updates);
+	public boolean deleteDimensions(List<Dimension> deletions);
 	
-	public void createReferenceObjects(List<ReferenceObject> creations);
-	public void updateReferenceObjects(List<ReferenceObject> updates);
-	public void deleteReferenceObjects(List<ReferenceObject> deletions);
+	public boolean createReferenceObjects(List<ReferenceObject> creations);
+	public boolean updateReferenceObjects(List<ReferenceObject> updates);
+	public boolean deleteReferenceObjects(List<ReferenceObject> deletions);
 	
-	public void createDimensionHierarchies(List<DimensionHierarchy> creations);
-	public void updateDimensionHierarchies(List<DimensionHierarchy> updates);
-	public void deleteDimensionHierarchies(List<DimensionHierarchy> deletions);
+	public boolean createDimensionHierarchies(List<DimensionHierarchy> creations);
+	public boolean updateDimensionHierarchies(List<DimensionHierarchy> updates);
+	public boolean deleteDimensionHierarchies(List<DimensionHierarchy> deletions);
 	
-	public void createReferenceObjectHierarchies(List<ReferenceObjectHierarchy> creations);
-	public void updateReferenceObjectHierarchies(List<ReferenceObjectHierarchy> updates);
-	public void deleteReferenceObjectHierarchies(List<ReferenceObjectHierarchy> deletions);
+	public boolean createReferenceObjectHierarchies(List<ReferenceObjectHierarchy> creations);
+	public boolean updateReferenceObjectHierarchies(List<ReferenceObjectHierarchy> updates);
+	public boolean deleteReferenceObjectHierarchies(List<ReferenceObjectHierarchy> deletions);
 	
-	public void createDimensionCombinations(List<DimensionCombination> creations);
-	public void updateDimensionCombinations(List<DimensionCombination> updates);
-	public void deleteDimensionCombinations(List<DimensionCombination> deletions);
+	public boolean createDimensionCombinations(List<DimensionCombination> creations);
+	public boolean updateDimensionCombinations(List<DimensionCombination> updates);
+	public boolean deleteDimensionCombinations(List<DimensionCombination> deletions);
 	
-	public void createReferenceObjectCombinations(List<ReferenceObjectCombination> creations);
-	public void updateReferenceObjectCombinations(List<ReferenceObjectCombination> updates);
-	public void deleteReferenceObjectCombinations(List<ReferenceObjectCombination> deletions);
+	public boolean createReferenceObjectCombinations(List<ReferenceObjectCombination> creations);
+	public boolean updateReferenceObjectCombinations(List<ReferenceObjectCombination> updates);
+	public boolean deleteReferenceObjectCombinations(List<ReferenceObjectCombination> deletions);
 	
-	public void createRatios(List<Ratio> creations);
-	public void updateRatios(List<Ratio> updates);
-	public void deleteRatios(List<Ratio> deletions);
+	public boolean createRatios(List<Ratio> creations);
+	public boolean updateRatios(List<Ratio> updates);
+	public boolean deleteRatios(List<Ratio> deletions);
 	
-	public void createRatioRelations(List<RatioRelation> creations);
-	public void updateRatioRelations(List<RatioRelation> updates);
-	public void deleteRatioRelations(List<RatioRelation> deletions);
+	public boolean createRatioRelations(List<RatioRelation> creations);
+	public boolean updateRatioRelations(List<RatioRelation> updates);
+	public boolean deleteRatioRelations(List<RatioRelation> deletions);
 	
-	public void createFacts(List<Fact> creations);
-	public void updateFacts(List<Fact> updates);
-	public void deleteFacts(List<Fact> deletions);
+	public boolean createFacts(List<Fact> creations);
+	public boolean updateFacts(List<Fact> updates);
+	public boolean deleteFacts(List<Fact> deletions);
 	
-	public void createDimensionCategories(List<DimensionCategory> creations);
-	public void updateDimensionCategories(List<DimensionCategory> updates);
-	public void deleteDimensionCategories(List<DimensionCategory> deletions);
+	public boolean createDimensionCategories(List<DimensionCategory> creations);
+	public boolean updateDimensionCategories(List<DimensionCategory> updates);
+	public boolean deleteDimensionCategories(List<DimensionCategory> deletions);
 	
-	public void createRatioCategories(List<RatioCategory> creations);
-	public void updateRatioCategories(List<RatioCategory> updates);
-	public void deleteRatioCategories(List<RatioCategory> deletions);
+	public boolean createRatioCategories(List<RatioCategory> creations);
+	public boolean updateRatioCategories(List<RatioCategory> updates);
+	public boolean deleteRatioCategories(List<RatioCategory> deletions);
 	
-	public void createUnits(List<Unit> creations);
-	public void updateUnits(List<Unit> updates);
-	public void deleteUnits(List<Unit> deletions);
+	public boolean createUnits(List<Unit> creations);
+	public boolean updateUnits(List<Unit> updates);
+	public boolean deleteUnits(List<Unit> deletions);
 }

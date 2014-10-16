@@ -193,7 +193,7 @@ public class ReferenceObjectManager extends DataObjectManager {
 	}
 	
 	
-	public void saveReferenceObjects(List<DataObject> stagedObjects) {
+	public boolean saveReferenceObjects(List<DataObject> stagedObjects) {
 		List<ReferenceObject> deletions = new ArrayList<>();
 		List<ReferenceObject> creations = new ArrayList<>();
 		List<ReferenceObject> updates = new ArrayList<>();
@@ -213,14 +213,17 @@ public class ReferenceObjectManager extends DataObjectManager {
 			}
 		}
 		
-		dbWriter.deleteReferenceObjects(deletions);
-		dbWriter.createReferenceObjects(creations);
-		dbWriter.updateReferenceObjects(updates);
+		boolean allChangesSaved = true;
+		if (!dbWriter.deleteReferenceObjects(deletions) || !dbWriter.createReferenceObjects(creations) || !dbWriter.updateReferenceObjects(updates)) {
+			allChangesSaved = false;
+		}
 		
 		loadReferenceObjects();
+		
+		return allChangesSaved;		
 	}
 
-	public void saveHierarchies(List<DataObject> stagedObjects) {
+	public boolean saveHierarchies(List<DataObject> stagedObjects) {
 		List<ReferenceObjectHierarchy> deletions = new ArrayList<>();
 		List<ReferenceObjectHierarchy> creations = new ArrayList<>();
 		List<ReferenceObjectHierarchy> updates = new ArrayList<>();
@@ -240,14 +243,17 @@ public class ReferenceObjectManager extends DataObjectManager {
 			}
 		}
 		
-		dbWriter.deleteReferenceObjectHierarchies(deletions);
-		dbWriter.createReferenceObjectHierarchies(creations);
-		dbWriter.updateReferenceObjectHierarchies(updates);
+		boolean allChangesSaved = true;
+		if (!dbWriter.deleteReferenceObjectHierarchies(deletions) || !dbWriter.createReferenceObjectHierarchies(creations) || !dbWriter.updateReferenceObjectHierarchies(updates)) {
+			allChangesSaved = false;
+		}
 		
 		loadHierarchies();
+		
+		return allChangesSaved;	
 	}
 
-	public void saveCombinations(List<DataObject> stagedObjects) {
+	public boolean saveCombinations(List<DataObject> stagedObjects) {
 		List<ReferenceObjectCombination> deletions = new ArrayList<>();
 		List<ReferenceObjectCombination> creations = new ArrayList<>();
 		List<ReferenceObjectCombination> updates = new ArrayList<>();
@@ -267,13 +273,16 @@ public class ReferenceObjectManager extends DataObjectManager {
 			}
 		}
 		
-		dbWriter.deleteReferenceObjectCombinations(deletions);
-		dbWriter.createReferenceObjectCombinations(creations);
-		dbWriter.updateReferenceObjectCombinations(updates);
+		boolean allChangesSaved = true;
+		if (!dbWriter.deleteReferenceObjectCombinations(deletions) || !dbWriter.createReferenceObjectCombinations(creations) || !dbWriter.updateReferenceObjectCombinations(updates)) {
+			allChangesSaved = false;
+		}
 		
 		if (!creations.isEmpty() || !deletions.isEmpty()) {
 			loadReferenceObjects();
 		}
 		loadCombinations();
+		
+		return allChangesSaved;	
 	}
 }

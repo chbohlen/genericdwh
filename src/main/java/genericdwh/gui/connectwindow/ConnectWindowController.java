@@ -78,8 +78,7 @@ public class ConnectWindowController implements Initializable {
 
 		mainWindowController.postStatus(StatusMessages.CONNECTING, Icons.NOTIFICATION);
 		// DB-Type //
-		boolean connected  = Main.getContext().getBean(DatabaseController.class).connect("localhost", "3306", "genericdwh" , "root", "root");
-//		boolean connected  = Main.getContext().getBean(DatabaseController.class).connect(tfIp.getText(), tfPort.getText(), tfDbName.getText() , tfUserName.getText(), tfPassword.getText());
+		boolean connected  = Main.getContext().getBean(DatabaseController.class).connect(tfIp.getText(), tfPort.getText(), tfDbName.getText() , tfUserName.getText(), tfPassword.getText());
 		
 		if (connected) {
 			storeDbCredentials();

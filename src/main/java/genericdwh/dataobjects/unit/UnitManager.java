@@ -36,7 +36,7 @@ public class UnitManager extends DataObjectManager {
 	}
 
 	
-	public void saveUnits(List<DataObject> stagedObjects) {
+	public boolean saveUnits(List<DataObject> stagedObjects) {
 		List<Unit> deletions = new ArrayList<>();
 		List<Unit> creations = new ArrayList<>();
 		List<Unit> updates = new ArrayList<>();
@@ -56,10 +56,13 @@ public class UnitManager extends DataObjectManager {
 			}
 		}
 		
-		dbWriter.deleteUnits(deletions);
-		dbWriter.createUnits(creations);
-		dbWriter.updateUnits(updates);
+		boolean allChangesSaved = true;
+		if (!dbWriter.deleteUnits(deletions) || !dbWriter.createUnits(creations) || !dbWriter.updateUnits(updates)) {
+			allChangesSaved = false;
+		}
 		
 		loadUnits();
+		
+		return allChangesSaved;	
 	}
 }

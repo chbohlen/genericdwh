@@ -152,7 +152,7 @@ public class DimensionManager extends DataObjectManager {
 	}
 
 	
-	public void saveDimensions(List<DataObject> stagedObjects) {
+	public boolean saveDimensions(List<DataObject> stagedObjects) {
 		List<Dimension> deletions = new ArrayList<>();
 		List<Dimension> creations = new ArrayList<>();
 		List<Dimension> updates = new ArrayList<>();
@@ -172,14 +172,17 @@ public class DimensionManager extends DataObjectManager {
 			}
 		}
 		
-		dbWriter.deleteDimensions(deletions);
-		dbWriter.createDimensions(creations);
-		dbWriter.updateDimensions(updates);
+		boolean allChangesSaved = true;
+		if (!dbWriter.deleteDimensions(deletions) || !dbWriter.createDimensions(creations) || !dbWriter.updateDimensions(updates)) {
+			allChangesSaved = false;
+		}
 		
 		loadDimensions();
+		
+		return allChangesSaved;
 	}
 
-	public void saveHierarchies(List<DataObject> stagedObjects) {
+	public boolean saveHierarchies(List<DataObject> stagedObjects) {
 		List<DimensionHierarchy> deletions = new ArrayList<>();
 		List<DimensionHierarchy> creations = new ArrayList<>();
 		List<DimensionHierarchy> updates = new ArrayList<>();
@@ -199,14 +202,17 @@ public class DimensionManager extends DataObjectManager {
 			}
 		}
 		
-		dbWriter.deleteDimensionHierarchies(deletions);
-		dbWriter.createDimensionHierarchies(creations);
-		dbWriter.updateDimensionHierarchies(updates);
+		boolean allChangesSaved = true;
+		if (!dbWriter.deleteDimensionHierarchies(deletions) || !dbWriter.createDimensionHierarchies(creations) || !dbWriter.updateDimensionHierarchies(updates)) {
+			allChangesSaved = false;
+		}
 		
 		loadHierarchies();
+		
+		return allChangesSaved;
 	}
 	
-	public void saveCombinations(List<DataObject> stagedObjects) {
+	public boolean saveCombinations(List<DataObject> stagedObjects) {
 		List<DimensionCombination> deletions = new ArrayList<>();
 		List<DimensionCombination> creations = new ArrayList<>();
 		List<DimensionCombination> updates = new ArrayList<>();
@@ -226,17 +232,20 @@ public class DimensionManager extends DataObjectManager {
 			}
 		}
 		
-		dbWriter.deleteDimensionCombinations(deletions);
-		dbWriter.createDimensionCombinations(creations);
-		dbWriter.updateDimensionCombinations(updates);
+		boolean allChangesSaved = true;
+		if (!dbWriter.deleteDimensionCombinations(deletions) || !dbWriter.createDimensionCombinations(creations) || !dbWriter.updateDimensionCombinations(updates)) {
+			allChangesSaved = false;
+		}
 		
 		if (!creations.isEmpty() || !deletions.isEmpty()) {
 			loadDimensions();
 		}
 		loadCombinations();
+		
+		return allChangesSaved;
 	}
 
-	public void saveCategories(List<DataObject> stagedObjects) {
+	public boolean saveCategories(List<DataObject> stagedObjects) {
 		List<DimensionCategory> deletions = new ArrayList<>();
 		List<DimensionCategory> creations = new ArrayList<>();
 		List<DimensionCategory> updates = new ArrayList<>();
@@ -256,10 +265,13 @@ public class DimensionManager extends DataObjectManager {
 			}
 		}
 		
-		dbWriter.deleteDimensionCategories(deletions);
-		dbWriter.createDimensionCategories(creations);
-		dbWriter.updateDimensionCategories(updates);
+		boolean allChangesSaved = true;
+		if (!dbWriter.deleteDimensionCategories(deletions) || !dbWriter.createDimensionCategories(creations) || !dbWriter.updateDimensionCategories(updates)) {
+			allChangesSaved = false;
+		}
 		
 		loadCategories();
+		
+		return allChangesSaved;
 	}
 }

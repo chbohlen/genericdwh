@@ -1,10 +1,7 @@
 package genericdwh.gui.editor;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.ResourceBundle;
 
 import genericdwh.dataobjects.ChangeManager;
@@ -41,7 +38,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
-import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -185,15 +181,22 @@ public class EditorController implements Initializable{
 			return;
 		}
 		
-		changeManager.saveChanges();
+		boolean changesSaved = changeManager.saveChanges();
 		refreshNeeded = true;
-		postStatus(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
 		if (id == -1) {
 			editingViewController.setHasUnsavedChanges(false);
-			Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
+			if (!changesSaved) {
+				Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.CHANGES_NOT_SAVED, Icons.WARNING);
+			} else {
+				Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
+			}
 			close();
 		} else {
-			postStatus(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
+			if (!changesSaved) {
+				postStatus(StatusMessages.CHANGES_NOT_SAVED, Icons.WARNING);
+			} else {
+				postStatus(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
+			}
 			createEditorTreeTable(id);
 		}
 	}
