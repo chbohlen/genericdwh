@@ -1,6 +1,7 @@
 package genericdwh.gui.editor.editingview.searchbox;
 
 import genericdwh.dataobjects.DataObject;
+import genericdwh.dataobjects.DataObjectCombination;
 import genericdwh.dataobjects.DataObjectHierarchy;
 import genericdwh.dataobjects.fact.Fact;
 import genericdwh.gui.editor.editingview.EditingViewController;
@@ -75,7 +76,7 @@ public class SearchBoxController implements Initializable {
 		TreeItem<DataObject> searchedObj = null;
 		for (; index < editingView.getRoot().getChildren().size(); index++) {
 			TreeItem<DataObject> tiObj = editingView.getRoot().getChildren().get(index);
-			if (!tiObj.getChildren().isEmpty() && !(tiObj.getValue() instanceof DataObjectHierarchy)) {
+			if (!tiObj.getChildren().isEmpty() && !(tiObj.getValue() instanceof DataObjectHierarchy) && !(tiObj.getValue() instanceof DataObjectCombination)) {
 				for (; indexChildren < tiObj.getChildren().size(); indexChildren++) {
 					TreeItem<DataObject> tiObjChild = tiObj.getChildren().get(indexChildren);
 					DataObject obj = tiObjChild.getValue();					

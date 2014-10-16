@@ -61,6 +61,7 @@ C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\dataobjects
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\configfiles\ConfigFileReaderConfig.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\db\model\tables\FactUnits.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\db\model\tables\DimensionCombinations.java
+C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\gui\editor\dialogpopups\SaveFailureDialogPopupController.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\dataobjects\unit\Unit.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\db\model\tables\records\FactsRecord.java
 C:\Users\Chris\Eclipse\workspace\genericdwh\src\main\java\genericdwh\gui\general\sidebar\HeaderItem.java

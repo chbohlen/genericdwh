@@ -19,6 +19,7 @@ import genericdwh.dataobjects.unit.Unit;
 import genericdwh.gui.SpringFXMLLoader;
 import genericdwh.gui.editor.dialogpopups.DeleteDialogPopupController;
 import genericdwh.gui.editor.dialogpopups.DiscardDialogPopupController;
+import genericdwh.gui.editor.dialogpopups.SaveFailureDialogPopupController;
 import genericdwh.gui.editor.dialogpopups.SaveOrDiscardDialogPopupController;
 import genericdwh.gui.editor.dialogpopups.SaveDialogPopupController;
 import genericdwh.gui.editor.dialogpopups.ValidationFailureDialogPopupController;
@@ -54,6 +55,7 @@ public class EditorController implements Initializable{
 	
 	private SaveDialogPopupController saveDialogPopupController;
 	private ValidationFailureDialogPopupController validationFailurePopupDialogController;
+	private SaveFailureDialogPopupController saveFailurePopupDialogController;
 	private DiscardDialogPopupController discardDialogPopupController;
 	private SaveOrDiscardDialogPopupController saveOrDiscardDialogPopupController;
 	private DeleteDialogPopupController deleteDialogPopupController;
@@ -70,6 +72,7 @@ public class EditorController implements Initializable{
 			EditorSidebarController sidebarController, EditingViewController resultViewController,
 			SaveDialogPopupController saveDialogPopupController,
 			ValidationFailureDialogPopupController validationFailurePopupDialogController,
+			SaveFailureDialogPopupController saveFailurePopupDialogController,
 			DiscardDialogPopupController discardDialogPopupController,
 			SaveOrDiscardDialogPopupController saveOrDiscardDialogPopupController,
 			DeleteDialogPopupController deleteDialogPopupController) {
@@ -83,6 +86,7 @@ public class EditorController implements Initializable{
 		
 		this.saveDialogPopupController = saveDialogPopupController;
 		this.validationFailurePopupDialogController = validationFailurePopupDialogController;
+		this.saveFailurePopupDialogController = saveFailurePopupDialogController;
 		this.discardDialogPopupController = discardDialogPopupController;
 		this.saveOrDiscardDialogPopupController = saveOrDiscardDialogPopupController;
 		this.deleteDialogPopupController = deleteDialogPopupController;
@@ -186,17 +190,19 @@ public class EditorController implements Initializable{
 		if (id == -1) {
 			editingViewController.setHasUnsavedChanges(false);
 			if (!changesSaved) {
+				saveFailurePopupDialogController.createWindow(true);
 				Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.CHANGES_NOT_SAVED, Icons.WARNING);
-			} else {
-				Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
+				return;
 			}
+			Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
 			close();
 		} else {
 			if (!changesSaved) {
+				saveFailurePopupDialogController.createWindow(false);
 				postStatus(StatusMessages.CHANGES_NOT_SAVED, Icons.WARNING);
-			} else {
-				postStatus(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
+				return;
 			}
+			postStatus(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
 			createEditorTreeTable(id);
 		}
 	}

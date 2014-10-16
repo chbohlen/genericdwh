@@ -93,6 +93,7 @@ public class ResultGrid extends GridPane {
 	
 	public void initializeWAggregations(Ratio ratio, List<TreeMap<Long, ReferenceObject>> rowRefObjs, List<TreeMap<Long, ReferenceObject>> colRefObjs,
 			AggregationType aggregationType) {
+		
 		initialize(ratio, rowRefObjs, colRefObjs, null, null);
 		
 		this.aggregationType = aggregationType;

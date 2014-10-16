@@ -5,6 +5,7 @@ import genericdwh.gui.connectwindow.ConnectWindowController;
 import genericdwh.gui.editor.EditorController;
 import genericdwh.gui.editor.dialogpopups.DeleteDialogPopupController;
 import genericdwh.gui.editor.dialogpopups.DiscardDialogPopupController;
+import genericdwh.gui.editor.dialogpopups.SaveFailureDialogPopupController;
 import genericdwh.gui.editor.dialogpopups.SaveOrDiscardDialogPopupController;
 import genericdwh.gui.editor.dialogpopups.SaveDialogPopupController;
 import genericdwh.gui.editor.dialogpopups.ValidationFailureDialogPopupController;
@@ -67,6 +68,7 @@ public class GUIConfig {
 				editorSidebarController(), editingViewController(),
 				saveDialogPopupController(),
 				validationFailureDialogPopupController(),
+				saveFailureDialogPopupController(),
 				discardDialogPopupController(),
 				saveOrDiscardDialogPopupController(),
 				deleteDialogPopupController());
@@ -109,6 +111,11 @@ public class GUIConfig {
 	@Bean
 	public ValidationFailureDialogPopupController validationFailureDialogPopupController() {
 		return new ValidationFailureDialogPopupController();
+	}
+	
+	@Bean
+	public SaveFailureDialogPopupController saveFailureDialogPopupController() {
+		return new SaveFailureDialogPopupController();
 	}
 	
 	@Bean
