@@ -87,8 +87,8 @@ public class ChangeManager {
 			changesSaved = unitManager.saveUnits(stagedObjects);
 		}
 		
-		
 		stagedObjects.clear();
+		stagedObjectClass = null;
 		
 		if (!changesSaved) {
 			Main.getLogger().info("Not all changes saved. Check log for further information.");
@@ -114,22 +114,25 @@ public class ChangeManager {
 	
 	@SuppressWarnings("unchecked")
 	public String validateChanges() {
-		if (stagedObjectClass == ReferenceObject.class) {
+		if (stagedObjectClass == ReferenceObject.class || stagedObjectClass == ReferenceObjectCombination.class) {
 			for (DataObject refObj : stagedObjects) {
-				if (((ReferenceObject)refObj).getDimensionProperty().get().getId() == -1) {
+				if (!refObj.isMarkedForDeletion() 
+						&& ((refObj instanceof ReferenceObject && ((ReferenceObject)refObj).getDimensionProperty().get().getId() == -1)
+						|| (refObj instanceof ReferenceObjectCombination && ((ReferenceObjectCombination)refObj).getCombination().getDimensionProperty().get().getId() == -1))) {
+						
 					Main.getLogger().info("Validation failed: " + ValidationMessages.REFERENCE_OBJECT_NO_DIMENSION);
 					return ValidationMessages.REFERENCE_OBJECT_NO_DIMENSION;
 				}
 			}
 		} else if (stagedObjectClass == DimensionHierarchy.class || stagedObjectClass == ReferenceObjectHierarchy.class || stagedObjectClass == RatioRelation.class) {
 			for (DataObject hierarchy : stagedObjects) {
-				if (((DataObjectHierarchy<DataObject>)hierarchy).getLevelsProperty().get().size() < 2) {
+				if (!hierarchy.isMarkedForDeletion() && ((DataObjectHierarchy<DataObject>)hierarchy).getLevelsProperty().get().size() < 2) {
 					Main.getLogger().info("Validation failed: " + ValidationMessages.HIERARCHY_RELATION__MIN_2_OBJECTS);
 					return ValidationMessages.HIERARCHY_RELATION__MIN_2_OBJECTS;
 				}
 				List<DataObject> containedLevels = new ArrayList<DataObject>();
 				for (DataObject lvl : ((DataObjectHierarchy<DataObject>)hierarchy).getLevelsProperty().get()) {
-					if (containedLevels.contains(lvl)) {
+					if (!lvl.isMarkedForDeletion() && containedLevels.contains(lvl)) {
 						Main.getLogger().info("Validation failed: " + ValidationMessages.HIERARCHY_RELATION__DUPLICATE_LEVEL);
 						return ValidationMessages.HIERARCHY_RELATION__DUPLICATE_LEVEL;
 					}
@@ -138,13 +141,13 @@ public class ChangeManager {
 			}
 		} else if (stagedObjectClass == DimensionCombination.class || stagedObjectClass == ReferenceObjectCombination.class) {
 			for (DataObject combination : stagedObjects) {
-				if (((DataObjectCombination<DataObject>)combination).getComponentsProperty().get().size() < 2) {
+				if (!combination.isMarkedForDeletion() && ((DataObjectCombination<DataObject>)combination).getComponentsProperty().get().size() < 2) {
 					Main.getLogger().info("Validation failed: " + ValidationMessages.COMBINATION_MIN_2_OBJECTS);
 					return ValidationMessages.COMBINATION_MIN_2_OBJECTS;
 				}
 				List<DataObject> containedComponents = new ArrayList<DataObject>();
 				for (DataObject comp : ((DataObjectCombination<DataObject>)combination).getComponentsProperty().get()) {
-					if (containedComponents.contains(comp)) {
+					if (!comp.isMarkedForDeletion() && containedComponents.contains(comp)) {
 						Main.getLogger().info("Validation failed: " + ValidationMessages.COMBINATION_DUPLICATE_COMPONENT);
 						return ValidationMessages.COMBINATION_DUPLICATE_COMPONENT;
 					}
@@ -153,10 +156,10 @@ public class ChangeManager {
 			}
 		} else if (stagedObjectClass == Fact.class) {
 			for (DataObject fact : stagedObjects) {
-				if (((Fact)fact).getRatioProperty().get().getId() == -1) {
+				if (!fact.isMarkedForDeletion() && ((Fact)fact).getRatioProperty().get().getId() == -1) {
 					Main.getLogger().info("Validation failed: " + ValidationMessages.FACT_NO_RATIO);
 					return ValidationMessages.FACT_NO_RATIO;
-				} else if (((Fact)fact).getReferenceObjectProperty().get().getId() == -1) {
+				} else if (!fact.isMarkedForDeletion() && ((Fact)fact).getReferenceObjectProperty().get().getId() == -1) {
 					Main.getLogger().info("Validation failed: " + ValidationMessages.FACT_NO_REFERENCE_OBJECT);
 					return ValidationMessages.FACT_NO_REFERENCE_OBJECT;
 				}

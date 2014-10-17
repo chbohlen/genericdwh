@@ -21,6 +21,7 @@ public class FactManager extends DataObjectManager {
 	
 	
 	public List<Fact> loadFacts() {
+		facts.clear();
 		List<Fact> loadedFacts = dbReader.loadFacts();
 		for(Fact fact : loadedFacts) {
 			facts.put(fact.getRatioId(), fact.getReferenceObjectId(), fact);

@@ -177,7 +177,6 @@ public class EditorController implements Initializable{
 			if (id == -1) {
 				editingViewController.setHasUnsavedChanges(false);
 				validationFailurePopupDialogController.createWindow(validationResult, true);
-				Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.VALIDATION_FAILED, Icons.WARNING);
 			} else {
 				validationFailurePopupDialogController.createWindow(validationResult, false);
 				postStatus(StatusMessages.VALIDATION_FAILED, Icons.WARNING);
@@ -191,11 +190,9 @@ public class EditorController implements Initializable{
 			editingViewController.setHasUnsavedChanges(false);
 			if (!changesSaved) {
 				saveFailurePopupDialogController.createWindow(true);
-				Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.CHANGES_NOT_SAVED, Icons.WARNING);
 				return;
 			}
-			Main.getContext().getBean(MainWindowController.class).postStatus(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
-			close();
+			close(StatusMessages.CHANGES_SAVED, Icons.NOTIFICATION);
 		} else {
 			if (!changesSaved) {
 				saveFailurePopupDialogController.createWindow(false);
@@ -289,14 +286,14 @@ public class EditorController implements Initializable{
 		if (editingViewController.getHasUnsavedChanges().get()) {
 			saveOrDiscardDialogPopupController.createWindow();
 		} else {
-			close();
+			close(null, null);
 		}
 	}
 	
-	public void close() {
+	public void close(String status, Image icon) {
 		stage.close();
 		if (refreshNeeded) {
-			Main.getContext().getBean(MainWindowController.class).refresh();
+			Main.getContext().getBean(MainWindowController.class).refresh(status, icon);
 		}
 	}
 }

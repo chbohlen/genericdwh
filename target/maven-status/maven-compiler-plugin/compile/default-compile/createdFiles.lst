@@ -3,6 +3,7 @@ genericdwh\gui\general\ValidationMessages.class
 genericdwh\gui\mainwindow\querypane\resultgrid\ResultGridCell$3.class
 genericdwh\gui\editor\editingview\EditingViewController$37.class
 genericdwh\gui\mainwindow\querypane\TableCellContextMenu$4.class
+genericdwh\gui\editor\editingview\EditingViewController$57.class
 genericdwh\dataobjects\fact\FactManager.class
 genericdwh\db\model\tables\records\DimensionsRecord.class
 genericdwh\db\model\Keys.class
@@ -18,6 +19,7 @@ genericdwh\gui\editor\EditorController$1.class
 genericdwh\db\model\tables\Ratios.class
 genericdwh\gui\editor\editingview\EditingViewController$11.class
 genericdwh\gui\mainwindow\querypane\dialogpopups\ExecutionFailurePopupDialogController.class
+genericdwh\dataobjects\ratio\RatioRelation.class
 genericdwh\dataobjects\ratio\Ratio.class
 genericdwh\gui\editor\editingview\EditingViewController$31.class
 genericdwh\gui\editor\editingview\EditingViewController$51.class
@@ -49,6 +51,7 @@ genericdwh\gui\general\sidebar\TreeCellRightClickHandler.class
 genericdwh\gui\mainwindow\sidebar\DataObjectTreeCellContextMenu$6.class
 genericdwh\db\model\tables\DimensionCombinations.class
 genericdwh\gui\editor\editingview\TreeTableCellContextMenu$14.class
+genericdwh\gui\editor\editingview\EditingViewController$56.class
 genericdwh\gui\editor\editingview\EditingViewController$16.class
 genericdwh\gui\mainwindow\querypane\TableCellContextMenu$5.class
 genericdwh\gui\editor\editingview\DataObjectTFTreeTableCell.class
@@ -73,6 +76,7 @@ genericdwh\dataobjects\DataObjectManagerConfig.class
 genericdwh\db\model\tables\DimensionHierarchies.class
 genericdwh\gui\mainwindow\sidebar\DataObjectTreeCellContextMenu$2.class
 genericdwh\db\DatabaseWriter.class
+genericdwh\gui\editor\editingview\EditingViewController$58.class
 genericdwh\gui\editor\editingview\EditingViewController$15.class
 genericdwh\gui\editor\editingview\EditingViewController$43.class
 genericdwh\gui\editor\editingview\EditingViewController$38.class
@@ -80,6 +84,7 @@ genericdwh\gui\mainwindow\querypane\resultgrid\ResultGridCellContextMenu.class
 genericdwh\gui\editor\editingview\TreeTableCellContextMenu$1.class
 genericdwh\gui\mainwindow\querypane\TableCellContextMenu$3.class
 genericdwh\gui\general\sidebar\DataObjectTreeCell.class
+genericdwh\dataobjects\DataObjectCategory.class
 genericdwh\gui\editor\editingview\EditingViewController$35.class
 genericdwh\db\model\tables\records\DimensionCombinationsRecord.class
 genericdwh\dataobjects\referenceobject\ReferenceObjectManager.class
@@ -92,6 +97,7 @@ genericdwh\gui\editor\editingview\EditingViewController$42.class
 genericdwh\gui\editor\editingview\EditingViewController$12.class
 genericdwh\gui\mainwindow\querypane\TableCellContextMenu$2.class
 genericdwh\gui\SpringFXMLLoader$1.class
+genericdwh\gui\editor\editingview\EditingViewController$59.class
 genericdwh\gui\mainwindow\sidebar\DataObjectTreeCellContextMenu$3.class
 genericdwh\gui\editor\editingview\TreeTableCellContextMenu$10.class
 genericdwh\gui\mainwindow\querypane\DataObjectTableCell$1.class
@@ -101,6 +107,7 @@ genericdwh\gui\editor\editingview\EditingViewController$36.class
 genericdwh\db\model\tables\records\FactUnitsRecord.class
 genericdwh\gui\editor\editingview\EditingViewController$41.class
 genericdwh\db\model\tables\records\ReferenceObjectsRecord.class
+genericdwh\gui\editor\dialogpopups\SaveFailureDialogPopupController.class
 genericdwh\db\model\tables\records\DimensionHierarchiesRecord.class
 genericdwh\gui\editor\editingview\EditingViewController$13.class
 genericdwh\gui\editor\editingview\EditingViewController$3.class
@@ -126,6 +133,7 @@ genericdwh\db\model\tables\DimensionCategories.class
 genericdwh\gui\editor\editingview\EditingViewController$14.class
 genericdwh\gui\editor\editingview\EditingViewController$34.class
 genericdwh\db\MySQLDatabaseReader.class
+genericdwh\gui\mainwindow\querypane\QueryPaneController$AggregationType.class
 genericdwh\dataobjects\ratio\RatioCategory.class
 genericdwh\db\model\tables\ReferenceObjects.class
 genericdwh\gui\editor\editingview\TreeTableCellContextMenu$12.class

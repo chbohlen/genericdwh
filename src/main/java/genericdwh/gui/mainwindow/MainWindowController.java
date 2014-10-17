@@ -248,10 +248,11 @@ public class MainWindowController implements Initializable{
 	public void addRatio(DataObject dim) {
 		queryPaneController.addRatio(dim);
 	}
-
-	public void refresh() {
+	
+	public void refresh(String status, Image icon) {
 		createSidebars();
 		clearQueryPane();
+		postStatus(status, icon);
 	}
 	
 	public void enableLastSQLQueryButton() {

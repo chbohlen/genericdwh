@@ -2,6 +2,7 @@ package genericdwh.gui.editor.dialogpopups;
 
 import genericdwh.gui.editor.EditorController;
 import genericdwh.gui.general.Icons;
+import genericdwh.gui.general.StatusMessages;
 import genericdwh.gui.general.dialogpopup.DialogPopupController;
 import genericdwh.main.Main;
 import javafx.fxml.FXML;
@@ -25,7 +26,7 @@ public class ValidationFailureDialogPopupController extends DialogPopupControlle
 	@FXML public void buttonYesOnClickHandler() {
 		stage.close();
 		if (closeEditor) {
-			Main.getContext().getBean(EditorController.class).close();
+			Main.getContext().getBean(EditorController.class).close(StatusMessages.VALIDATION_FAILED, Icons.WARNING);
 		}
 	}
 }

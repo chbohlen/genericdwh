@@ -43,7 +43,7 @@ public class SaveOrDiscardDialogPopupController extends DialogPopupController {
 		editorController.discardChanges(id);
 		stage.close();
 		if (closeEditor) {
-			editorController.close();
+			editorController.close(null, null);
 		}
 	}
 
